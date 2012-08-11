@@ -14,11 +14,11 @@ LightPHP(光进程)是一个迷你而强大的PHP类库，致力于协助开发�
 `Examples`文件夹不是使用LightPHP所必须的.**在生产环境中使用时强烈建议删除`Examples`文件夹！**
 
 ###授权
-`lp-class`中全部代码：[LGPLv3](http://www.gnu.org/licenses/lgpl.html).
-Wiki中全部文档：[署名-相同方式共享3.0(CC-BY-SA-3.0)](http://zh.wikipedia.org/wiki/Wikipedia:CC-BY-SA).
-`lp-style`中的jQuery：[MIT](https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt).
-`lp-style`中的Bootstrap：[Apache2.0](http://www.apache.org/licenses/LICENSE-2.0).
-其他部分(`lp-style`、`Examples`、根目录下其他文件)：[WTFPLv2](http://sam.zoy.org/wtfpl/COPYING).
+* `lp-class`中全部代码：[LGPLv3](http://www.gnu.org/licenses/lgpl.html).
+* Wiki中全部文档：[署名-相同方式共享3.0(CC-BY-SA-3.0)](http://zh.wikipedia.org/wiki/Wikipedia:CC-BY-SA).
+* `lp-style`中的jQuery：[MIT](https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt).
+* `lp-style`中的Bootstrap：[Apache2.0](http://www.apache.org/licenses/LICENSE-2.0).
+* 其他部分(`lp-style`、`Examples`、根目录下其他文件)：[WTFPLv2](http://sam.zoy.org/wtfpl/COPYING).
 
 ##特点
 
