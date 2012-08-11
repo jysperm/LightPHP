@@ -53,7 +53,7 @@ define("lpCfgFileCache",true);
 
 define("lpCfgVer","3.0.0");
 define("lpCfgBootstrapVer","2.0.4");
-define("lpCfgJQueryVer","1.7.2");
+define("lpCfgJQueryVer","1.8.0");
 
 
 //--lpMySQL
