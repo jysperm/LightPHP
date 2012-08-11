@@ -5,13 +5,8 @@
 
 //是否启用Debug模式(将实时显示错误信息)
 define("lpCfgDebug",true);
-    //是否将错误写入日志，日志位于 /lp-errorlog.txt.php
-    define("lpCfgErrorLog",true);
-    //是否将警告写入日志
-    define("lpCfgWarningLog",true);
-    //是否在Debug模式中显示警告
-    define("lpCfgShowWarning",true);
-
+//非Debug模式下出现错误时提示给用户的信息
+define("lpErrorMsg","服务器脚本执行错误，请联系管理员");
 
 //--公共
 

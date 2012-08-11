@@ -17,35 +17,19 @@ function lpExpr($value)
     return $value;
 }
 
-define("lpErrorMsg","服务器脚本执行错误，错误信息已记入日志，请联系管理员");
-
 class lpGlobal
 {
     public static function onError($info,$file,$line)
     {
-        $out="错误:{$info} in {$file} line {$line}";
-
-        if(lpCfgErrorLog)
-            lpGlobal::writeToLog($out);
-
         if(lpCfgDebug)
+        {
+            $out="错误:{$info} in {$file} line {$line}";
             die($out);
-        else
-            die(lpErrorMsg);
-    }
-
-    public static function onWarning($info,$file,$line)
-    {
-        $out="警告:{$info} in {$file} line {$line}";
-
-        if($lpConfigs["LightPHP"]["warning_log"])
-        {
-            $this::writeToLog($out);
         }
-
-        if(lpCfgDebug && lpCfgShowWarning)
+        else
         {
-            echo $out;
+            //TODO:清空缓冲区
+            die(lpErrorMsg);
         }
     }
 
