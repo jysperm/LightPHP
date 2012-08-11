@@ -19,20 +19,25 @@ class lpFileLock
         if(!$this->file)
             $this->file=fopen($this->fileName,"w+");
 
-        if(flock($this->file,$type | LOCK_NB))
+        if($this->isLocked)
+            return false;
+
+        if($testOnly)
         {
-            if($testOnly)
+            if(flock($this->file,$type | LOCK_NB))
             {
                 $this->unLock();
                 return true;
             }
-
-            $this->isLocked=true;
-            return true;
+            else
+            {
+                return false;
+            }
         }
         else
         {
-            return false;
+            while(!flock($this->file,$type));
+            $this->isLocked=true;
         }
     }
 
