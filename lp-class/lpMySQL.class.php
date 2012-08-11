@@ -47,12 +47,12 @@ class lpMySQL
                 $this->connect=mysql_connect($configs["host"],$configs["user"],$configs["pwd"]);
 
             if(!$this->connect)
-                lpGlobal::onError("lpMySQL::open():连接到数据库失败(无法连接到服务器`{$configs["host"]}`,或密码错误)", __FILE__, __LINE__);
+                lpGlobal::onError("lpMySQL::open(): 连接到数据库失败(无法连接到服务器`{$configs["host"]}`,或密码错误)", __FILE__, __LINE__);
 
             mysql_query("SET NAMES {$this->escape($configs["charset"])}",$this->connect);
 
             if(!mysql_select_db($configs["dbname"],$this->connect))
-                lpGlobal::onError("lpMySQL::open():打开数据库`{$configs["dbname"]}`失败", __FILE__, __LINE__);
+                lpGlobal::onError("lpMySQL::open(): 打开数据库`{$configs["dbname"]}`失败", __FILE__, __LINE__);
         }
 
         return $this->ping();
@@ -78,7 +78,8 @@ class lpMySQL
 
         $sql=$this->parseSQL($sql, $args);
 
-        //echo $sql."\n";
+        if(lpMySQLDebug)
+            echo "lpMySQL::exec(): {$sql}\n";
 
         return new lpSQLRs(mysql_query($sql,$this->connect),$this);
     }
@@ -180,6 +181,14 @@ class lpMySQL
             $this->open();
 
         return $this->queryToArray(mysql_list_dbs($this->connect));
+    }
+
+    public function lastError()
+    {
+        if(mysql_errno($this->connect))
+            return mysql_error($this->connect);
+        else
+            return NULL;
     }
 
     public function getTables($dbname)

@@ -57,6 +57,9 @@ define("lpCfgJQueryVer","1.7.2");
 
 
 //--lpMySQL
+
+//Debug模式将打印所有执行的MySQL语句
+define("lpMySQLDebug",false);
 //该部分用于指定lpMySQL默认使用的数据库连接信息
 $lpCfgMySQL=array(
                    "host" => "localhost",
