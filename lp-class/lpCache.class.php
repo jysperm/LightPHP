@@ -3,6 +3,7 @@
 require_once("lpGlobal.class.php");
 require_once("lpMySQL.class.php");
 require_once("lpSQLRs.class.php");
+require_once("lpLock.class.php");
 
 define("lpKEY", "key");
 define("lpVALUE", "value");
@@ -110,6 +111,7 @@ class lpCache
         }
         else
         {
+			$lock=new lpMutex;
             if(lpCfgFileCache)
             {
                 $this->_lpCache[$key]=$value;
@@ -124,6 +126,7 @@ class lpCache
 
             $content = lpSTART . $content . lpEND;
             file_put_contents($this->_lpSource,$content);
+			$lock=NULL
         }
     }
 }
