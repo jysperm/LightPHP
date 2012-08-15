@@ -10,7 +10,7 @@ LightPHP(光进程)是一个迷你而强大的PHP类库，致力于协助开发�
 * 其他组件
 
 ###文档和示例
-文档在Wiki中，示例代码在`Examples`文件夹中.
+文档在Wiki中，示例代码在`Examples`文件夹中.  
 `Examples`文件夹不是使用LightPHP所必须的.**在生产环境中使用时强烈建议删除`Examples`文件夹！**
 
 ###授权

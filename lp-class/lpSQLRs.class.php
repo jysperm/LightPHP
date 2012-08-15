@@ -1,8 +1,5 @@
 <?php
 
-require_once("lpGlobal.class.php");
-require_once("lpMySQL.class.php");
-
 class lpSQLRs
 {
     private $_lpRes=NULL;
