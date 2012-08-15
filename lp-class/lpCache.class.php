@@ -111,7 +111,10 @@ class lpCache
         }
         else
         {
-			$lock=new lpMutex;
+			$name=md5(dirname($this->_lpSource) . "/" . basename($this->_lpSource));
+			$lock=new lpFileLock($name);
+			$lock->lock();
+			
             if(lpCfgFileCache)
             {
                 $this->_lpCache[$key]=$value;
@@ -126,7 +129,8 @@ class lpCache
 
             $content = lpSTART . $content . lpEND;
             file_put_contents($this->_lpSource,$content);
-			$lock=NULL
+			
+			$lock->unLock();
         }
     }
 }
