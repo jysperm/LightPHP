@@ -1,8 +1,5 @@
 <?php
 
-require_once("lpMySQL.class.php");
-require_once("lpSQLRs.class.php");
-
 class lpFileLock
 {
     private $file=NULL;

@@ -8,10 +8,14 @@ define("lpCfgDebug",true);
 //非Debug模式下出现错误时提示给用户的信息
 define("lpErrorMsg","服务器脚本执行错误，请联系管理员");
 
-//--公共
+//--LightPHP
 
 //与北京时间的时差(单位秒)
 define("lpCfgTimeToChina",0);
+//LightPHP相对于域名根目录的位置
+define("lpUrl","/");
+//LightPHP在服务器文件系统上的位置
+define("lpROOT",dirname(__FILE__));
 
 //--lpAuth
 

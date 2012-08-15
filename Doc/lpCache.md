@@ -8,7 +8,7 @@
 ###MySQL
 建表SQL：
 
-    CREATE TABLE IF NOT EXISTS `lp-options` (
+    CREATE TABLE IF NOT EXISTS `lp-cache` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `key` text NOT NULL,
       `value` text NOT NULL,
