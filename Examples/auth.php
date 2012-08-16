@@ -1,7 +1,9 @@
 <?php
-/*
- 用到的类：lpAuth
-*/
+
+require_once("../lp-config.php");
+require_once("../lp-class/lpGlobal.class.php");
+require_once("../lp-class/lpSQLRs.class.php");
+require_once("../lp-class/lpMySQL.class.php");
 require_once("../lp-class/lpAuth.class.php");
 
 //我们可以通过这样的方式从GET参数接收用户名和密码，

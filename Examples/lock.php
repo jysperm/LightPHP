@@ -1,7 +1,9 @@
 <?php
-/*
- 用到的类：lpFileLock、lpMySQLLock、lpMutex
-*/
+
+require_once("../lp-config.php");
+require_once("../lp-class/lpGlobal.class.php");
+require_once("../lp-class/lpSQLRs.class.php");
+require_once("../lp-class/lpMySQL.class.php");
 require_once("../lp-class/lpLock.class.php");
 
 //lpLock其实分成三个类：lpFileLock、lpMySQLLock、lpMutex.

@@ -36,15 +36,15 @@ class lpCache
     {
         if($this->_lpConnect)
         {
-            $rs=$this->_lpConnect->select($this->_lpTable,array(lpKEY => $name));
+            $rs=$this->_lpConnect->select($this->_lpTable,array(lpCfgKEY => $name));
             return $rs->read();
         }
         else
         {
             if(lpCfgFileCache)
-                return array_key_exists($key,$this->_lpCache)
+                return array_key_exists($key,$this->_lpCache);
             else
-                return array_key_exists($key,$this->loadFile())
+                return array_key_exists($key,$this->loadFile());
         }
     }
 	
@@ -55,7 +55,7 @@ class lpCache
 			
         if($this->_lpConnect)
         {
-            $rs=$this->_lpConnect->delete($this->_lpTable,array(lpKEY => $name));
+            $rs=$this->_lpConnect->delete($this->_lpTable,array(lpCfgKEY => $name));
         }
         else
         {
@@ -85,9 +85,9 @@ class lpCache
     {
         if($this->_lpConnect)
         {
-            $rs=$this->_lpConnect->select($this->_lpTable,array(lpKEY => $key));
+            $rs=$this->_lpConnect->select($this->_lpTable,array(lpCfgKEY => $key));
             if($rs->read())
-                return unserialize($rs->value(lpVALUE));
+                return unserialize($rs->value(lpCfgVALUE));
             else
                 return NULL;
         }
@@ -147,15 +147,15 @@ class lpCache
 	
 	private function loadFile()
     {
-        $content=file_get_contents($this->_lpFile)
-        $content=substr($content,strlen(lpSTART),strlen($content)-strlen(lpSTART)-strlen(lpEND));
+		$content=file_get_contents($this->_lpFile);
+        $content=substr($content,strlen(lpCfgSTART),strlen($content)-strlen(lpCfgSTART)-strlen(lpCfgEND));
 
         return unserialize($content);
     }
 	
 	private function writeFile($content)
     {
-        $content = lpSTART . serialize($content) . lpEND;
+        $content = lpCfgSTART . serialize($content) . lpCfgEND;
         file_put_contents($this->_lpSource,$content);
     }
 }

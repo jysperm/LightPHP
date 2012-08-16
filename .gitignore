@@ -23,3 +23,12 @@ qrc_*.cpp
 /*build*/*
 */release/*
 */debug/*
+
+#VS2010 VS.PHP
+/.vsphpignore
+/Projects.phpproj
+/php.ini
+/Projects.puo
+/Projects.sln
+/.httpd.conf
+/Projects.suo

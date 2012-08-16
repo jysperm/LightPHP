@@ -1,9 +1,5 @@
 <?php
 
-require_once("lpGlobal.class.php");
-require_once("lpMySQL.class.php");
-require_once("lpSQLRs.class.php");
-
 class lpAuth
 {
     public static function auth($user,$passwd,$isRaw=true,$isDB=false,$isCookie=false)
@@ -57,14 +53,14 @@ class lpAuth
 
             $expire=time()+lpCfgTimeLimit*24*3600;
 
-            setcookie(lpUNAME,$user,$expire,"/");
-            setcookie(lpPASSWD,$passwd,$expire,"/");
+            setcookie(lpCfgUNAME,$user,$expire,"/");
+            setcookie(lpCfgPASSWD,$passwd,$expire,"/");
 
             return true;
         }
         else
         {
-            setcookie(lpPASSWD,NULL,time()-1,"/");
+            setcookie(lpCfgPASSWD,NULL,time()-1,"/");
             return false;
         }
     }
@@ -79,8 +75,8 @@ class lpAuth
 
     public static function logout()
     {
-        setcookie(lpUNAME,NULL,time()-1,"/");
-        setcookie(lpPASSWD,NULL,time()-1,"/");
+        setcookie(lpCfgUNAME,NULL,time()-1,"/");
+        setcookie(lpCfgPASSWD,NULL,time()-1,"/");
     }
 
     public static function DBHash($user,$passwd)
