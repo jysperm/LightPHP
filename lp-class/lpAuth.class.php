@@ -4,9 +4,6 @@ require_once("lpGlobal.class.php");
 require_once("lpMySQL.class.php");
 require_once("lpSQLRs.class.php");
 
-define("lpUNAME", "{$lpConfigs['lpAuth']['cookie_prefix']}uname");
-define("lpPASSWD", "{$lpConfigs['lpAuth']['cookie_prefix']}passwd");
-
 class lpAuth
 {
     public static function auth($user,$passwd,$isRaw=true,$isDB=false,$isCookie=false)

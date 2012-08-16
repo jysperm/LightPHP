@@ -1,11 +1,5 @@
 <?php
 
-define("lpKEY", "key");
-define("lpVALUE", "value");
-
-define("lpSTART", "<?php /*");
-define("lpEND", "*/ ?>");
-
 class lpCache
 {
     private $_lpConnect=NULL;

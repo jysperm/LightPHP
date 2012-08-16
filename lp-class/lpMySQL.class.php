@@ -1,8 +1,5 @@
 <?php
 
-require_once("lpGlobal.class.php");
-require_once("lpSQLRs.class.php");
-
 class lpMySQL
 {
     private $configs;
@@ -78,7 +75,7 @@ class lpMySQL
 
         $sql=$this->parseSQL($sql, $args);
 
-        if(lpMySQLDebug)
+        if(lpCfgDebug && lpCfgMySQLDebug)
             echo "lpMySQL::exec(): {$sql}\n";
 
         return new lpSQLRs(mysql_query($sql,$this->connect),$this);
