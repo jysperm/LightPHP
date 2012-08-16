@@ -2,10 +2,10 @@
 $lpROOT=dirname(__FILE__);
 $lpClassDir="{$lpROOT}/lp-class";
 require_once("{$lpROOT}/lp-config.php");
-require_once("{$lpClassDir}/lpGlobal.class.php");
-require_once("{$lpClassDir}/lpMySQL.class.php");
+require_once("{$lpClassDir}/lpTools.class.php");
 require_once("{$lpClassDir}/lpSQLRs.class.php");
-require_once("{$lpClassDir}/lpOptions.class.php");
+require_once("{$lpClassDir}/lpMySQL.class.php");
+require_once("{$lpClassDir}/lpCache.class.php");
 require_once("{$lpClassDir}/lpAuth.class.php");
 require_once("{$lpClassDir}/lpTemplate.class.php");
 require_once("{$lpClassDir}/lpMVC.class.php");

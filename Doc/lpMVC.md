@@ -25,13 +25,13 @@
 ##URL重写
 LightPHP默认的`.htaccess`如下，存储在`LightPHP.htaccess`中，使用时你需要把它重命名为`.htaccess`
 
-	<IfModule mod_rewrite.c>
-	    RewriteEngine On
-	    RewriteBase /
-	    RewriteCond %{REQUEST_FILENAME} !-f
-	    RewriteCond %{REQUEST_FILENAME} !-d
-	    RewriteRule . /lp-main.php [L]
-	</IfModule>
+    <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteBase /
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule . /lp-main.php [L]
+    </IfModule>
 
 它会首先判断是否存在与URL对应的文件，如果存在，即使用该文件，如果不存在，将请求重写到`lp-main.php`.  
 你可以在`lp-main.php`中使用lpMVC进行控制.

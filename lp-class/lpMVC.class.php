@@ -1,15 +1,56 @@
 <?php
 
-require_once("lpGlobal.class.php");
+class lpPage
+{
+    public $httpCode=200;
+
+    public function goto($url)
+    {
+        header("Location: {$url}");
+
+        exit(0);
+    }
+    
+    public function _lpInit()
+    {
+        ob_start();
+    }
+    
+    public function _lpFinish()
+    {
+        if($this->httpCode!=200)
+        {
+            $codeStr = array (
+                400 => "400 Bad Request",
+                403 => "403 Forbidden",
+                404 => "404 Not Found",
+                500 => "Internal Server Error"
+            );
+
+            header("HTTP/1.1 {$codeStr[$code]}");
+            header("Status: {$codeStr[$code]}");
+        }
+
+        ob_end_flush();
+    }
+    
+    public function get($args)
+    {
+        echo "没有实现GET方法";
+    }
+    
+    public function post($args)
+    {
+        echo "没有实现POST方法";
+    }
+}
 
 class lpMVC
 {
     public static function bind($rx,$handler)
     {
         if(preg_match($rx,rawurldecode($_SERVER["REQUEST_URI"]),$args))
-        {
             lpMVC::procHandler($handler,$args);
-        }
     }
 
     public static function onDefault($handler)
@@ -19,31 +60,23 @@ class lpMVC
 
     private static function procHandler($handler,$args=array())
     {
-        global $lpE;
-        
-        array_shift($args);
         if(strtolower(get_class($handler))==strtolower("Closure"))
+            $handler=$handler();
+        
+        if(is_string($handler))
         {
-            $out=$handler();
-            if(is_string($out))
-                echo $out;
-            else
-            {
-                $funcName=strtolower($_SERVER["REQUEST_METHOD"]);
-                if(!method_exists($out,$funcName))
-                    lpGlobal::onError("lpMVC::procHandler():{$lpE(get_class($out))}没有{$funcName}方法",__FILE__,__LINE__);
-                $out->$funcName($args);
-            }
+            echo $handler;
         }
         else
         {
-            if(is_string($args))
-                echo $args;
-            $funcName=strtolower($_SERVER["REQUEST_METHOD"]);
-            if(!method_exists($handler,$funcName))
-                lpGlobal::onError("lpMVC::procHandler():{$lpE(get_class($handler))}没有{$funcName}方法",__FILE__,__LINE__);
-            $handler->$funcName($args);
+            array_shift($args);
+            $methodName=strtolower($_SERVER["REQUEST_METHOD"]);
+            
+            $handler->_lpInit();
+            $handler->$methodName($args);
+            $handler->_lpFinish();
         }
+        
         exit(0);
     }
 }

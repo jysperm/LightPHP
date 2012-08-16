@@ -1,9 +1,5 @@
 <?php
 
-require_once("lpGlobal.class.php");
-
-define("lpDEFAULT","{$lpROOT}/lp-style/default.template.php");
-
 function lpBeginBlock()
 {
     ob_start();
@@ -23,7 +19,7 @@ class lpTemplate
         ob_start();
     }
 
-    public function parse($filename,$lpVars_=array())
+    public function parse($filename,$lpVars=array())
     {
         if($this->isParse)
             lpGlobal::onError("lpTemplate::parse():对同一个实例进行了多次解析",__FILE__,__LINE__);
@@ -31,23 +27,23 @@ class lpTemplate
 
         $lpContents_=ob_get_clean();
 
-        $temp=function($filename,$lpContents_,$lpVars_)
+        $temp=function($lpFilename,$lpContents_,$lpVars_)
         {
             $lpInTemplate=true;
 
             foreach ($lpVars_ as $key => $value) 
             {
-                $value=serialize($value);
-                eval("\${$key} = unserialize('{$value}');");
+                $value=base64_encode(serialize($value));
+                eval("\${$key} = unserialize(base64_decode('{$value}'));");
             }
 
             $lpContents=$lpContents_;
 
-            $lpCode_=file_get_contents($filename);
+            $lpCode_=file_get_contents($lpFilename);
             eval("?>{$lpCode_} <?php ");
         };
 
-        $temp($filename,$lpContents_,$lpVars_);
+        $temp($filename,$lpContents_,$lpVars);
     }
     
     public function __destruct()

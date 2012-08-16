@@ -47,12 +47,12 @@ class lpCache
                 return array_key_exists($key,$this->loadFile());
         }
     }
-	
-	public function deleteKey($key)
+    
+    public function deleteKey($key)
     {
-		if(!$this->isHas($key))
-			return false;
-			
+        if(!$this->isHas($key))
+            return false;
+            
         if($this->_lpConnect)
         {
             $rs=$this->_lpConnect->delete($this->_lpTable,array(lpCfgKEY => $name));
@@ -60,25 +60,25 @@ class lpCache
         else
         {
             $name=md5(dirname($this->_lpSource) . "/" . basename($this->_lpSource));
-			$lock=new lpFileLock($name);
-			$lock->lock();
-			
+            $lock=new lpFileLock($name);
+            $lock->lock();
+            
             if(lpCfgFileCache)
             {
-				unset($this->_lpCache[$key]);
-				$this->writeFile($this->_lpCache);
+                unset($this->_lpCache[$key]);
+                $this->writeFile($this->_lpCache);
             }
             else
             {
                 $cache=$this->loadFile();
-				unset($cache[$key]);
+                unset($cache[$key]);
                 $this->writeFile($cache);
             }
-			
-			$lock->unLock();
+            
+            $lock->unLock();
         }
-		
-		return true;
+        
+        return true;
     }
 
     public function __get($key)
@@ -125,14 +125,14 @@ class lpCache
         }
         else
         {
-			$name=md5(dirname($this->_lpSource) . "/" . basename($this->_lpSource));
-			$lock=new lpFileLock($name);
-			$lock->lock();
-			
+            $name=md5(dirname($this->_lpSource) . "/" . basename($this->_lpSource));
+            $lock=new lpFileLock($name);
+            $lock->lock();
+            
             if(lpCfgFileCache)
             {
                 $this->_lpCache[$key]=$value;
-				$this->writeFile($this->_lpCache);
+                $this->writeFile($this->_lpCache);
             }
             else
             {
@@ -140,20 +140,20 @@ class lpCache
                 $cache[$key]=$value;
                 $this->writeFile($cache);
             }
-			
-			$lock->unLock();
+            
+            $lock->unLock();
         }
     }
-	
-	private function loadFile()
+    
+    private function loadFile()
     {
-		$content=file_get_contents($this->_lpFile);
+        $content=file_get_contents($this->_lpFile);
         $content=substr($content,strlen(lpCfgSTART),strlen($content)-strlen(lpCfgSTART)-strlen(lpCfgEND));
 
         return unserialize($content);
     }
-	
-	private function writeFile($content)
+    
+    private function writeFile($content)
     {
         $content = lpCfgSTART . serialize($content) . lpCfgEND;
         file_put_contents($this->_lpSource,$content);

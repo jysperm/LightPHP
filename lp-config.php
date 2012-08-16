@@ -1,6 +1,5 @@
 <?php
 //该文件保存了LightPHP的一些设置
-//分为`常用`和`高级`两部分
 
 //常用
 //------------------------
@@ -94,5 +93,18 @@ define("lpCfgVALUE", "value");
 define("lpCfgSTART", "<?php /*");
 //文件模式中文件末尾的保护性注释
 define("lpCfgEND", "*/ ?>");
+
+//--lpTemplate
+
+//默认模板文件的位置
+define("lpCfgDefault","{$lpROOT}/lp-style/default.template.php");
+
+
+
+//以下请勿修改
+//------------------------
+
+if(!lpCfgDebug)
+    ini_set("display_errors","Off");
 
 ?>
