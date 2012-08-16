@@ -32,3 +32,4 @@ qrc_*.cpp
 /Projects.sln
 /.httpd.conf
 /Projects.suo
+/Projects.intellisense.cache
