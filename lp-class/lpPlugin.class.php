@@ -1,1 +1,8 @@
-﻿
+﻿<?php
+
+class lpPlugin
+{
+    
+}
+
+?>
