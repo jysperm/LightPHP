@@ -1,12 +1,12 @@
 <?php
-/*
-用到的类：lpMySQL
-*/
+
+require_once("../lp-config.php");
+require_once("../lp-class/lpGlobal.class.php");
+require_once("../lp-class/lpSQLRs.class.php");
 require_once("../lp-class/lpMySQL.class.php");
 
-
 //连接到默认数据库
-//默认数据库可以在 lp-config.ini.php 中的 [lpMySQL] 一节中指定
+//默认数据库可以在配置文件中指定
 $conn=new lpMySQL();
 
 //上面的代码只是产生了一个连接对象.

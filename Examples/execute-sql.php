@@ -1,7 +1,8 @@
 <?php
-/*
- 用到的类：lpMySQL
-*/
+
+require_once("../lp-config.php");
+require_once("../lp-class/lpGlobal.class.php");
+require_once("../lp-class/lpSQLRs.class.php");
 require_once("../lp-class/lpMySQL.class.php");
 
 //连接到默认数据库
