@@ -1,9 +1,9 @@
 <?php
 
 require_once("../lp-config.php");
-require_once("../lp-class/lpGlobal.class.php");
-require_once("../lp-class/lpSQLRs.class.php");
-require_once("../lp-class/lpMySQL.class.php");
+require_once("../lp-class/lpTools.php");
+require_once("../lp-class/lpSQLRs.php");
+require_once("../lp-class/lpMySQL.php");
 
 //连接到默认数据库
 //默认数据库可以在配置文件中指定
@@ -15,7 +15,7 @@ $conn->open();
 
 //你还可以向lpMySQL的构造函数传递更多参数，像下面这样
 //具体请参见文档
-$conn=new lpMySQL("localhost","mydb","myuser","mypassword","utf8");
+$conn=new lpMySQL("localhost","mydb","myuser","mypasswd","utf8");
 $conn->open();
 
 //你可以通过lpMySQL的ping()函数来检查到数据库的连接是否可用

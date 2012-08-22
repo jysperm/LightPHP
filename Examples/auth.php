@@ -1,10 +1,10 @@
 <?php
 
 require_once("../lp-config.php");
-require_once("../lp-class/lpGlobal.class.php");
-require_once("../lp-class/lpSQLRs.class.php");
-require_once("../lp-class/lpMySQL.class.php");
-require_once("../lp-class/lpAuth.class.php");
+require_once("../lp-class/lpTools.php");
+require_once("../lp-class/lpSQLRs.php");
+require_once("../lp-class/lpMySQL.php");
+require_once("../lp-class/lpAuth.php");
 
 //我们可以通过这样的方式从GET参数接收用户名和密码，
 //并验证用户输入的密码是否正确：

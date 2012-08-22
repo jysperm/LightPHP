@@ -38,13 +38,15 @@ class lpMySQL
 
             $configs=$this->configs;
 
+            print_r($configs);
+
             if($isPC)
                 $this->connect=mysql_pconnect($configs["host"],$configs["user"],$configs["pwd"]);
             else
                 $this->connect=mysql_connect($configs["host"],$configs["user"],$configs["pwd"]);
 
             if(!$this->connect)
-                lpGlobal::onError("lpMySQL::open(): 连接到数据库失败(无法连接到服务器`{$configs["host"]}`,或密码错误)", __FILE__, __LINE__);
+                lpTools::onError("lpMySQL::open(): 连接到数据库失败(无法连接到服务器`{$configs["host"]}`,或密码错误)", __FILE__, __LINE__);
 
             mysql_query("SET NAMES {$this->escape($configs["charset"])}",$this->connect);
 

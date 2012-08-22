@@ -40,7 +40,7 @@ $lpCfgMySQL=array(
                    "host" => "localhost",
                    "dbname" => "mydb",
                    "user" => "myuser",
-                   "pwd" => "mypassword",
+                   "pwd" => "mypasswd",
                    "charset" => "utf8"
                  );
 
@@ -97,7 +97,7 @@ define("lpCfgEND", "*/ ?>");
 //--lpTemplate
 
 //默认模板文件的位置
-define("lpCfgDefault","{$lpROOT}/lp-style/default.template.php");
+define("lpCfgDefault",lpROOT . "/lp-style/default.template.php");
 
 
 

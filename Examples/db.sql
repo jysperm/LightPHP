@@ -22,7 +22,7 @@ INSERT INTO `user` (`uid`, `uname`, `passwd`, `regtime`, `website`, `info`, `ema
 (4, 'abort', 'f4f1dfdaf4a1cf1b1f3f111fd43cf73cd8b21ab7', 1338480000, '', '', 'm@sunyboy.cn', ''),
 (5, 'zeroms', '64556c314e890f5d041a22c808918b5d997ae22e', 1338480000, '', '', '', '');
 
-CREATE TABLE IF NOT EXISTS `lp-options` (
+CREATE TABLE IF NOT EXISTS `lp-cache` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `key` text NOT NULL,
   `value` text NOT NULL,
