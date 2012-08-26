@@ -2,7 +2,7 @@
 /*
  用到的类：lpMVC
 */
-require_once("../lp-class/lpMVC.class.php");
+require_once("../lp-class/lpMVC.php");
 
 //lpMVC是一个灰常简单的MVC路由器，用于把请求分发到对应的处理器(handler)
 
