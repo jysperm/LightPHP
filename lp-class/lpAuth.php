@@ -31,11 +31,11 @@ class lpAuth
             $isCookie=true;
         }
 
-        if(!$user && isset($_COOKIE[lpUNAME]))
-            $user=$_COOKIE[lpUNAME];
+        if(!$user && isset($_COOKIE[lpCfgUNAME]))
+            $user=$_COOKIE[lpCfgUNAME];
 
-        if(!$passwd && isset($_COOKIE[lpPASSWD]))
-            $passwd=$_COOKIE[lpPASSWD];
+        if(!$passwd && isset($_COOKIE[lpCfgPASSWD]))
+            $passwd=$_COOKIE[lpCfgPASSWD];
 
         if(!$user || !$passwd)
             return false;
@@ -67,8 +67,8 @@ class lpAuth
 
     public static function getUName()
     {
-        if(isset($_COOKIE[lpUNAME]))
-            return $_COOKIE[lpUNAME];
+        if(isset($_COOKIE[lpCfgUNAME]))
+            return $_COOKIE[lpCfgUNAME];
         else
             return NULL;
     }
@@ -81,17 +81,17 @@ class lpAuth
 
     public static function DBHash($user,$passwd)
     {
-        return lpCfgDBHash($user,$passwd);
+        return call_user_func(lpCfgDBHash,$user,$passwd);
     }
 
     public static function cookieHash($DBPasswd)
     {
-        return lpCfgCookieHash($DBPasswd);
+        return call_user_func(lpCfgCookieHash,$DBPasswd);
     }
 
     public static function getPasswd($uname)
     {
-        return lpCfgGetPasswd($uname);
+        return call_user_func(lpCfgGetPasswd,$uname);
     }
 }
 

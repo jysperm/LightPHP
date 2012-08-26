@@ -4,7 +4,7 @@ class lpPage
 {
     public $httpCode=200;
 
-    public function goto($url)
+    public function gotoUrl($url)
     {
         header("Location: {$url}");
 

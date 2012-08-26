@@ -1,6 +1,6 @@
 <?php
 
-require_once("./lp-config.php");
+require_once("lp-config.php");
 
 function lpLoader($name)
 {

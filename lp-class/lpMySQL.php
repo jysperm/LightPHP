@@ -8,8 +8,6 @@ class lpMySQL
 
     public function __construct($host=NULL,$dbname=NULL,$user=NULL,$pwd=NULL,$charset=NULL)
     {
-        global $lpConfigs;
-
         $this->configs=$GLOBALS["lpCfgMySQL"];
 
         if($host)
@@ -37,8 +35,6 @@ class lpMySQL
             $this->isPCconnect=$isPC;
 
             $configs=$this->configs;
-
-            print_r($configs);
 
             if($isPC)
                 $this->connect=mysql_pconnect($configs["host"],$configs["user"],$configs["pwd"]);

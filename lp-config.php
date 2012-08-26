@@ -14,7 +14,7 @@ define("lpCfgDebug",true);
 //与北京时间的时差(单位秒)
 define("lpCfgTimeToChina",0);
 //LightPHP相对于域名根目录的位置
-define("lpUrl","/");
+$lpUrl="/";
 
 //各组件的版本信息
 
@@ -98,6 +98,8 @@ define("lpCfgEND", "*/ ?>");
 
 //默认模板文件的位置
 define("lpCfgDefault",lpROOT . "/lp-style/default.template.php");
+
+
 
 
 
