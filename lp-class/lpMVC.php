@@ -2,13 +2,16 @@
 
 class lpPage
 {
-    public $httpCode=200;
+    protected $httpCode=200;
 
-    public function gotoUrl($url)
+    protected function gotoUrl($url)
     {
         header("Location: {$url}");
-
-        exit(0);
+    }
+    
+    public function procError()
+    {
+    	
     }
     
     public function _lpInit()
@@ -24,11 +27,11 @@ class lpPage
                 400 => "400 Bad Request",
                 403 => "403 Forbidden",
                 404 => "404 Not Found",
-                500 => "Internal Server Error"
+                500 => "500 Internal Server Error"
             );
 
-            header("HTTP/1.1 {$codeStr[$code]}");
-            header("Status: {$codeStr[$code]}");
+            header("HTTP/1.1 {$codeStr[$this->httpCode]}");
+            header("Status: {$codeStr[$this->httpCode]}");
         }
 
         ob_end_flush();
@@ -73,7 +76,8 @@ class lpMVC
             $methodName=strtolower($_SERVER["REQUEST_METHOD"]);
             
             $handler->_lpInit();
-            $handler->$methodName($args);
+            if(!$handler->$methodName($args))
+            	$handler->procError();
             $handler->_lpFinish();
         }
         

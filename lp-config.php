@@ -12,7 +12,7 @@ define("lpCfgDebug",true);
 //--LightPHP
 
 //与北京时间的时差(单位秒)
-define("lpCfgTimeToChina",0);
+$lpCfgTimeToChina=0;
 //LightPHP相对于域名根目录的位置
 $lpUrl="/";
 
