@@ -11,7 +11,8 @@ class lpPage
     
     public function procError()
     {
-    	
+    	$this->httpCode=500;
+    	echo "\nlpPage::procError(): 服务器在处理请求时遇到错误\n";
     }
     
     public function _lpInit()
@@ -34,7 +35,10 @@ class lpPage
             header("Status: {$codeStr[$this->httpCode]}");
         }
 
-        ob_end_flush();
+        if($this->httpCode!=200 || lpCfgDebug)
+        	ob_end_flush();
+        else
+        	ob_end_clean();
     }
     
     public function get($args)
