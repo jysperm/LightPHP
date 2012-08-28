@@ -56,7 +56,7 @@ class lpMVC
 {
     public static function bind($rx,$handler)
     {
-        if(preg_match($rx,rawurldecode($_SERVER["REQUEST_URI"]),$args))
+        if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),$args))
             lpMVC::procHandler($handler,$args);
     }
 

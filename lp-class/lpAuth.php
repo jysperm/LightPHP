@@ -25,6 +25,8 @@ class lpAuth
 
     public static function login($user=NULL,$passwd=NULL,$isRaw=true,$isDB=false,$isCookie=false)
     {
+    		global $lpCfgCallback;
+    	
         if(!$user || !$passwd)
         {
             $isRaw=false;
@@ -48,8 +50,8 @@ class lpAuth
             if($isRaw || $isDB)
                 $passwd=lpCookieHash($passwd);
 
-            if(lpCfgCallback)
-                call_user_func(lpCfgCallback,$user);
+            if($lpCfgCallback)
+                call_user_func($lpCfgCallback,$user);
 
             $expire=time()+lpCfgTimeLimit*24*3600;
 

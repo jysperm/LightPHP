@@ -54,6 +54,14 @@ class lpTemplate
             ob_end_flush();
         }
     }
+    
+	public static function parseFile($file)
+    {
+        $tmp=new lpTemplate;
+        $tmp->parse($file);
+        
+        return true;
+    }
 }
 
 ?>

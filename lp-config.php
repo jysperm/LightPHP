@@ -29,7 +29,7 @@ define("lpCfgSecurityCode","0123456789abcdefghijklmnopqrstuvwxyz");
 //登录状态有效期,单位天
 define("lpCfgTimeLimit",30);
 //登录成功后的回调函数
-define("lpCfgCallback",NULL);
+$lpCfgCallback=NULL;
 
 //--lpMySQL
 
