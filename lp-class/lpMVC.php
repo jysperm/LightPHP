@@ -11,8 +11,8 @@ class lpPage
     
     public function procError()
     {
-    	$this->httpCode=500;
-    	echo "\nlpPage::procError(): 服务器在处理请求时遇到错误\n";
+	    	$this->httpCode=500;
+	    	echo "\nlpPage::procError(): 服务器在处理请求时遇到错误\n";
     }
     
     public function _lpInit()
@@ -25,6 +25,7 @@ class lpPage
         if($this->httpCode!=200)
         {
             $codeStr = array (
+            		302 => "302 Found",
                 400 => "400 Bad Request",
                 403 => "403 Forbidden",
                 404 => "404 Not Found",
