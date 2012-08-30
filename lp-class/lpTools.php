@@ -24,6 +24,11 @@ class lpTools
             return NULL;
     }
     
+    public static function gravatarUrl($email)
+    {
+    	  return "http://www.gravatar.com/avatar/" . md5(strtolower(trim($email)));
+    }
+    
 		public static function niceTime($time)
 	  {
 		    global $lpCfgTimeToChina;
