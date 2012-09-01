@@ -25,8 +25,8 @@ class lpAuth
 
     public static function login($user=NULL,$passwd=NULL,$isRaw=true,$isDB=false,$isCookie=false)
     {
-    	global $lpCfgCallback,$lpCfgUNAME,$lpCfgPASSWD,$lpCfgTimeLimit;
-    	
+        global $lpCfgCallback,$lpCfgUNAME,$lpCfgPASSWD,$lpCfgTimeLimit;
+
         if(!$user || !$passwd)
         {
             $isRaw=false;

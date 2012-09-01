@@ -1,10 +1,6 @@
 <?php
 
-require_once("../lp-config.php");
-require_once("../lp-class/lpTools.php");
-require_once("../lp-class/lpSQLRs.php");
-require_once("../lp-class/lpMySQL.php");
-require_once("../lp-class/lpLock.php");
+require_once("../lp-load.php");
 
 //lpLock其实分成三个类：lpFileLock、lpMySQLLock、lpMutex.
 
