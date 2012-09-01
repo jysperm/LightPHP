@@ -1,9 +1,6 @@
 <?php
 
-require_once("../lp-config.php");
-require_once("../lp-class/lpGlobal.class.php");
-require_once("../lp-class/lpSQLRs.class.php");
-require_once("../lp-class/lpMySQL.class.php");
+require_once("../lp-load.php");
 
 //连接到默认数据库
 $conn=new lpMySQL();

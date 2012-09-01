@@ -52,11 +52,6 @@ $lpCfgMySQL=array(
 //高级
 //------------------------
 
-//--Debug
-
-//非Debug模式下出现错误时提示给用户的信息
-$lpCfgErrorMsg="服务器脚本执行错误，请联系管理员";
-
 //--LightPHP
 
 //LightPHP在服务器文件系统上的位置

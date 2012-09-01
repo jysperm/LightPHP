@@ -1,9 +1,6 @@
 <?php
 
-require_once("../lp-config.php");
-require_once("../lp-class/lpTools.php");
-require_once("../lp-class/lpSQLRs.php");
-require_once("../lp-class/lpMySQL.php");
+require_once("../lp-load.php");
 
 //连接到默认数据库
 //默认数据库可以在配置文件中指定
