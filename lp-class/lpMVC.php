@@ -8,16 +8,26 @@ class lpPage
     {
         header("Location: {$url}");
     }
-    
-    public function procError()
-    {
-	    	$this->httpCode=500;
-	    	echo "\nlpPage::procError(): 服务器在处理请求时遇到错误\n";
-    }
-    
+
     public function _lpInit()
     {
         ob_start();
+    }
+
+    public function get($args)
+    {
+        echo "没有实现GET方法";
+    }
+    
+    public function post($args)
+    {
+        echo "没有实现POST方法";
+    }
+    
+    public function procError()
+    {
+            $this->httpCode=500;
+            echo "\nlpPage::procError(): 服务器在处理请求时遇到错误\n";
     }
     
     public function _lpFinish()
@@ -25,7 +35,7 @@ class lpPage
         if($this->httpCode!=200)
         {
             $codeStr = array (
-            		302 => "302 Found",
+                302 => "302 Found",
                 400 => "400 Bad Request",
                 403 => "403 Forbidden",
                 404 => "404 Not Found",
@@ -37,19 +47,9 @@ class lpPage
         }
 
         if($this->httpCode!=200 || lpCfgDebug)
-        	ob_end_flush();
+            ob_end_flush();
         else
-        	ob_end_clean();
-    }
-    
-    public function get($args)
-    {
-        echo "没有实现GET方法";
-    }
-    
-    public function post($args)
-    {
-        echo "没有实现POST方法";
+            ob_end_clean();
     }
 }
 
@@ -82,7 +82,7 @@ class lpMVC
             
             $handler->_lpInit();
             if(!$handler->$methodName($args))
-            	$handler->procError();
+                $handler->procError();
             $handler->_lpFinish();
         }
         
