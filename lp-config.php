@@ -94,6 +94,9 @@ $lpCfgEND="*/ ?>";
 //默认模板文件的位置
 $lpCfgDefault="{$lpROOT}/lp-style/default.template.php";
 
+//--lpTools
+$lpCfgGravatarUrl="http://www.gravatar.com/avatar/";
+
 
 
 
