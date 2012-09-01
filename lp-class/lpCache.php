@@ -9,6 +9,8 @@ class lpCache
 
     public function __construct($FileOrlpMySQL=NULL,$table=NULL)
     {
+        global $lpCfgFileCache;
+
         if($table)
         {
             $this->_lpConnect=$FileOrlpMySQL;
@@ -18,7 +20,7 @@ class lpCache
         {
             $this->_lpSource=$FileOrlpMySQL;
 
-            if(lpCfgFileCache)
+            if($lpCfgFileCache)
             {
                 if(!file_exists($this->_lpFile))
                 {
@@ -34,14 +36,16 @@ class lpCache
 
     public function isHas($key)
     {
+        global $lpCfgKEY,$lpCfgFileCache;
+
         if($this->_lpConnect)
         {
-            $rs=$this->_lpConnect->select($this->_lpTable,array(lpCfgKEY => $name));
+            $rs=$this->_lpConnect->select($this->_lpTable,array($lpCfgKEY => $name));
             return $rs->read();
         }
         else
         {
-            if(lpCfgFileCache)
+            if($lpCfgFileCache)
                 return array_key_exists($key,$this->_lpCache);
             else
                 return array_key_exists($key,$this->loadFile());
@@ -50,12 +54,14 @@ class lpCache
     
     public function deleteKey($key)
     {
+        global $lpCfgKEY,$lpCfgFileCache;
+
         if(!$this->isHas($key))
             return false;
             
         if($this->_lpConnect)
         {
-            $rs=$this->_lpConnect->delete($this->_lpTable,array(lpCfgKEY => $name));
+            $rs=$this->_lpConnect->delete($this->_lpTable,array($lpCfgKEY => $name));
         }
         else
         {
@@ -63,7 +69,7 @@ class lpCache
             $lock=new lpFileLock($name);
             $lock->lock();
             
-            if(lpCfgFileCache)
+            if($lpCfgFileCache)
             {
                 unset($this->_lpCache[$key]);
                 $this->writeFile($this->_lpCache);
@@ -83,17 +89,19 @@ class lpCache
 
     public function __get($key)
     {
+        global $lpCfgKEY,$lpCfgVALUE,$lpCfgFileCache;
+
         if($this->_lpConnect)
         {
-            $rs=$this->_lpConnect->select($this->_lpTable,array(lpCfgKEY => $key));
+            $rs=$this->_lpConnect->select($this->_lpTable,array($lpCfgKEY => $key));
             if($rs->read())
-                return unserialize($rs->value(lpCfgVALUE));
+                return unserialize($rs->value($lpCfgVALUE));
             else
                 return NULL;
         }
         else
         {
-            if(lpCfgFileCache)
+            if($lpCfgFileCache)
             {
                 if(isset($this->_lpCache[$key]))
                     return $this->_lpCache[$key];
@@ -113,15 +121,17 @@ class lpCache
 
     public function __set($key,$value)
     {
+        global $lpCfgKEY,$lpCfgVALUE,$lpCfgFileCache;
+
         if($this->_lpConnect)
         {
             $value=serialize($value);
-            $rs=$this->_lpConnect->select($this->_lpTable,array($key => $name));
+            $rs=$this->_lpConnect->select($this->_lpTable,array($lpCfgKEY => $name));
 
             if($rs->read())
-                $this->_lpConnect->update($this->_lpTable,array($key => $name),array(lpVALUE => $value));
+                $this->_lpConnect->update($this->_lpTable,array($lpCfgKEY => $name),array($lpCfgVALUE => $value));
             else
-                $this->_lpConnect->insert($this->_lpTable,array($key => $name,lpVALUE => $value));
+                $this->_lpConnect->insert($this->_lpTable,array($lpCfgKEY => $name,$lpCfgVALUE => $value));
         }
         else
         {
@@ -129,7 +139,7 @@ class lpCache
             $lock=new lpFileLock($name);
             $lock->lock();
             
-            if(lpCfgFileCache)
+            if($lpCfgFileCache)
             {
                 $this->_lpCache[$key]=$value;
                 $this->writeFile($this->_lpCache);
@@ -147,15 +157,19 @@ class lpCache
     
     private function loadFile()
     {
+        global $lpCfgSTART,$lpCfgEND;
+
         $content=file_get_contents($this->_lpFile);
-        $content=substr($content,strlen(lpCfgSTART),strlen($content)-strlen(lpCfgSTART)-strlen(lpCfgEND));
+        $content=substr($content,strlen($lpCfgSTART),strlen($content)-strlen($lpCfgSTART)-strlen($lpCfgEND));
 
         return unserialize($content);
     }
     
     private function writeFile($content)
     {
-        $content = lpCfgSTART . serialize($content) . lpCfgEND;
+        global $lpCfgSTART,$lpCfgEND;
+
+        $content = $lpCfgSTART . serialize($content) . $lpCfgEND;
         file_put_contents($this->_lpSource,$content);
     }
 }
