@@ -1,11 +1,6 @@
 <?php
 
-require_once("../lp-config.php");
-require_once("../lp-class/lpGlobal.class.php");
-require_once("../lp-class/lpSQLRs.class.php");
-require_once("../lp-class/lpMySQL.class.php");
-require_once("../lp-class/lpLock.class.php");
-require_once("../lp-class/lpCache.class.php");
+require_once("../lp-load.php");
 
 /*
 该类提供了一个键/值对应的储存系统，通过序列化，可以储存PHP中任何数据类型，它可以无差别地读写来自MySQL或文件的数据.
@@ -18,7 +13,7 @@ require_once("../lp-class/lpCache.class.php");
 $cache=new lpCache("{$lpROOT}/my-config.data.php");
 //或
 $conn=new lpMySQL();
-$cache=new lpCache($conn,"lp-options");
+$cache=new lpCache($conn,"lp-cache");
 
 //你可以这样地保存数据：
 $cache->myname="jybox";
