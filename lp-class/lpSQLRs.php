@@ -58,7 +58,7 @@ class lpSQLRs
         return $result;
     }
     
-		public function rawArray()
+    public function rawArray()
     {
         return $this->_lpRow;
     }
