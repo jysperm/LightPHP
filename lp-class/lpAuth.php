@@ -25,7 +25,7 @@ class lpAuth
 
     public static function login($user=NULL,$passwd=NULL,$isRaw=true,$isDB=false,$isCookie=false)
     {
-    		global $lpCfgCallback;
+    	global $lpCfgCallback,$lpCfgUNAME,$lpCfgPASSWD,$lpCfgTimeLimit;
     	
         if(!$user || !$passwd)
         {
@@ -69,6 +69,8 @@ class lpAuth
 
     public static function getUName()
     {
+        global $lpCfgUNAME;
+
         if(isset($_COOKIE[$lpCfgUNAME]))
             return $_COOKIE[$lpCfgUNAME];
         else
@@ -77,22 +79,30 @@ class lpAuth
 
     public static function logout()
     {
+        global $lpCfgUNAME,$lpCfgPASSWD;
+
         setcookie($lpCfgUNAME,NULL,time()-1,"/");
         setcookie($lpCfgPASSWD,NULL,time()-1,"/");
     }
 
     public static function DBHash($user,$passwd)
     {
+        global $lpCfgDBHash;
+
         return call_user_func($lpCfgDBHash,$user,$passwd);
     }
 
     public static function cookieHash($DBPasswd)
     {
+        global $lpCfgCookieHash;
+
         return call_user_func($lpCfgCookieHash,$DBPasswd);
     }
 
     public static function getPasswd($uname)
     {
+        global $lpCfgGetPasswd;
+
         return call_user_func($lpCfgGetPasswd,$uname);
     }
 }
@@ -109,11 +119,15 @@ function lpDBHash($user,$passwd)
 
 function lpCookieHash($DBPasswd)
 {
+    global $lpCfgSecurityCode;
+
     return lpHash256(lpHash256($lpCfgSecurityCode) . $DBPasswd);
 }
 
 function lpGetPasswd($uname)
 {
+    global $lpCfgUNameField,$lpCfgPasswdField;
+
     $conn=new lpMySQL;
     $rs=$conn->select($lpCfgTable,array($lpCfgUNameField => $uname));
     if($rs->read())
