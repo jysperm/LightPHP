@@ -22,7 +22,7 @@ class lpTemplate
     public function parse($filename,$lpVars=array())
     {
         if($this->isParse)
-            lpGlobal::onError("lpTemplate::parse():对同一个实例进行了多次解析",__FILE__,__LINE__);
+            die("lpTemplate::parse():对同一个实例进行了多次解析");
         $this->isParse=true;
 
         $lpContents_=ob_get_clean();
@@ -50,7 +50,6 @@ class lpTemplate
     {
         if(!$this->isParse)
         {
-            lpGlobal::onWarning("lpTemplate::__destruct():没有对该实例进行解析，捕捉到的输入将被释放",__FILE__,__LINE__);
             ob_end_flush();
         }
     }

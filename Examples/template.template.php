@@ -1,4 +1,5 @@
 <?php if(!isset($lpInTemplate)) die(); /*如果不是被模板引擎调用，则退出*/ ?>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -20,6 +21,7 @@
     </p>
   </body>
 </html>
+
 <?php
 /*
 模板文件其实就是一个PHP文件，你可以写任何PHP代码.

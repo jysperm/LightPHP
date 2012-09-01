@@ -1,8 +1,6 @@
 <?php
-/*
- 用到的类：lpTemplate
-*/
-require_once("../lp-class/lpTemplate.class.php");
+
+require_once("../lp-load.php");
 
 /*
 lpTemplate是一个灰常简单的模板引擎，它提供的功能很少，但却也很实用.
