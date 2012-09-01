@@ -33,11 +33,11 @@ class lpAuth
             $isCookie=true;
         }
 
-        if(!$user && isset($_COOKIE[lpCfgUNAME]))
-            $user=$_COOKIE[lpCfgUNAME];
+        if(!$user && isset($_COOKIE[$lpCfgUNAME]))
+            $user=$_COOKIE[$lpCfgUNAME];
 
-        if(!$passwd && isset($_COOKIE[lpCfgPASSWD]))
-            $passwd=$_COOKIE[lpCfgPASSWD];
+        if(!$passwd && isset($_COOKIE[$lpCfgPASSWD]))
+            $passwd=$_COOKIE[$lpCfgPASSWD];
 
         if(!$user || !$passwd)
             return false;
@@ -53,53 +53,53 @@ class lpAuth
             if($lpCfgCallback)
                 call_user_func($lpCfgCallback,$user);
 
-            $expire=time()+lpCfgTimeLimit*24*3600;
+            $expire=time()+$lpCfgTimeLimit * 24 * 3600;
 
-            setcookie(lpCfgUNAME,$user,$expire,"/");
-            setcookie(lpCfgPASSWD,$passwd,$expire,"/");
+            setcookie($lpCfgUNAME,$user,$expire,"/");
+            setcookie($lpCfgPASSWD,$passwd,$expire,"/");
 
             return true;
         }
         else
         {
-            setcookie(lpCfgPASSWD,NULL,time()-1,"/");
+            setcookie($lpCfgPASSWD,NULL,time()-1,"/");
             return false;
         }
     }
 
     public static function getUName()
     {
-        if(isset($_COOKIE[lpCfgUNAME]))
-            return $_COOKIE[lpCfgUNAME];
+        if(isset($_COOKIE[$lpCfgUNAME]))
+            return $_COOKIE[$lpCfgUNAME];
         else
             return NULL;
     }
 
     public static function logout()
     {
-        setcookie(lpCfgUNAME,NULL,time()-1,"/");
-        setcookie(lpCfgPASSWD,NULL,time()-1,"/");
+        setcookie($lpCfgUNAME,NULL,time()-1,"/");
+        setcookie($lpCfgPASSWD,NULL,time()-1,"/");
     }
 
     public static function DBHash($user,$passwd)
     {
-        return call_user_func(lpCfgDBHash,$user,$passwd);
+        return call_user_func($lpCfgDBHash,$user,$passwd);
     }
 
     public static function cookieHash($DBPasswd)
     {
-        return call_user_func(lpCfgCookieHash,$DBPasswd);
+        return call_user_func($lpCfgCookieHash,$DBPasswd);
     }
 
     public static function getPasswd($uname)
     {
-        return call_user_func(lpCfgGetPasswd,$uname);
+        return call_user_func($lpCfgGetPasswd,$uname);
     }
 }
 
 function lpHash256($data)
 {
-    return hash("sha256", $data);
+    return hash("sha256",$data);
 }
 
 function lpDBHash($user,$passwd)
@@ -109,15 +109,15 @@ function lpDBHash($user,$passwd)
 
 function lpCookieHash($DBPasswd)
 {
-    return lpHash256(lpHash256(lpCfgSecurityCode) . $DBPasswd);
+    return lpHash256(lpHash256($lpCfgSecurityCode) . $DBPasswd);
 }
 
 function lpGetPasswd($uname)
 {
-    $conn=new lpMySQL();
-    $rs=$conn->select(lpCfgTable,array(lpCfgUNameField => $uname));
+    $conn=new lpMySQL;
+    $rs=$conn->select($lpCfgTable,array($lpCfgUNameField => $uname));
     if($rs->read())
-        return $rs->value(lpCfgPasswdField);
+        return $rs->value($lpCfgPasswdField);
     return NULL;
 }
 

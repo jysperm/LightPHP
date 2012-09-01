@@ -1,10 +1,6 @@
 <?php
 
-require_once("../lp-config.php");
-require_once("../lp-class/lpTools.php");
-require_once("../lp-class/lpSQLRs.php");
-require_once("../lp-class/lpMySQL.php");
-require_once("../lp-class/lpAuth.php");
+require_once("../lp-lode.php");
 
 //我们可以通过这样的方式从GET参数接收用户名和密码，
 //并验证用户输入的密码是否正确：
@@ -29,5 +25,4 @@ jybox
 //可以通过logout()函数来退出登录
 lpAuth::logout();
 
-//注：配置文件中有大量关于lpAuth的设置，详情参见配置文件的注释.
 ?>
