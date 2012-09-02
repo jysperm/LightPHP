@@ -18,7 +18,7 @@ $lpUrl="/";
 
 //各组件的版本信息
 
-$lpCfgVer="3.0.0";
+$lpCfgVer="3.1.0";
 $lpCfgBootstrapVer="2.0.4";
 $lpCfgJQueryVer="1.8.0";
 
