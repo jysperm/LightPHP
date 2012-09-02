@@ -32,6 +32,8 @@ class lpPage
     
     public function _lpFinish()
     {
+        global $lpCfgDebug;
+
         if($this->httpCode!=200)
         {
             $codeStr = array (
@@ -46,7 +48,7 @@ class lpPage
             header("Status: {$codeStr[$this->httpCode]}");
         }
 
-        if($this->httpCode!=200 || lpCfgDebug)
+        if($this->httpCode!=200 || $lpCfgDebug)
             ob_end_flush();
         else
             ob_end_clean();

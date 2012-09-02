@@ -126,7 +126,7 @@ function lpCookieHash($DBPasswd)
 
 function lpGetPasswd($uname)
 {
-    global $lpCfgUNameField,$lpCfgPasswdField;
+    global $lpCfgTable,$lpCfgUNameField,$lpCfgPasswdField;
 
     $conn=new lpMySQL;
     $rs=$conn->select($lpCfgTable,array($lpCfgUNameField => $uname));

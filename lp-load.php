@@ -4,7 +4,9 @@ require_once("lp-config.php");
 
 function lpLoader($name)
 {
-    $path=lpROOT . "/lp-class/{$name}.php";
+    global $lpROOT;
+
+    $path="{$lpROOT}/lp-class/{$name}.php";
     if(file_exists($path))
         require_once($path);
 }

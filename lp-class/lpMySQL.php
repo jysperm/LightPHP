@@ -147,9 +147,6 @@ class lpMySQL
     {
         $table=$this->escape($table);
 
-        if(!$querys)
-            lpGlobal::onWarning("lpMySQL::delete():你正在删除表中的全部数据",__FILE__,__LINE__);
-
         $sql="DELETE FROM `{$table}` " . $this->buildWhere($querys);
         $this->exec($sql);
     }

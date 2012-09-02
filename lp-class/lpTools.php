@@ -38,7 +38,7 @@ class lpTools
 
     public static function linkTo($libName,$version=NULL,$isMin=true)
     {
-        global $lpUrl;
+        global $lpUrl,$lpCfgBootstrapVer,$lpCfgJQueryVer;
         
         if($isMin)
             $isMin=".min";
@@ -49,22 +49,22 @@ class lpTools
         {
             case "bootstrap":
                 if(!$version)
-                    $version=lpCfgBootstrapVer;
+                    $version=$lpCfgBootstrapVer;
                     
                 return "<link href='{$lpUrl}lp-style/bootstrap-{$version}/css/bootstrap{$isMin}.css' rel='stylesheet' type='text/css' />";
             case "bootstrap-responsive":
                 if(!$version)
-                    $version=lpCfgBootstrapVer;
+                    $version=$lpCfgBootstrapVer;
                     
                 return "<link href='{$lpUrl}lp-style/bootstrap-{$version}/css/bootstrap-responsive{$isMin}.css' rel='stylesheet' type='text/css' />";
             case "bootstrap-js":
                 if(!$version)
-                    $version=lpCfgBootstrapVer;
+                    $version=$lpCfgBootstrapVer;
                     
                 return "<script type='text/javascript' src='{$lpUrl}lp-style/bootstrap-{$version}/js/bootstrap{$isMin}.js'></script>";
             case "jquery":
                 if(!$version)
-                    $version=lpCfgJQueryVer;
+                    $version=$lpCfgJQueryVer;
                     
                 return "<script type='text/javascript' src='{$lpUrl}lp-style/jquery/jquery-{$version}{$isMin}.js'></script>";
             case "lp-css":
