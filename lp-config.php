@@ -19,7 +19,7 @@ $lpUrl="/";
 //各组件的版本信息
 
 $lpCfgVer="3.1.0";
-$lpCfgBootstrapVer="2.0.4";
+$lpCfgBootstrapVer="2.1.1";
 $lpCfgJQueryVer="1.8.0";
 
 //--lpAuth
