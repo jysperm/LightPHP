@@ -101,7 +101,7 @@ class lpMySQL
         if($num>-1 && $start>-1)
             $sql .= " LIMIT {$start},{$num} ";
         if($num>-1 && !($start>-1))
-            $sql .= " LIMIT {num} ";
+            $sql .= " LIMIT {$num} ";
 
         return $this->exec($sql);
     }
