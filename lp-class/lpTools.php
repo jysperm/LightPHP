@@ -22,7 +22,15 @@ class lpTools
         global $lpCfgTimeToChina;
 
         $timeDiff=time()+$lpCfgTimeToChina-$time;
-        if($timeDiff < 60)
+        if($timeDiff < -3600*24)
+            return round($timeDiff/(-3600*24)) . "天后";
+        elseif($timeDiff < -3600)
+            return round($timeDiff/(-3600)) . "小时后";
+        elseif($timeDiff < -60)
+            return round($timeDiff/-60) . "分后";
+        elseif($timeDiff < 0)
+            return -$timeDiff . "秒后";
+        elseif($timeDiff < 60)
             return $timeDiff . "秒前";
         elseif($timeDiff < 3600)
             return round($timeDiff/60) . "分前";
