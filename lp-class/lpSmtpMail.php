@@ -5,7 +5,7 @@ class lpSmtpMail
     private $host;
     private $uname;
     private $passwd;
-    private $address
+    private $address;
     
     private $port;
     private $isAuth; 
@@ -18,7 +18,7 @@ class lpSmtpMail
 
     public function __construct($host=NULL,$uname=NULL,$passwd=NULL,$address=NULL,$port=25,$isAuth=true,$isDebug=false,$timeOut=30,$myHostName="lpSmtpMail") 
     { 
-        global $lpCfgMailHost,$lpCfgMailAddress,$lpCfgMailUser,$lpCfgMailPasswd;
+        global $lpCfgMailHost,$lpCfgMailAddress,$lpCfgMailUName,$lpCfgMailPasswd;
 
         $this->isDebug=$isDebug;
         $this->port =$port;
@@ -28,7 +28,7 @@ class lpSmtpMail
         if(!$host)
             $host=$lpCfgMailHost;
         if(!$uname)
-            $uname=$lpCfgMailUser;
+            $uname=$lpCfgMailUName;
         if(!$passwd)
             $passwd=$lpCfgMailPasswd;
         if(!$address)
@@ -50,9 +50,9 @@ class lpSmtpMail
         if($contentType=="HTML")
             $header.="Content-Type:text/html\r\n";
         
-        $header.="To: ".$to."\r\n";
+        $header.="To: {$toAddress}\r\n";
         if (!$ccList)
-            $header.="Cc: ".$cc."\r\n";
+            $header.="Cc: {$ccList}\r\n";
             
         $header.="From: {$this->address}<{$this->address}>\r\n";
         $header.="Subject: {$title}\r\n";
@@ -65,9 +65,9 @@ class lpSmtpMail
         $header.="Message-ID: <".date("YmdHis", $sec).".".($msec*1000000).".{$mailFrom}>\r\n";
         $toList=explode(",",$this->stripComment($toAddress));
 
-        if(!$ccList) 
+        if($ccList) 
             $toList=array_merge($toList,explode(",",$this->stripComment($ccList)));
-        if(!$bccList)
+        if($bccList)
             $toList=array_merge($toList,explode(",",$this->stripComment($bccList)));
             
         $isSent=true;
@@ -96,12 +96,17 @@ class lpSmtpMail
         
         return $isSent; 
     }
+
+    public function getLog()
+    {
+        return $this->log;
+    }
     
-    function openSocket($address) 
+    private function openSocket($address) 
     { 
         $this->log("Trying to {$this->host}:{$this->port}\n"); 
-        $this->socket=@fsockopen($this->host,$this->port,$errno,$errStr,$this->timeOut); 
-        if (!($this->socket && $this->isOk())) 
+        $this->socket=fsockopen($this->host,$this->port,$errno,$errStr,$this->timeOut);
+        if(!($this->socket && $this->isOk())) 
         { 
           $this->log("Error: Cannot connenct to relay host {$this->host}\n"); 
           $this->log("Error: {$errStr} ({$errno})\n");
@@ -111,7 +116,7 @@ class lpSmtpMail
         return true;;
     }
     
-    function isOk() 
+    private function isOk() 
     { 
         $response=str_replace("\r\n", "",fgets($this->socket,512)); 
         $this->log("Server: {$response}\n"); 
@@ -124,23 +129,18 @@ class lpSmtpMail
         } 
         return true; 
     }
-
     
-    function sendMail($myHostName,$mailFrom,$to,$header,$body="") 
+    private function sendMail($myHostName,$mailFrom,$to,$header,$body="") 
     { 
         if(!$this->sendCmd("HELO",$myHostName)) 
             return $this->error("sending HELO command"); 
 
         if($this->isAuth) 
         { 
-            if(!$this->sendCmd("AUTH LOGIN",base64_encode($this->user))) 
-            { 
+            if(!$this->sendCmd("AUTH LOGIN",base64_encode($this->uname))) 
                 return $this->error("sending HELO command");
-            } 
-            if(!$this->sendCmd("",base64_encode($this->pass))) 
-            { 
+            if(!$this->sendCmd("",base64_encode($this->passwd))) 
                 return $this->error("sending HELO command");
-            } 
         }
         
         if(!$this->sendCmd("MAIL","FROM:<{$mailFrom}>")) 
@@ -151,7 +151,7 @@ class lpSmtpMail
             return $this->error("sending DATA command"); 
         if(!$this->sendMessage($header,$body)) 
             return $this->error("sending message"); 
-        if(!$this->smtp_eom()) 
+        if(!$this->SendEom()) 
             return $this->error("sending <CR><LF>.<CR><LF> [EOM]"); 
         if(!$this->sendCmd("QUIT")) 
             return $this->error("sending QUIT command");
@@ -159,7 +159,7 @@ class lpSmtpMail
         return true; 
     }
     
-    function sendCmd($cmd,$arg="") 
+    private function sendCmd($cmd,$arg="") 
     { 
         if($arg) 
         { 
@@ -174,17 +174,17 @@ class lpSmtpMail
         return $this->isOk(); 
     }
 
-    function sendMessage($header,$body) 
+    private function sendMessage($header,$body) 
     { 
         fputs($this->socket,"{$header}\r\n{$body}");
         $this->log(str_replace("\r\n","Client: \n"."> ","{$header}\n> {$body}\n> ")); 
         return true; 
     }
 
-    function SendEom() 
+    private function SendEom() 
     {
         fputs($this->socket,"\r\n.\r\n");
-        $this->log("Client: . [EOM]\n"); 
+        $this->log("\nClient: . [EOM]\n"); 
         return $this->isOk(); 
     }
 
@@ -213,9 +213,10 @@ class lpSmtpMail
         $this->log.=gmdate("Y.m.d H:i:s",time()+$lpCfgTimeToChina)." {$msg}";
     }
 
-    function error($msg) 
+    private function error($msg) 
     { 
         $this->log("Error: Error occurred while {$msg}.\n"); 
         return false; 
-    } 
+    }
+}
 ?>

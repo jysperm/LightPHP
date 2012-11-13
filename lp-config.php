@@ -51,7 +51,7 @@ $lpCfgMailHost="smtp.exmail.qq.com";
 //默认邮箱地址
 $lpCfgMailAddress="public@jybox.net";
 //默认邮箱用户名
-$lpCfgMailUser="public@jybox.net";
+$lpCfgMailUName="public@jybox.net";
 //默认邮箱密码
 $lpCfgMailPasswd="passwd123123";
 
