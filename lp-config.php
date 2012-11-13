@@ -44,7 +44,7 @@ $lpCfgMySQL=array(
                    "charset" => "utf8"
                  );
 
-//--lpMail
+//--lpSmtpMail
 
 //默认SMTP服务器
 $lpCfgMailHost="smtp.exmail.qq.com";

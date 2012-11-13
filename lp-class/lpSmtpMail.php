@@ -10,17 +10,15 @@ class lpSmtpMail
     private $port;
     private $isAuth; 
     private $timeOut; 
-    private $isDebug; 
     private $myHostName;
     
     private $socket=NULL;
     private $log;
 
-    public function __construct($host=NULL,$uname=NULL,$passwd=NULL,$address=NULL,$port=25,$isAuth=true,$isDebug=false,$timeOut=30,$myHostName="lpSmtpMail") 
+    public function __construct($host=NULL,$uname=NULL,$passwd=NULL,$address=NULL,$port=25,$isAuth=true,$timeOut=30,$myHostName="lpSmtpMail") 
     { 
         global $lpCfgMailHost,$lpCfgMailAddress,$lpCfgMailUName,$lpCfgMailPasswd;
 
-        $this->isDebug=$isDebug;
         $this->port =$port;
         $this->isAuth=$isAuth;
         $this->timeOut=$timeOut;
@@ -41,7 +39,7 @@ class lpSmtpMail
         $this->myHostName=$myHostName;
     }
         
-    public function send($toAddress,$title="",$body="",$contentType,$ccList="",$bccList="",$addHeaders="")
+    public function send($toAddress,$title="",$body="",$contentType="TXT",$ccList="",$bccList="",$addHeaders="")
     {
         $mailFrom=$this->getAddress($this->stripComment($this->address));
         $body=ereg_replace("(^|(\r\n))(\.)","\1.\3",$body);
