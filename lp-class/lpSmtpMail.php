@@ -10,15 +10,17 @@ class lpSmtpMail
     private $port;
     private $isAuth; 
     private $timeOut; 
+    private $isDebug;
     private $myHostName;
     
     private $socket=NULL;
     private $log;
 
-    public function __construct($host=NULL,$uname=NULL,$passwd=NULL,$address=NULL,$port=25,$isAuth=true,$timeOut=30,$myHostName="lpSmtpMail") 
+    public function __construct($host=NULL,$uname=NULL,$passwd=NULL,$address=NULL,$port=25,$isAuth=true,$isDebug=false,$timeOut=30,$myHostName="lpSmtpMail") 
     { 
         global $lpCfgMailHost,$lpCfgMailAddress,$lpCfgMailUName,$lpCfgMailPasswd;
 
+        $this->isDebug=$isDebug;
         $this->port =$port;
         $this->isAuth=$isAuth;
         $this->timeOut=$timeOut;
