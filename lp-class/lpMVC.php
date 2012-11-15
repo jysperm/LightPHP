@@ -4,14 +4,14 @@ class lpPage
 {
     protected $httpCode=200;
 
-    protected function gotoUrl($url)
-    {
-        header("Location: {$url}");
-    }
-
     public function _lpInit()
     {
         ob_start();
+    }
+
+    public function _Init()
+    {
+        
     }
 
     public function get($args)
@@ -22,12 +22,6 @@ class lpPage
     public function post($args)
     {
         echo "没有实现POST方法";
-    }
-    
-    public function procError()
-    {
-            $this->httpCode=500;
-            echo "\nlpPage::procError(): 服务器在处理请求时遇到错误\n";
     }
     
     public function _lpFinish()
@@ -53,14 +47,41 @@ class lpPage
         else
             ob_end_clean();
     }
+
+    public function _Finish()
+    {
+
+    }
+}
+
+class lpAction extends lpPage
+{
+    public static function execAct($action,$actName)
+    {
+        if(method_exists($action,$act))
+            $action->$act(lpMVC::$urlArgs);
+        else
+            echo "不存在对应操作";
+    }
+
+    public static function exec($action,$act,$isPostOrGet=true)
+    {
+        $args=$isPostOrGet?$_POST:$_GET;
+        if(isset($args[$act]))
+            lpAction::execAct($action,$args[$act]);
+        else
+            echo "操作为空";
+    }
 }
 
 class lpMVC
 {
+    public static $urlArgs;
+
     public static function bind($rx,$handler)
     {
-        if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),$args))
-            lpMVC::procHandler($handler,$args);
+        if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
+            lpMVC::procHandler($handler);
     }
 
     public static function onDefault($handler)
@@ -68,7 +89,7 @@ class lpMVC
         lpMVC::procHandler($handler);
     }
 
-    private static function procHandler($handler,$args=array())
+    private static function procHandler($handler)
     {
         if(strtolower(get_class($handler))==strtolower("Closure"))
             $handler=$handler();
@@ -79,12 +100,14 @@ class lpMVC
         }
         else
         {
-            array_shift($args);
+            array_shift(lpMVC::$urlArgs);
             $methodName=strtolower($_SERVER["REQUEST_METHOD"]);
             
             $handler->_lpInit();
-            if(!$handler->$methodName($args))
+            $handler->_Init();
+            if(!$handler->$methodName(lpMVC::$urlArgs))
                 $handler->procError();
+            $handler->_Finish();
             $handler->_lpFinish();
         }
         
