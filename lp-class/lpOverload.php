@@ -12,12 +12,17 @@ class lpOverload
         
         if(isset(lpOverload::$_data[$creatFuncName]))
         {
-            foreach(lpOverload::$_data[$creatFuncName] as $v)
+            foreach(lpOverload::$_data[$creatFuncName] as $oldV)
             {
-                if(count($v)==count($argInfo))
+                $notDefArgs=$oldV;
+                array_shift($notDefArgs);
+                $notDefArgsOld=lpOverload::removeDefaultArgs($notDefArgs);
+                $notDefArgsNew=$notDefArgsOld=lpOverload::removeDefaultArgs($argList);
+
+                if(count($notDefArgsOld)==count($notDefArgsNew))
                 {
-                    $thisFunc=array_shift($v);
-                    if($v===$argList)
+                    $thisFunc=array_shift($oldV);
+                    if($notDefArgsOld===$notDefArgsNew)
                     {
                         if($thisFunc==$realFunc)
                             echo "警告：重复插入了两个相同的重载版本\n";
@@ -47,6 +52,101 @@ class lpOverload
         }
 
         return true;
+    }
+
+    private static removeDefaultArgs($args)
+    {
+        $i=0;
+        foreach($argse as $k => $v)
+        {
+            $i++;
+            if(!is_int($k))
+                break;
+        }
+        $t=array_chunk($argse,$i);
+        return $t[0];
+    }
+
+    private static checkType($type,$value)
+    {
+        if(in_array($type,array("int","float","string","array","resource","bool")))
+        {
+            return call_user_func("is_{$type}",$value);
+        }
+        else
+        {
+            switch($type)
+            {
+                case ".intval":
+                    return is_int($value) || is_float($value) || is_numeric($value);
+                case ".lambda":
+                    return get_class($value)=="Closure";
+                case ".nullval":
+                    return is_null($value);
+                case ".notnull":
+                    return !is_null($value);
+                case ".any":
+                    return true;
+                default:
+                    if(substr($type,strlen($type)-2,1)=="+")
+                        return is_subclass_of($value,$type);
+                    return get_class($value)==$type;
+            }
+        }
+    }
+
+    private static selectFunc($name,$argList)
+    {
+        if(isset(lpOverload::$_data[$name]))
+        {
+            $allowFunc=array();
+
+            foreach(lpOverload::$_data[$name] as $thisV)
+            {
+                $args=$thisV;
+                $realFunc=array_shift($args);
+                $notDefArgNum=count(lpOverload::removeDefaultArgs($args));
+
+                if(count($argList) > $notDefArgNum && count($argList) < count($args))
+                {
+                    $isOk=true;
+                    for($i=0;$i<count($notDefArgNum);$i++)
+                    {
+                        if(!lpOverload::checkType($notDefArgNum[$i],$argList[$i]))
+                        {
+                            $isOk=false;
+                            break;
+                        }
+                    }
+                    if($isOk)
+                        $allowFunc[]=$realFunc;
+                }
+            }
+
+            if(count($allowFunc)==0)
+            {
+                echo "错误：没有匹配的函数\n";
+            }
+            else if(count($allowFunc)==1)
+            {
+                return $allowFunc[0];
+            }
+            else
+            {
+                for($i=0;$i<count($notDefArgNum);$i++)
+                {
+                    if(!lpOverload::checkType($notDefArgNum[$i],$argList[$i]))
+                    {
+                        $isOk=false;
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            echo "错误：没有绑定任何函数\n";
+        }
     }
 
     public static function debugData()
@@ -81,8 +181,7 @@ class lpOverload
 
     public static function _functionOverload($funcName,$argList)
     {
-        $realFuncInfo=lpOverload::$_data[$funcName][0];
-        $realFunc=array_shift($realFuncInfo);
+        $realFunc=lpOverload::selectFunc($funcName,$argList)
 
         if(is_string($realFunc))
         {
@@ -116,43 +215,9 @@ lpOverload::bind("test",array("int","string"),function($x){
 });
 
 test("test\n",0);
-/*
-test1 test
-*/
 
 echo lpOverload::debugData();
-/*
-Array
-(
-    [test] => Array
-    (
-        [0] => Array
-        (
-            [0] => test1
-            [1] => string
-            [2] => int
-        )
-        [1] => Array
-        (
-            [0] => Closure Object
-            (
-                [parameter] => Array
-                (
-                    [$x] => <required>
-                )
-            )
-            [1] => int
-            [2] => string
-        )
-
-    )
-)
-*/
 
 echo lpOverload::debugFunc("test");
-/*
-test1(string,int);
-Lambda[Closure](int,string);
-*/
 
 ?>
