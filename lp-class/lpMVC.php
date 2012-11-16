@@ -58,8 +58,8 @@ class lpAction extends lpPage
 {
     public static function execAct($action,$actName)
     {
-        if(method_exists($action,$act))
-            $action->$act(lpMVC::$urlArgs);
+        if(method_exists($action,$actName))
+            $action->$actName(lpMVC::$urlArgs);
         else
             echo "不存在对应操作";
     }
@@ -68,7 +68,13 @@ class lpAction extends lpPage
     {
         $args=$isPostOrGet?$_POST:$_GET;
         if(isset($args[$act]))
+        {
+            $action->_lpInit();
+            $action->_Init();
             lpAction::execAct($action,$args[$act]);
+            $page->_Finish();
+            $page->_lpFinish();
+        }
         else
             echo "操作为空";
     }
@@ -78,40 +84,55 @@ class lpMVC
 {
     public static $urlArgs;
 
-    public static function bind($rx,$handler)
+    public static bindPage($rx,$page)
     {
         if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
-            lpMVC::procHandler($handler);
-    }
-
-    public static function onDefault($handler)
-    {
-        lpMVC::procHandler($handler);
-    }
-
-    private static function procHandler($handler)
-    {
-        if(strtolower(get_class($handler))==strtolower("Closure"))
-            $handler=$handler();
-        
-        if(is_string($handler))
-        {
-            echo $handler;
-        }
-        else
         {
             array_shift(lpMVC::$urlArgs);
             $methodName=strtolower($_SERVER["REQUEST_METHOD"]);
-            
-            $handler->_lpInit();
-            $handler->_Init();
-            if(!$handler->$methodName(lpMVC::$urlArgs))
-                $handler->procError();
-            $handler->_Finish();
-            $handler->_lpFinish();
+            $page->_lpInit();
+            $page->_Init();
+            $page->$methodName(lpMVC::$urlArgs);
+            $page->_Finish();
+            $page->_lpFinish();
+            exit(0);
         }
-        
-        exit(0);
+    }
+    
+    public static bindLambda($rx,$lambda)
+    {
+        if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
+        {
+            array_shift(lpMVC::$urlArgs);
+            
+            $lambda(lpMVC::$urlArgs);
+            
+            exit(0);
+        }
+    }
+    
+    public static bindFile($rx,$file)
+    {
+        if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
+        {
+            array_shift(lpMVC::$urlArgs);
+            
+            require($file);
+            
+            exit(0);
+        }
+    }
+    
+    public static bindAction($rx,$action,$act,$isPostOrGet=true)
+    {
+        if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
+        {
+            array_shift(lpMVC::$urlArgs);
+            
+            lpMVC::exec($action,$act,$isPostOrGet);
+            
+            exit(0);
+        }
     }
 }
 
