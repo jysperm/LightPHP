@@ -83,6 +83,12 @@ class lpAction extends lpPage
 class lpMVC
 {
     public static $urlArgs;
+    
+    public function exit($str)
+    {
+        echo $str;
+        exit();
+    }
 
     public static bindPage($rx,$page)
     {
