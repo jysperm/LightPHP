@@ -72,8 +72,8 @@ class lpAction extends lpPage
             $action->_lpInit();
             $action->_Init();
             lpAction::execAct($action,$args[$act]);
-            $page->_Finish();
-            $page->_lpFinish();
+            $action->_Finish();
+            $action->_lpFinish();
         }
         else
             echo "操作为空";
@@ -84,13 +84,13 @@ class lpMVC
 {
     public static $urlArgs;
     
-    public function exit($str)
+    public static function quit($str)
     {
         echo $str;
         exit();
     }
 
-    public static bindPage($rx,$page)
+    public static function bindPage($rx,$page)
     {
         if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
         {
@@ -105,7 +105,7 @@ class lpMVC
         }
     }
     
-    public static bindLambda($rx,$lambda)
+    public static function bindLambda($rx,$lambda)
     {
         if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
         {
@@ -117,7 +117,7 @@ class lpMVC
         }
     }
     
-    public static bindFile($rx,$file)
+    public static function bindFile($rx,$file)
     {
         if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
         {
@@ -129,13 +129,13 @@ class lpMVC
         }
     }
     
-    public static bindAction($rx,$action,$act,$isPostOrGet=true)
+    public static function bindAction($rx,$action,$act,$isPostOrGet=true)
     {
         if(preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpMVC::$urlArgs))
         {
             array_shift(lpMVC::$urlArgs);
             
-            lpMVC::exec($action,$act,$isPostOrGet);
+            lpAction::exec($action,$act,$isPostOrGet);
             
             exit(0);
         }
