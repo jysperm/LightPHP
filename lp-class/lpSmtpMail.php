@@ -219,4 +219,3 @@ class lpSmtpMail
         return false; 
     }
 }
-?>

@@ -134,5 +134,3 @@ function lpGetPasswd($uname)
         return $rs->value($lpCfgPasswdField);
     return NULL;
 }
-
-?>

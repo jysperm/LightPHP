@@ -79,4 +79,3 @@ class lpSQLRs
         return mysql_data_seek($this->_lpRes,$s);
     }
 }
-?>

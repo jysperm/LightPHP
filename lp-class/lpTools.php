@@ -90,5 +90,3 @@ class lpTools
             return $_SERVER["REMOTE_ADDR"];
     }
 }
-
-?>

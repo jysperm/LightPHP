@@ -44,12 +44,12 @@ class lpMySQL
                 $this->connect=mysql_connect($configs["host"],$configs["user"],$configs["pwd"]);
 
             if(!$this->connect)
-                die("lpMySQL::open(): 连接到数据库失败(无法连接到服务器`{$configs["host"]}`,或密码错误)");
+                throw new RuntimeException("连接到数据库失败(无法连接到服务器`{$configs["host"]}`,或密码错误)");
 
             mysql_query("SET NAMES {$this->escape($configs["charset"])}",$this->connect);
 
             if(!mysql_select_db($configs["dbname"],$this->connect))
-                die("lpMySQL::open(): 打开数据库`{$configs["dbname"]}`失败");
+                throw new RuntimeException("打开数据库`{$configs["dbname"]}`失败");
         }
 
         return $this->ping();
@@ -291,4 +291,3 @@ class lpMySQL
         return $sql;
     }
 }
-?>

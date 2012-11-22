@@ -173,4 +173,3 @@ class lpCache
         file_put_contents($this->_lpSource,$content);
     }
 }
-?>

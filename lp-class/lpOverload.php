@@ -219,5 +219,3 @@ test("test\n",0);
 echo lpOverload::debugData();
 
 echo lpOverload::debugFunc("test");
-
-?>

@@ -1,31 +1,78 @@
 <?php
 
-function lpBeginBlock()
-{
-    ob_start();
-}
-
-function lpEndBlock()
-{
-    return ob_get_clean();
-}
+ini_set("short_open_tag","1");
 
 class lpTemplate
 {
-    private $isParse=false;
+    private $filename;
+    private $values=array();
 
-    public function __construct()
+    public static function beginBlock()
     {
         ob_start();
     }
 
-    public function parse($filename,$lpVars=array())
+    public static function endBlock()
     {
-        if($this->isParse)
-            die("lpTemplate::parse():对同一个实例进行了多次解析");
-        $this->isParse=true;
+        return ob_get_clean();
+    }
 
-        $lpContents_=ob_get_clean();
+    public static function esc($str)
+    {
+        return htmlspecialchars($str);
+    }
+
+    public static function outputFile($file)
+    {
+        $tmp=new lpTemplate($file);
+        $tmp->output();
+    }
+
+    public function __construct($filename)
+    {
+        ob_start();
+
+        $this->filename=$filename;
+    }
+
+    public function __destruct()
+    {
+        ob_end_flush();
+    }
+
+    public function setValue($k,$v)
+    {
+        $this->values[$k]=$v;
+    }
+
+    public function setValues($arr)
+    {
+        foreach ($arr as $k => $v)
+        {
+            $this->setValue($k,$v);
+        }
+    }
+
+    public function __set($k,$v)
+    {
+        $this->setValue($k,$v);
+    }
+
+    public function __get($k)
+    {
+        return $this->values[$k];
+    }
+
+    public function output()
+    {
+        echo $this->getOutput();
+    }
+
+    public function getOutput()
+    {
+        $lpContents=ob_get_clean();
+
+        lpTemplate::beginBlock();
 
         $temp=function($lpFilename,$lpContents_,$lpVars_)
         {
@@ -43,24 +90,8 @@ class lpTemplate
             eval("?>{$lpCode_} <?php ");
         };
 
-        $temp($filename,$lpContents_,$lpVars);
-    }
-    
-    public function __destruct()
-    {
-        if(!$this->isParse)
-        {
-            ob_end_flush();
-        }
-    }
-    
-	public static function parseFile($file)
-    {
-        $tmp=new lpTemplate;
-        $tmp->parse($file);
-        
-        return true;
+        $temp($this->filename,$lpContents,$this->values);
+
+        return lpTemplate::endBlock();
     }
 }
-
-?>
