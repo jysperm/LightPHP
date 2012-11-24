@@ -57,12 +57,23 @@ class lpMySQL
 
     public function close()
     {
-        @mysql_close($this->connect);
+        try
+        {
+            if($this->connect)
+                mysql_close($this->connect);
+        }
+        catch(Exception $e)
+        {
+          
+        }
     }
 
     public function ping()
     {
-        return @mysql_ping($this->connect)?true:false;
+        if($this->connect)
+            return mysql_ping($this->connect)?true:false;
+        else
+            return false;
     }
 
     public function exec($sql,$more=NULL)
@@ -163,12 +174,12 @@ class lpMySQL
 
     public function affected()
     {
-        return @mysql_affected_rows($this->connect);
+        return mysql_affected_rows($this->connect);
     }
 
     public function insertId()
     {
-        return @mysql_insert_id($this->connect);
+        return mysql_insert_id($this->connect);
     }
 
     public function getDBs()

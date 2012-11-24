@@ -18,9 +18,16 @@ class lpSQLRs
 
     public function close()
     {
-        @mysql_free_result($this->_rsID);
-        $this->_lpRes=NULL;
-        $this->_lpRow=NULL;
+        try
+        {
+            mysql_free_result($this->_lpRes);
+            $this->_lpRes=NULL;
+            $this->_lpRow=NULL;
+        }
+        catch(Exception $e)
+        {
+            
+        }
     }
 
     public function __get($name)

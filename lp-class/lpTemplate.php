@@ -6,6 +6,7 @@ class lpTemplate
 {
     private $filename;
     private $values=array();
+    private $isFlush=false;
 
     public static function beginBlock()
     {
@@ -37,7 +38,8 @@ class lpTemplate
 
     public function __destruct()
     {
-        ob_end_flush();
+        if(!$this->isFlush)
+            ob_end_flush();
     }
 
     public function setValue($k,$v)
@@ -70,6 +72,7 @@ class lpTemplate
 
     public function getOutput()
     {
+        $this->isFlush=true;
         $lpContents=ob_get_clean();
 
         lpTemplate::beginBlock();
@@ -77,8 +80,20 @@ class lpTemplate
         $temp=function($lpFilename,$lpContents_,$lpVars_)
         {
             $lpInTemplate=true;
+            
+            $lpCode_=file_get_contents($lpFilename);
+            
+            if(preg_match('%\\n#//!lpTemplateArgs\(([A-Za-z_,]*)\)\\n%',$lpCode_,$lpR_) && isset($lpR_[1]))
+            {
+                $lpArgs_=explode(",",$lpR_[1]);
+                foreach($lpArgs_ as $v)
+                {
+                    if($v && !array_key_exists($v,get_defined_vars()))
+                        eval("\${$v}=NULL;");
+                }
+            }
 
-            foreach ($lpVars_ as $key => $value) 
+            foreach($lpVars_ as $key => $value) 
             {
                 $value=base64_encode(serialize($value));
                 eval("\${$key} = unserialize(base64_decode('{$value}'));");
@@ -86,7 +101,7 @@ class lpTemplate
 
             $lpContents=$lpContents_;
 
-            $lpCode_=file_get_contents($lpFilename);
+            
             eval("?>{$lpCode_} <?php ");
         };
 
