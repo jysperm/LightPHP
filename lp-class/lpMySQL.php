@@ -57,12 +57,29 @@ class lpMySQL
 
     public function close()
     {
-        @mysql_close($this->connect);
+		try
+        {
+            mysql_close($this->connect);
+        }
+        catch(Exception $e)
+        {
+            
+        }
     }
 
     public function ping()
     {
-        return @mysql_ping($this->connect)?true:false;
+        try
+        {
+            if($this->connect)
+                return mysql_ping($this->connect)?true:false;
+            else
+                return false;
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
     }
 
     public function exec($sql,$more=NULL)
