@@ -107,14 +107,4 @@ $lpCfgDefault="{$lpROOT}/lp-style/default.template.php";
 //--lpTools
 $lpCfgGravatarUrl="http://www.gravatar.com/avatar/";
 
-
-
-
-
-//以下请勿修改
-//------------------------
-
-if(!$lpCfgDebug)
-    ini_set("display_errors","Off");
-
 ?>

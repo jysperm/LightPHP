@@ -1,6 +1,6 @@
 <?php
 
-class lpPage
+abstract class lpPage
 {
     protected $httpCode=200;
 
@@ -14,14 +14,14 @@ class lpPage
         
     }
 
-    public function get($args)
+    public function get()
     {
-        echo "没有实现GET方法";
+        
     }
     
-    public function post($args)
+    public function post()
     {
-        echo "没有实现POST方法";
+        
     }
     
     public function _lpFinish()
@@ -54,12 +54,12 @@ class lpPage
     }
 }
 
-class lpAction extends lpPage
+abstract class lpAction extends lpPage
 {
     public static function execAct($action,$actName)
     {
         if(method_exists($action,$actName))
-            $action->$actName(lpRoute::$urlArgs);
+            $action->$actName();
         else
             echo "不存在对应操作";
     }
@@ -89,6 +89,11 @@ class lpRoute
         echo $str;
         exit();
     }
+    
+    public static function gotoUrl($url)
+    {
+        header("Location: {$url}");
+    }
 
     public static function bindPage($rx,$page)
     {
@@ -98,10 +103,10 @@ class lpRoute
             $methodName=strtolower($_SERVER["REQUEST_METHOD"]);
             $page->_lpInit();
             $page->_Init();
-            $page->$methodName(lpRoute::$urlArgs);
+            $page->$methodName();
             $page->_Finish();
             $page->_lpFinish();
-            exit(0);
+            exit();
         }
     }
     
@@ -111,13 +116,13 @@ class lpRoute
         {
             array_shift(lpRoute::$urlArgs);
             
-            $lambda(lpRoute::$urlArgs);
+            $lambda();
             
             exit(0);
         }
     }
     
-    public static function bindFile($rx,$file)
+    public static function bindPHPFile($rx,$file)
     {
         if(!$rx | preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpRoute::$urlArgs))
         {
@@ -125,7 +130,17 @@ class lpRoute
             
             require($file);
             
-            exit(0);
+            exit();
+        }
+    }
+    
+    public static function bindHTMLFile($rx,$file)
+    {
+        if(!$rx | preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpRoute::$urlArgs))
+        {
+            echo file_get_contents($file);
+            
+            exit();
         }
     }
     
@@ -137,11 +152,11 @@ class lpRoute
             
             lpAction::exec($action,$act,$isPostOrGet);
             
-            exit(0);
+            exit();
         }
     }
 
-    public static function bindAction($rx,$template)
+    public static function bindTemplate($rx,$template)
     {
         if(!$rx | preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpRoute::$urlArgs))
         {
@@ -149,20 +164,20 @@ class lpRoute
             
             $template->output();
             
-            exit(0);
+            exit();
         }
     }
 
-    public static function bindTemplateFromFile($rx,$file)
+    public static function bindTemplateFile($rx,$file)
     {
         if(!$rx | preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpRoute::$urlArgs))
         {
             array_shift(lpRoute::$urlArgs);
 
 
-            lpTemplate::outputFile($file)
+            lpTemplate::outputFile($file);
 
-            exit(0);
+            exit();
         }
     }
 
@@ -196,12 +211,10 @@ class lpRoute
     {
         if(!$rx | preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpRoute::$urlArgs))
         {
-            array_shift(lpRoute::$urlArgs);
-
-            header("Content-Type: text/plant; charset=UTF-8")
+            header("Content-Type: text/plant; charset=UTF-8");
             echo $text;
 
-            exit(0);
+            exit();
         }
     }
 
@@ -209,12 +222,37 @@ class lpRoute
     {
         if(!$rx | preg_match("%{$rx}%u",rawurldecode($_SERVER["REQUEST_URI"]),lpRoute::$urlArgs))
         {
-            array_shift(lpRoute::$urlArgs);
-
-            header("Content-Type: text/html; charset=UTF-8")
+            header("Content-Type: text/html; charset=UTF-8");
             echo $html;
 
-            exit(0);
+            exit();
+        }
+    }
+    
+    public static function bindDir($alias,$dir)
+    {
+        if(substr($alias,strlen($alias)-2,1)!="/")
+            $alias .= "/";
+              
+        if(substr($_SERVER["REQUEST_URI"],0,strlen($alias))==$alias)
+        {
+            if(substr($dir,strlen($dir)-2,1)=="/")
+              $dir=substr($dir,0,strlen($dir)-1);
+            
+            $path=substr($_SERVER["REQUEST_URI"],strlen($alias)-1);
+            $path=lpTools::rxMatch('/^[^\?]\?/');
+            
+            if(file_exists("{$dir}/{$path}"))
+            {
+                echo file_get_contents("{$dir}/{$path}");
+            }
+            else
+            {
+                header("HTTP/1.1 404 Not Found");
+                header("Status: 404 Not Found");
+            }
+            
+            exit();
         }
     }
 }
