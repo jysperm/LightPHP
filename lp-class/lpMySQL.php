@@ -59,7 +59,7 @@ class lpMySQL
     {
         try
         {
-            if($this->connect)
+            if(is_resource($this->connect))
                 mysql_close($this->connect);
         }
         catch(Exception $e)

@@ -38,5 +38,5 @@ if(!$lpCfgDebug)
     ini_set("display_errors","Off");
 
 spl_autoload_register("lpLoader");
-if(defined("lpOFF_Exception") && lpOFF_Exception)
+if(!defined("lpOFF_Exception") || !lpOFF_Exception)
     set_error_handler("lpExceptionHandler");

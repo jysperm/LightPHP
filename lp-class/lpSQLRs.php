@@ -20,7 +20,8 @@ class lpSQLRs
     {
         try
         {
-            mysql_free_result($this->_lpRes);
+            if(is_resource($this->_lpRes))
+                mysql_free_result($this->_lpRes);
             $this->_lpRes=NULL;
             $this->_lpRow=NULL;
         }
