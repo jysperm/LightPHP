@@ -70,10 +70,17 @@ class lpMySQL
 
     public function ping()
     {
-        if($this->connect)
-            return mysql_ping($this->connect)?true:false;
-        else
+        try
+        {
+            if($this->connect)
+                return mysql_ping($this->connect)?true:false;
+            else
+                return false;
+        }
+        catch(Exception $e)
+        {
             return false;
+        }
     }
 
     public function exec($sql,$more=NULL)
