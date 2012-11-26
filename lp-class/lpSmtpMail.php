@@ -44,7 +44,7 @@ class lpSmtpMail
     public function send($toAddress,$title="",$body="",$contentType="TXT",$ccList="",$bccList="",$addHeaders="")
     {
         $mailFrom=$this->getAddress($this->stripComment($this->address));
-        $body=ereg_replace("(^|(\r\n))(\.)","\1.\3",$body);
+        $body=preg_replace("/(^|(\r\n))(\.)/","\1.\3",$body);
         
         $header="MIME-Version:1.0\r\n";
         if($contentType=="HTML")
@@ -120,7 +120,7 @@ class lpSmtpMail
     { 
         $response=str_replace("\r\n", "",fgets($this->socket,512)); 
         $this->log("Server: {$response}\n"); 
-        if(!ereg("^[23]",$response)) 
+        if(!preg_match("/^[23]/",$response)) 
         { 
             fputs($this->socket,"QUIT\r\n"); 
             fgets($this->socket,512); 
@@ -190,16 +190,16 @@ class lpSmtpMail
 
     private function stripComment($address) 
     { 
-        $comment="\([^()]*\)"; 
-        while(ereg($comment,$address)) 
-            $address=ereg_replace($comment,"",$address); 
+        $comment="/\([^()]*\)/"; 
+        while(preg_match($comment,$address)) 
+            $address=preg_replace($comment,"",$address); 
         return $address; 
     }
     
     private function getAddress($address) 
     { 
-        $address=ereg_replace("([ \t\r\n])+","",$address); 
-        $address=ereg_replace("^.*<(.+)>.*$","\1",$address); 
+        $address=preg_replace("/([ \t\r\n])+/","",$address); 
+        $address=preg_replace("/^.*<(.+)>.*$/","\1",$address); 
         return $address; 
     }
     
