@@ -43,14 +43,21 @@ class lpSQLRs
 
     public function read()
     {
-        $r=mysql_fetch_assoc($this->_lpRes);
-        if($r)
-        {
-            $this->_lpRow=$r;
-            $this->_lpSeek++;
-            return true;
-        }
-        else
+		try
+		{
+			$r=mysql_fetch_assoc($this->_lpRes);
+			if($r)
+			{
+				$this->_lpRow=$r;
+				$this->_lpSeek++;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+        catch(Exception $e)
         {
             return false;
         }
