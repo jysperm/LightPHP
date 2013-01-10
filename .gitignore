@@ -3,38 +3,3 @@
 
 #Winodws
 Thumbs.db
-
-*.exe
-*.dll
-
-#C++
-Makefile*
-*.o
-*.a
-
-#Qt
-ui_*.h
-moc_*.cpp
-qrc_*.cpp
-
-#Qt Creator
-*.pro.user
-*.autosave
-/*build*/*
-*/release/*
-*/debug/*
-
-#Eclipse
-.buildpath
-.project
-.settings/*
-
-#VS2010 VS.PHP
-/.vsphpignore
-/Projects.phpproj
-/php.ini
-/Projects.puo
-/Projects.sln
-/.httpd.conf
-/Projects.suo
-/Projects.intellisense.cache
