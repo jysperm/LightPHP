@@ -12,7 +12,9 @@
 *   @package LightPHP
 */
 
+
 // --------------- 经常修改的选项 ---------------
+
 
 /**
 *   时区
@@ -24,6 +26,7 @@
 *
 *   @type string
 */
+
 $lpCfg["TimeZone.LightPHP"] = "Asia/Shanghai";
 
 /**
@@ -37,9 +40,15 @@ $lpCfg["TimeZone.LightPHP"] = "Asia/Shanghai";
 *   @see $lpCfg["RecommendedPHPVersion.LightPHP"]
 *   @type bool
 */
+
 $lpCfg["PHPVersion.TrunOff.Warning"] = false;
 
+
+
+
+
 // --------------- 高级选项(请慎重修改) ---------------
+
 
 /**
 *   LightPHP推荐的PHP最低版本
@@ -48,4 +57,5 @@ $lpCfg["PHPVersion.TrunOff.Warning"] = false;
 *
 *   @type string
 */
+
 $lpCfg["RecommendedPHPVersion.LightPHP"] = "5.4.0";

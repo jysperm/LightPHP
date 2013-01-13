@@ -54,6 +54,7 @@ define("lpInLightPHP", true);
 *
 *   @see /lp-config.php
 */
+
 require("lp-config.php");
 
 // 如果PHP版本过低, 显示警告.
