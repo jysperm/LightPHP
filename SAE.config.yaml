@@ -3,10 +3,9 @@
 # 该文件会重写所有不存在对应文件的路径到 index.php
 # 并将目录索引文件设为 index.html index.php
 
-# 请修改应用名称和版本！
+# 请修改应用名称和版本!
 name: lightphp
 version: 1
 handle:
   - rewrite: if(!is_dir() && !is_file()) goto "index.php?%{QUERY_STRING}"
   - directoryindex: index.html index.php
-  
