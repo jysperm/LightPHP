@@ -59,7 +59,7 @@ require("lp-config.php");
 
 // 如果PHP版本过低, 显示警告.
 if(version_compare(PHP_VERSION, $lpCfg["RecommendedPHPVersion.LightPHP"]) <= 0 && !lpCfg["PHPVersion.TrunOff.Warning"])
-    trigger_error("Please install the newly version of PHP ({$lpCfg["RecommendedPHPVersion.LightPHP"]}). Or edit `Version.TrunOff.Warning` in /lp-config.php ", E_WARNING);
+    trigger_error("Please install the newly version of PHP ({$lpCfg["RecommendedPHPVersion.LightPHP"]}+). Or edit `Version.TrunOff.Warning` in /lp-config.php ", E_WARNING);
 
 // 如果不是在SAE环境(SAE不支持), 则开启短标记功能.
 if(!class_exists("SaeObject",false))
