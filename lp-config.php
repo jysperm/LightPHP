@@ -26,8 +26,24 @@
 *
 *   @type string
 */
-
 $lpCfg["TimeZone.LightPHP"] = "Asia/Shanghai";
+
+/**  
+*   lpSmtp 类的默认发信服务器. 
+*
+*   @type string
+*   @see lpSmtp
+*/
+$lpCfg["Host.Default.lpSmtp"] = "smtp.exmail.qq.com";
+
+/**  @type string   lpSmtp 类的默认发信地址. */
+$lpCfg["Address.Default.lpSmtp"] = "public@jybox.net";
+
+/**  @type string   lpSmtp 类的默认发信用户名. */
+$lpCfg["UName.Default.lpSmtp"] = "public@jybox.net";
+
+/**  @type string   lpSmtp 类的默认发信密码. */
+$lpCfg["Passwd.Default.lpSmtp"] = "passwd123123";
 
 /**
 *   关闭PHP版本号过低时显示的警告.
@@ -40,7 +56,6 @@ $lpCfg["TimeZone.LightPHP"] = "Asia/Shanghai";
 *   @see $lpCfg["RecommendedPHPVersion.LightPHP"]
 *   @type bool
 */
-
 $lpCfg["PHPVersion.TrunOff.Warning"] = false;
 
 
@@ -57,5 +72,4 @@ $lpCfg["PHPVersion.TrunOff.Warning"] = false;
 *
 *   @type string
 */
-
 $lpCfg["RecommendedPHPVersion.LightPHP"] = "5.4.0";

@@ -23,7 +23,6 @@ if(!defined("lpStartTime"))
     *
     *   该常量可用于计算页面执行时间.
     */
-
     define("lpStartTime",microtime(true));
 }
 
@@ -35,7 +34,6 @@ if(!defined("lpStartTime"))
 *   @final
 *   @type string
 */
-
 $lpROOT = dirname(__FILE__);
 
 /**
@@ -46,7 +44,6 @@ $lpROOT = dirname(__FILE__);
 *   
 *   以上代码使用英文是考虑到普通访客没有机会浏览到该错误信息, 因此省略掉设置编码, 所以使用英文.
 */
-
 define("lpInLightPHP", true);
 
 /**
@@ -54,7 +51,6 @@ define("lpInLightPHP", true);
 *
 *   @see /lp-config.php
 */
-
 require("lp-config.php");
 
 // 如果PHP版本过低, 显示警告.
@@ -63,7 +59,7 @@ if(version_compare(PHP_VERSION, $lpCfg["RecommendedPHPVersion.LightPHP"]) <= 0 &
 
 // 如果不是在SAE环境(SAE不支持), 则开启短标记功能.
 if(!class_exists("SaeObject",false))
-    ini_set("short_open_tag",)
+    ini_set("short_open_tag","1");
 
 // 如果设置了 register_globals 选项, 则 unset 所有由它引入的变量.
 if(ini_get('register_globals'))
@@ -71,7 +67,7 @@ if(ini_get('register_globals'))
     foreach($GLOBALS as $k => $v)
     {
         $allows = array('GLOBALS', '_FILES', '_REQUEST', '_COOKIE', '_SERVER', '_ENV', '_SESSION', ini_get('session.name'), 'k', 'v')
-        if(!in_array($k, $allows)
+        if(!in_array($k, $allows))
         {
             unset($GLOBALS[$k]);
         }
