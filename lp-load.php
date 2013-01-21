@@ -54,7 +54,7 @@ define("lpInLightPHP", true);
 require("lp-config.php");
 
 // 如果PHP版本过低, 显示警告.
-if(version_compare(PHP_VERSION, $lpCfg["RecommendedPHPVersion.LightPHP"]) <= 0 && !lpCfg["PHPVersion.TrunOff.Warning"])
+if(version_compare(PHP_VERSION, $lpCfg["RecommendedPHPVersion.LightPHP"]) <= 0 && !$lpCfg["PHPVersion.TrunOff.Warning"])
     trigger_error("Please install the newly version of PHP ({$lpCfg["RecommendedPHPVersion.LightPHP"]}+). Or edit `Version.TrunOff.Warning` in /lp-config.php ", E_WARNING);
 
 // 如果不是在SAE环境(SAE不支持), 则开启短标记功能.
@@ -66,7 +66,7 @@ if(ini_get('register_globals'))
 {
     foreach($GLOBALS as $k => $v)
     {
-        $allows = array('GLOBALS', '_FILES', '_REQUEST', '_COOKIE', '_SERVER', '_ENV', '_SESSION', ini_get('session.name'), 'k', 'v')
+        $allows = array('GLOBALS', '_FILES', '_REQUEST', '_COOKIE', '_SERVER', '_ENV', '_SESSION', ini_get('session.name'), 'k', 'v');
         if(!in_array($k, $allows))
         {
             unset($GLOBALS[$k]);
