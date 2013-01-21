@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
 *   该文件用于载入LightPHP库.
@@ -105,11 +105,13 @@ function lpLoader($name)
         require_once($path);
 }
 
+spl_autoload_register("lpLoader");
+
 /**
 *   该函数将会根据参数抛出一个 ErrorException 类型的异常.
 *
 *   该函数将会被 set_error_handler() 注册为PHP的默认错误处理程序, 将PHP的错误转换为异常抛出.
-*   通常你不应该手动调用该函数, 你应当通过抛出异常来表示错误.
+*   通常你不应该手动调用该函数(你也无法调用匿名函数), 你应当通过抛出异常来表示错误.
 *
 *   @param int $no 错误的级别
 *   @param string $str 错误的描述信息
@@ -117,12 +119,12 @@ function lpLoader($name)
 *   @param int $line 发生错误的行号
 *   @param array $varList 错误发生时的符号表
 *
-*   @access private
+*   @type closures
 *   @return true
 */
 
-function lpErrorHandler($no, $str, $file, $line, $varList)
+set_error_handler(function($no, $str, $file, $line, $varList)
 {
     throw new ErrorException($str, 0, $no, $file, $line);
     return true;
-}
+});
