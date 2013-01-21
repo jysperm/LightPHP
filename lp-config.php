@@ -9,6 +9,8 @@
 *   该文件只会给变量赋值, 因此你可以在希望重置配置信息时, 手动重新包含该文件.
 *   但有的配置可能不会随着重新加载而改变, 因为它们已经被其他组件读取并使用了.
 *
+*	只所以使用变量来储存这些配置, 是方便在使用LightPHP的程序中方便地覆盖这些配置, 而不必修改LightPHP的文件.
+*
 *   @package LightPHP
 */
 
@@ -44,6 +46,25 @@ $lpCfg["UName.Default.lpSmtp"] = "public@jybox.net";
 
 /**  @type string   lpSmtp 类的默认发信密码. */
 $lpCfg["Passwd.Default.lpSmtp"] = "passwd123123";
+
+/**
+*	lpMySQLDrive 类的默认连接选项
+*
+*	* host 服务器IP或主机名(如`localhost`),还可以指定端口(如`localhost:4567`),也可以使用本地Socket(如`/var/run/mysqld/mysqld.sock`)
+*	* dbname 数据库名
+*	* user 数据库用户名
+*	* passwd 数据库密码
+*	* charset 数据库字符集
+*
+*	@type array
+*/
+$lpCfg["Default.lpMySQLDrive"] = [
+	"host" => "localhost",
+	"dbname" => "mydb",
+	"user" => "myuser",
+	"passwd" => "mypasswd",
+	"charset" => "utf8"
+];
 
 /**
 *   关闭PHP版本号过低时显示的警告.

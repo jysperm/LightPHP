@@ -100,6 +100,19 @@ function lpLoader($name)
     if(class_exists($name, false))
         return;
 
+    $map = [
+        "lpDBInquiryDrive" => "lpDBDrive"
+    ];
+
+    foreach($map as $key => $value)
+    {
+        if($name == $key)
+        {
+            $name = $value;
+            break;
+        }
+    }
+
     $path = "{$lpROOT}/lp-class/{$name}.php";
     if(file_exists($path))
         require_once($path);
@@ -127,4 +140,16 @@ set_error_handler(function($no, $str, $file, $line, $varList)
 {
     throw new ErrorException($str, 0, $no, $file, $line);
     return true;
+});
+
+/**
+*   该函数会根据参数, 打印异常信息.
+*
+*   该函数将会被 set_exception_handler() 注册为PHP的默认异常处理程序, 对于未处理的异常显示错误信息.
+*
+*   @param Exception $exception 未处理的异常
+*/
+
+set_exception_handler(function($exception) {
+  echo "Uncaught exception: " , $exception->getMessage(), "\n";
 });
