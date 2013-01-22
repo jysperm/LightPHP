@@ -1,7 +1,7 @@
 ﻿<?php
 
 /**
-*   该文件包含 lpMySQLDBDrive 的类定义.
+*   该文件包含 lpMySQLDBDrive 和 lpDBMySQLInquiryDrive 的类定义.
 *
 *   @package LightPHP
 */
@@ -23,12 +23,48 @@ class lpMySQLDBDrive extends lpDBDrive
     /** @type array 连接选项, 参见 connect() . */
     private $config=null;
 
+    /** 
+    *   排序字段.
+    *   
+    *   @param string
+    *   
+    *   @type enum(SelectConfig)
+    */
+    const OrderBy = "orderby";
+    
+    /** 
+    *   是否按正序排序.
+    *   
+    *   @param bool
+    *   
+    *   @type enum(SelectConfig)
+    */
+    const IsAsc = "isasc";
+
+    /** 
+    *   开始行数.
+    *   
+    *   @param int
+    *   
+    *   @type enum(SelectConfig)
+    */
+    const Start = "start";
+
+    /** 
+    *   总行数.
+    *   
+    *   @param int
+    *   
+    *   @type enum(SelectConfig)
+    */
+    const Num = "num";
+
 	/**
 	*	
 	*	该类会从 /lp-config.php 中的 `Default.lpMySQLDrive` 段读取默认连接选项, 可用的选项请参见 /lp-config.php .
 	*/
 
-    public function connect($config=null)
+    public function __construct($config=null)
     {
     	global $lpCfg;
 
@@ -48,7 +84,7 @@ class lpMySQLDBDrive extends lpDBDrive
             throw new RuntimeException("打开数据库`{$config['dbname']}`失败");
     }
 
-    public function close()
+    public function __destruct()
     {
     	mysql_close($this->connect);
     }
@@ -57,27 +93,23 @@ class lpMySQLDBDrive extends lpDBDrive
     {
         $table = $this->escape($table);
 
-        $sqlColumns = null;
+        $sqlColumns = array_keys($row);
+        $sqlValues = array_keys($row);
 
-        foreach($row as $key => $value)
+        array_walk($sqlColumns, function(&$v)
         {
-            if(!$sqlColumns)
-            {
-                $sqlColumns = "";
-                $sqlValues = "";
-            }
-            else
-            {
-                $sqlColumns .= ",";
-                $sqlValues .= ",";
-            }
+            $v = $this->escape($v);
+            $v = "`{$v}`";
+        });
 
-            $key = $this->escape($key);
-            $value = $this->escape($value);
+        array_walk($sqlValues, function(&$v)
+        {
+            $v = $this->escape($v);
+            $v = "'{$v}'";
+        });
 
-            $sqlColumns .= "`{$key}`";
-            $sqlValues .= "'{$value}'";
-        }
+        $sqlColumns = implode(", ", $sqlColumns);
+        $sqlValues = implode(", ", $sqlValues);
 
         $sql = "INSERT INTO `{$table}` ({$sqlColumns}) VALUES ({$sqlValues});";
 
@@ -85,36 +117,65 @@ class lpMySQLDBDrive extends lpDBDrive
     }
 
     /**
-    *   从数据表查询数据.
     *
-    *   @param string $table  表名
-    *   @param array  $if     查询的条件 [列名 => 值] 或 [列名 => [操作符 => 值]]
-    *   @param array  $config 要插入的数据 [选项 => 值]
+    *   支持的选项见 enum(SelectConfig) .
+    *   
     */
 
     public function select($table, $if, $config)
     {
-        
+        $table = $this->escape($table);
+
+        $sql = "SELECT * FROM `{$table}` " . $if->buildWhere();
+
+        if(isset($config[$this::OrderBy]))
+        {
+            $orderBy = $config[$this::OrderBy];
+            $sql .=" ORDER BY `{$orderBy}` ";
+
+            if(isset($config[$this::IsAsc]) && !$config[$this::IsAsc])
+            {
+                $sql .= " DESC ";
+            }
+        }
+
+        $start = isset($config[$this::Start]) ? $config[$this::Start] : -1;
+        $num = isset($config[$this::Num]) ? $config[$this::Num] : -1;
+
+        if($num>-1 && $start>-1)
+            $sql .= " LIMIT {$start}, {$num} ";
+        if($num>-1 && !($start>-1))
+            $sql .= " LIMIT {$num} ";
+
+        return new mysql_query($sql, $this->connect);
     }
 
-    /**
-    *   从数据表修改数据.
-    *
-    *   @param string $table  表名
-    *   @param array  $if     修改的条件 [列名 => 值] 或 [列名 => [操作符 => 值]]
-    *   @param array  $new    新数据 [列名 => 值]
-    */
+    public function update($table, $if, $new)
+    {
+        $table = $this->escape($table);
 
-    abstract public function update($table, $if, $new);
+        foreach($new as $k => $v)
+        {
+            $k = $this->escape($k);
+            $v = $this->escape($v);
+            $sqlSet[]= "`{$k}`='{$v}'";
+        }
 
-    /**
-    *   从数据表删除数据.
-    *
-    *   @param string $table  表名
-    *   @param array  $if     删除的条件 [列名 => 值] 或 [列名 => [操作符 => 值]]
-    */
+        $sqlSet = implode(", ", $sqlSet);
 
-    abstract public function delete($table, $if);
+        $sql = "UPDATE `{$table}` SET {$sqlSet} " . $if->buildWhere();
+
+        return new mysql_query($sql, $this->connect);
+    }
+
+    public function delete($table, $if)
+    {
+        $table = $this->escape($table);
+
+        $sql = "DELETE FROM `{$table}` " . $if->buildWhere();
+
+        return new mysql_query($sql, $this->connect);
+    }
 
     public function tableList()
     {
@@ -125,18 +186,13 @@ class lpMySQLDBDrive extends lpDBDrive
         return $result;
     }
 
-    /**
-    *   执行数据库原生的操作.
-    *
-    *	这将是数据库相关的, 不推荐.
-    *
-    *   @param string $name  操作名
-    *   @param string $args  参数
-    *
-    *   @return array
-    */
-
-    abstract public function operator($name, $args);
+    public function operator($name, $args)
+    {
+        switch($name)
+        {
+            
+        }
+    }
 
     /**
     *   执行带占位符的SQL指令.
@@ -147,17 +203,44 @@ class lpMySQLDBDrive extends lpDBDrive
 
     public function commandArgs($command, $more=null)
     {
-        $args=func_get_args();
+        $args = func_get_args();
         array_shift($args);
 
-        $sql=$this->parseSQL($sql, $args);
+        $sql = $this->parseSQL($sql, $args);
 
-        return new mysql_query($sql,$this->connect);
+        return new mysql_query($sql, $this->connect);
     }
 
     public function command($command)
     {
-        return new mysql_query($command,$this->connect);
+        return new mysql_query($command, $this->connect);
+    }
+
+    static public function getInquiry()
+    {
+        return new lpDBMySQLInquiryDrive;
+    }
+
+    static public function rsReadRow($rs)
+    {
+        return mysql_fetch_assoc($rs);
+    }
+
+    static public function rsToArray($rs, $num=-1)
+    {
+        while($r = $this->rsReadRow($rs) && $num--!=0)
+            $result[]=$r;
+        return $result;
+    }
+    
+    static public function rsGetNum($rs)
+    {
+        return mysql_num_rows($rs);
+    }
+    
+    static public function rsSeek($rs, $s)
+    {
+        return mysql_data_seek($rs, $s);
     }
 
     /**
@@ -170,7 +253,7 @@ class lpMySQLDBDrive extends lpDBDrive
 
     private function escape($str)
     {
-        return mysql_real_escape_string($str,$this->connect);
+        return mysql_real_escape_string($str, $this->connect);
     }
 
     /**

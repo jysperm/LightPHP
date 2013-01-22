@@ -29,13 +29,13 @@ abstract class lpDBDrive
     *   @param array $config 连接选项 [选项 => 值]
     */
 
-    abstract public function connect($config=null);
+    abstract public function __construct($config=null);
 
     /**
     *   从数据库断开连接.
     */
 
-    abstract public function close();
+    abstract public function __destruct();
 
     /**
     *   向数据表插入一行.
@@ -51,7 +51,7 @@ abstract class lpDBDrive
     *
     *   @param string $table  表名
     *   @param lpDBInquiryDrive  $if   查询的条件
-    *   @param array  $config 要插入的数据 [选项 => 值]
+    *   @param array  $config 查询选项 [选项 => 值]
     */
 
     abstract public function select($table, $if, $config);
@@ -62,6 +62,8 @@ abstract class lpDBDrive
     *   @param string $table  表名
     *   @param lpDBInquiryDrive  $if   修改的条件
     *   @param array  $new    新数据 [列名 => 值]
+    *
+    *   @return mixed 结果集资源句柄
     */
 
     abstract public function update($table, $if, $new);
@@ -76,7 +78,7 @@ abstract class lpDBDrive
     abstract public function delete($table, $if);
 
     /**
-    *   获得该数据库下的数据表列表
+    *   获得该数据库下的数据表列表.
     *
     *   @return array
     */
@@ -91,7 +93,7 @@ abstract class lpDBDrive
     *   @param string $name  操作名
     *   @param string $args  参数
     *
-    *   @return array
+    *   @return mixed
     */
 
     abstract public function operator($name, $args);
@@ -104,10 +106,62 @@ abstract class lpDBDrive
     *   @param string $command  指令
     *   @param mixed  $more...  更多指令(取决于数据库)
     *
-    *   @return lpDBResult 结果集
+    *   @return mixed 结果集资源句柄
     */
 
     abstract public function command($command, $more=null);
+
+    /**
+    *   获取当前驱动对应的查询器实例.
+    *
+    *   @return lpDBInquiryDrive
+    */
+
+    abstract static public function getInquiry();
+
+    /**
+    *   从结果集中读取一行.
+    *
+    *   若已到最后一行, 则返回 null .
+    *
+    *   @param mixed $rs 结果集资源句柄
+    *
+    *   @return array|null
+    */
+
+    abstract static public function rsReadRow($rs);
+
+    /**
+    *   将结果集转换为数组.
+    *
+    *   @param mixed $rs  结果集资源句柄
+    *   @param int   $num 转换结果集的前 $num 行, 默认转换全部.
+    *
+    *   @return array
+    */
+
+    abstract static public function rsToArray($rs, $num=-1);
+
+    /**
+    *   获取结果集的行数.
+    *
+    *   @param mixed $rs  结果集资源句柄
+    *
+    *   @return int
+    */
+    
+    abstract static public function rsGetNum($rs);
+
+    /**
+    *   移动结果集中的指针.
+    *
+    *   @param mixed $rs  结果集资源句柄
+    *   @param int   $s   移动的目标位置
+    *
+    *   @return int
+    */
+    
+    abstract static public function rsSeek($rs, $s);
 }
 
 /**
