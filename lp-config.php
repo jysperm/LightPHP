@@ -58,7 +58,7 @@ $lpCfg["Passwd.Default.lpSmtp"] = "passwd123123";
 *
 *	@type array
 */
-$lpCfg["Default.lpMySQLDrive"] = [
+$lpCfg["Default.lpMySQLDBDrive"] = [
 	"host" => "localhost",
 	"dbname" => "mydb",
 	"user" => "myuser",
@@ -78,6 +78,7 @@ $lpCfg["Default.lpMySQLDrive"] = [
 *   @type bool
 */
 $lpCfg["PHPVersion.TrunOff.Warning"] = false;
+
 
 
 

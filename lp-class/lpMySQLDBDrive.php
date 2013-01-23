@@ -69,7 +69,7 @@ class lpMySQLDBDrive extends lpDBDrive
     	global $lpCfg;
 
     	if($config)
-    		$config = array_merge($lpCfg["Default.lpMySQLDrive"], $config);
+    		$config = array_merge($lpCfg["Default.lpMySQLDBDrive"], $config);
 
         $this->config = $config;
 

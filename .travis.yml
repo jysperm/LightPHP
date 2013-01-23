@@ -1,4 +1,4 @@
 ﻿language: php
 php:
   - 5.4
-script: phpunit Test/UnitTest.php
+script: phpunit Test

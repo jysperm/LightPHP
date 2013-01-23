@@ -61,19 +61,6 @@ if(version_compare(PHP_VERSION, $lpCfg["RecommendedPHPVersion.LightPHP"]) <= 0 &
 if(!class_exists("SaeObject",false))
     ini_set("short_open_tag","1");
 
-// 如果设置了 register_globals 选项, 则 unset 所有由它引入的变量.
-if(ini_get('register_globals'))
-{
-    foreach($GLOBALS as $k => $v)
-    {
-        $allows = array('GLOBALS', '_FILES', '_REQUEST', '_COOKIE', '_SERVER', '_ENV', '_SESSION', ini_get('session.name'), 'k', 'v');
-        if(!in_array($k, $allows))
-        {
-            unset($GLOBALS[$k]);
-        }
-    }
-}
-
 // 设置时区
 date_default_timezone_set($lpCfg["TimeZone.LightPHP"]);
 
