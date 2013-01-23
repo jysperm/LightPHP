@@ -36,13 +36,13 @@ $lpCfg["TimeZone.LightPHP"] = "Asia/Shanghai";
 *   @type string
 *   @see lpSmtp
 */
-$lpCfg["Host.Default.lpSmtp"] = "smtp.exmail.qq.com";
+$lpCfg["Host.Default.lpSmtp"] = "smtp.163.com";
 
 /**  @type string   lpSmtp 类的默认发信地址. */
-$lpCfg["Address.Default.lpSmtp"] = "public@jybox.net";
+$lpCfg["Address.Default.lpSmtp"] = "lightphp_test@163.com";
 
 /**  @type string   lpSmtp 类的默认发信用户名. */
-$lpCfg["UName.Default.lpSmtp"] = "public@jybox.net";
+$lpCfg["UName.Default.lpSmtp"] = "lightphp_test@163.com";
 
 /**  @type string   lpSmtp 类的默认发信密码. */
 $lpCfg["Passwd.Default.lpSmtp"] = "passwd123123";
