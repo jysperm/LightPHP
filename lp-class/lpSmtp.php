@@ -333,7 +333,7 @@ class lpSmtp
     private function sendMessage($header, $body) 
     { 
         fputs($this->socket, "{$header}\r\n{$body}");
-        $this->log(str_replace("\r\n", "Client: \n"."> ", "{$header}\n> {$body}\n> ")); 
+        $this->log(str_replace("\r\n", "\n"."> ", "\n{$header}\n> {$body}\n> ")); 
         return true; 
     }
 
