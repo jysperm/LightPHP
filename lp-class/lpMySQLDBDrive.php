@@ -66,16 +66,18 @@ class lpMySQLDBDrive extends lpDBDrive
 
     public function __construct($config=null)
     {
-    	global $lpCfg;
+        global $lpCfg;
 
-    	if($config)
-    		$config = array_merge($lpCfg["Default.lpMySQLDBDrive"], $config);
+        if(!$config)
+            $config = [];
+
+        $config = array_merge($lpCfg["Default.lpMySQLDBDrive"], $config);
 
         $this->config = $config;
 
-    	$this->connect=mysql_connect($config["host"], $config["user"], $config["pwd"]);
+        $this->connect=mysql_connect($config["host"], $config["user"], $config["passwd"]);
 
-    	if(!$this->connect)
+        if(!$this->connect)
             throw new RuntimeException("连接到数据库失败(无法连接到服务器`{$config['host']}`,或密码错误)");
 
         mysql_query("SET NAMES {$this->escape($config['charset'])}", $this->connect);
@@ -94,7 +96,7 @@ class lpMySQLDBDrive extends lpDBDrive
         $table = $this->escape($table);
 
         $sqlColumns = array_keys($row);
-        $sqlValues = array_keys($row);
+        $sqlValues = array_values($row);
 
         array_walk($sqlColumns, function(&$v)
         {
@@ -113,7 +115,7 @@ class lpMySQLDBDrive extends lpDBDrive
 
         $sql = "INSERT INTO `{$table}` ({$sqlColumns}) VALUES ({$sqlValues});";
 
-        $this->command($sql);
+        return mysql_query($sql, $this->connect);
     }
 
     /**
@@ -122,8 +124,13 @@ class lpMySQLDBDrive extends lpDBDrive
     *   
     */
 
-    public function select($table, $if, $config)
+    public function select($table, $if=null, $config=null)
     {
+        if(!$if)
+            $if = $this->getInquiry();
+        if(!$config)
+            $config = [];
+
         $table = $this->escape($table);
 
         $sql = "SELECT * FROM `{$table}` " . $if->buildWhere();
@@ -147,7 +154,7 @@ class lpMySQLDBDrive extends lpDBDrive
         if($num>-1 && !($start>-1))
             $sql .= " LIMIT {$num} ";
 
-        return new mysql_query($sql, $this->connect);
+        return mysql_query($sql, $this->connect);
     }
 
     public function update($table, $if, $new)
@@ -165,7 +172,7 @@ class lpMySQLDBDrive extends lpDBDrive
 
         $sql = "UPDATE `{$table}` SET {$sqlSet} " . $if->buildWhere();
 
-        return new mysql_query($sql, $this->connect);
+        return mysql_query($sql, $this->connect);
     }
 
     public function delete($table, $if)
@@ -174,7 +181,7 @@ class lpMySQLDBDrive extends lpDBDrive
 
         $sql = "DELETE FROM `{$table}` " . $if->buildWhere();
 
-        return new mysql_query($sql, $this->connect);
+        return mysql_query($sql, $this->connect);
     }
 
     public function tableList()
@@ -186,7 +193,7 @@ class lpMySQLDBDrive extends lpDBDrive
         return $result;
     }
 
-    public function operator($name, $args)
+    public function operator($name, $args=null)
     {
         switch($name)
         {
@@ -208,12 +215,12 @@ class lpMySQLDBDrive extends lpDBDrive
 
         $sql = $this->parseSQL($sql, $args);
 
-        return new mysql_query($sql, $this->connect);
+        return mysql_query($sql, $this->connect);
     }
 
-    public function command($command)
+    public function command($command, $more=null)
     {
-        return new mysql_query($command, $this->connect);
+        return mysql_query($command, $this->connect);
     }
 
     static public function getInquiry()
@@ -225,13 +232,6 @@ class lpMySQLDBDrive extends lpDBDrive
     {
         return mysql_fetch_assoc($rs);
     }
-
-    static public function rsToArray($rs, $num=-1)
-    {
-        while($r = $this->rsReadRow($rs) && $num--!=0)
-            $result[]=$r;
-        return $result;
-    }
     
     static public function rsGetNum($rs)
     {
@@ -241,6 +241,11 @@ class lpMySQLDBDrive extends lpDBDrive
     static public function rsSeek($rs, $s)
     {
         return mysql_data_seek($rs, $s);
+    }
+
+    static public function rsDestroy($rs)
+    {
+        return mysql_free_result($rs);
     }
 
     /**
@@ -309,9 +314,9 @@ class lpMySQLDBDrive extends lpDBDrive
 class lpDBMySQLInquiryDrive extends lpDBInquiryDrive
 {
     /** @type string 当前条件的SQL WHERE表示. */
-    private $where="";
+    private $where = "";
 
-    public function and($key, $value, $operator=$this::Equal)
+    public function andC($key, $value, $operator=self::Equal)
     {
         $key = $this->escape($key);
         $value = $this->escape($value);
@@ -330,7 +335,7 @@ class lpDBMySQLInquiryDrive extends lpDBInquiryDrive
             $this->where = "({$this->where} AND {$other->where})";
     }
     
-    public function or($key, $value, $operator=$this::Equal)
+    public function orC($key, $value, $operator=self::Equal)
     {
         $key = $this->escape($key);
         $value = $this->escape($value);
@@ -349,7 +354,7 @@ class lpDBMySQLInquiryDrive extends lpDBInquiryDrive
             $this->where = "({$this->where} OR {$other->where})";
     }
 
-    public function not()
+    public function notC()
     {
         if($this->where)
             $this->where = "( NOT {$this->where})";

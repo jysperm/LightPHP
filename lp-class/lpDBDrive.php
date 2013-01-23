@@ -54,7 +54,7 @@ abstract class lpDBDrive
     *   @param array  $config 查询选项 [选项 => 值]
     */
 
-    abstract public function select($table, $if, $config);
+    abstract public function select($table, $if=null, $config=null);
 
     /**
     *   从数据表修改数据.
@@ -96,7 +96,7 @@ abstract class lpDBDrive
     *   @return mixed
     */
 
-    abstract public function operator($name, $args);
+    abstract public function operator($name, $args=null);
 
     /**
     *   运行数据库原生指令.
@@ -117,7 +117,10 @@ abstract class lpDBDrive
     *   @return lpDBInquiryDrive
     */
 
-    abstract static public function getInquiry();
+    static public function getInquiry()
+    {
+        return null;
+    }
 
     /**
     *   从结果集中读取一行.
@@ -129,18 +132,10 @@ abstract class lpDBDrive
     *   @return array|null
     */
 
-    abstract static public function rsReadRow($rs);
-
-    /**
-    *   将结果集转换为数组.
-    *
-    *   @param mixed $rs  结果集资源句柄
-    *   @param int   $num 转换结果集的前 $num 行, 默认转换全部.
-    *
-    *   @return array
-    */
-
-    abstract static public function rsToArray($rs, $num=-1);
+    static public function rsReadRow($rs)
+    {
+        return null;
+    }
 
     /**
     *   获取结果集的行数.
@@ -150,7 +145,10 @@ abstract class lpDBDrive
     *   @return int
     */
     
-    abstract static public function rsGetNum($rs);
+    static public function rsGetNum($rs)
+    {
+        return null;
+    }
 
     /**
     *   移动结果集中的指针.
@@ -161,7 +159,21 @@ abstract class lpDBDrive
     *   @return int
     */
     
-    abstract static public function rsSeek($rs, $s);
+    static public function rsSeek($rs, $s)
+    {
+        return null;
+    }
+
+    /**
+    *   销毁结果集.
+    *
+    *   @param mixed $rs  结果集资源句柄
+    */
+    
+    static public function rsDestroy($rs)
+    {
+        return null;
+    }
 }
 
 /**
@@ -198,7 +210,7 @@ abstract class lpDBInquiryDrive
     *   @return $this
     */
 
-    abstract public function and($key, $value, $operator=$this::Equal);
+    abstract public function andC($key, $value, $operator=self::Equal);
 
     /**
     *   查询交集.
@@ -220,7 +232,7 @@ abstract class lpDBInquiryDrive
     *   @return $this
     */
     
-    abstract public function or($key, $value, $operator=$this::Equal);
+    abstract public function orC($key, $value, $operator=self::Equal);
 
     /**
     *   查询并集.
@@ -240,5 +252,5 @@ abstract class lpDBInquiryDrive
     *   @return $this
     */
     
-    abstract public function not();
+    abstract public function notC();
 }
