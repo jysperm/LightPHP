@@ -4,7 +4,7 @@ php:
 
 before_install:
   - sudo apt-get update -qq > /dev/null 2>&1
-  - sudo apt-get install php5
+  - sudo apt-get install php5 php-pear
   - sudo pear install phpunit/PHPUnit
 
 script: phpunit Test
