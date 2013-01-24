@@ -38,6 +38,15 @@ class lpDBQuery
     }
 
     /**
+    *   @return lpDBDrive 底层驱动
+    */
+
+    public function drive()
+    {
+        return $this->conn;
+    }
+
+    /**
     *   开始一个查询.
     *
     *   链式调用.
@@ -76,7 +85,7 @@ class lpDBQuery
     *   @param array  $config 查询选项 [选项 => 值]
     */
 
-    public function select($config)
+    public function select($config=null)
     {
         $r = $this->conn->select($this->table, $this->inquiry, $config);
         $this->cleanUp();
@@ -93,12 +102,12 @@ class lpDBQuery
     *   @return array|null
     */
 
-    public function top($config)
+    public function top($config=null)
     {
         $r = $this->conn->select($this->table, $this->inquiry, $config);
         $this->cleanUp();
         $r = new lpDBResult($r, $this->conn);
-        if($r->read)
+        if($r->read())
             return $r->toArray();
         else
             return null;

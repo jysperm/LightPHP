@@ -48,7 +48,7 @@ EOF;
         $rs = $xxoo->select("test", $if);
 
         //数据集行数
-        $this->assertEquals(1 ,$xxoo->rsGetNum($rs));
+        $this->assertEquals(1, $xxoo->rsGetNum($rs));
 
         // -- 断言查询到数据
         $r = $xxoo->rsReadRow($rs);
@@ -59,7 +59,7 @@ EOF;
         $this->assertEquals($jybox ,$r);
 
         //已经到达数据集的末尾
-        $this->assertEquals(false ,$xxoo->rsReadRow($rs));
+        $this->assertEquals(false, $xxoo->rsReadRow($rs));
 
         // -- 删除数据
 
@@ -68,6 +68,6 @@ EOF;
         $xxoo->delete("test", $if);
 
         $rs = $xxoo->select("test");
-        $this->assertEquals(0 ,$xxoo->rsGetNum($rs));
+        $this->assertEquals(0, $xxoo->rsGetNum($rs));
     }
 }

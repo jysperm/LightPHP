@@ -213,7 +213,7 @@ class lpMySQLDBDrive extends lpDBDrive
         $args = func_get_args();
         array_shift($args);
 
-        $sql = $this->parseSQL($sql, $args);
+        $sql = $this->parseSQL($command, $args);
 
         return mysql_query($sql, $this->connect);
     }
