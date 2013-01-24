@@ -88,7 +88,10 @@ function lpLoader($name)
         return;
 
     $map = [
-        "lpDBInquiryDrive" => "lpDBDrive"
+        "lpDBInquiryDrive" => "lpDBDrive",
+        "lpFileLock" => "lpLock",
+        "lpMySQLLock" => "lpLock",
+        "lpMutex" => "lpLock"
     ];
 
     foreach($map as $key => $value)
