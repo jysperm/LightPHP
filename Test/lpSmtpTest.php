@@ -6,7 +6,9 @@ class lpSmtpTest extends PHPUnit_Framework_TestCase
 {
     public function test()
     {
-        
+        if(isset($_ENV["TRAVIS"]))
+            return;
+
         $xxoo = new lpSmtp;
 
         $xxoo->send("jyboxnet@gmail.com", "PHPUnit 测试邮件", "内容");
