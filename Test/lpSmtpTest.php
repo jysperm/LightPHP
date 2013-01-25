@@ -6,7 +6,8 @@ class lpSmtpTest extends PHPUnit_Framework_TestCase
 {
     public function test()
     {
-        if(isset($_ENV["TRAVIS"]))
+        global $lpROOT;
+        if($lpROOT == "/home/travis/builds/jybox/LightPHP")
             return;
 
         $xxoo = new lpSmtp;

@@ -5,8 +5,4 @@ php:
 before_script:
   - mysql -e "create database IF NOT EXISTS mydb;" -uroot
 
-env:
-  - TRAVIS=true
-
-
 script: phpunit Test
