@@ -41,18 +41,18 @@ EOF;
 
         // -- 更新数据
 
-        $xxoo("test")->where("name", "jybox")->update(["info" => "正在编写LightPHP"]);
-        $xxoo("test")->where("age", 18, lpDBInquiryDrive::Less)->update(["info" => "未成年"]);
-        $xxoo("test")->where("name", "whtsky")->whereOr("name", "土豆")->update(["info" => "富二代"]);
+        $xxoo("test")->where(["name" => "jybox"])->update(["info" => "正在编写LightPHP"]);
+        $xxoo("test")->where(["age" => ["<" => 18]])->update(["info" => "未成年"]);
+        $xxoo("test")->where(["name" => "whtsky"])->whereOr(["name" => "土豆"])->update(["info" => "富二代"]);
 
         // -- 查询数据
 
         $this->assertEquals(5, $xxoo("test")->select()->num());
-        $this->assertEquals(4, $xxoo("test")->where("age", 18, lpDBInquiryDrive::Less)->select()->num());
-        $this->assertEquals("土豆", $xxoo("test")->top([lpMySQLDBDrive::OrderBy => "age"])["name"]);
-        $this->assertEquals(2, $xxoo("test")->select(["num" => 2])->num());
+        $this->assertEquals(4, $xxoo("test")->where(["age" => ["<" => 18]])->select()->num());
+        $this->assertEquals("土豆", $xxoo("test")->sort("age")->top()["name"]);
+        $this->assertEquals(2, $xxoo("test")->limit(2)->select()->num());
 
-        $rs = $xxoo("test")->where("info", "富二代")->select();
+        $rs = $xxoo("test")->where(["info" => "富二代"])->select();
 
         $this->assertEquals(2, $rs->num());
         $this->assertEquals(true, $rs->read());
@@ -66,7 +66,7 @@ EOF;
 
         // -- 删除数据
 
-        $xxoo("test")->where("name", "abreto")->delete();
+        $xxoo("test")->where(["name" => "abreto"])->delete();
 
         $this->assertEquals(4, $xxoo("test")->select()->num());
 

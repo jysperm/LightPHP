@@ -1,7 +1,7 @@
 ﻿<?php
 
 /**
-*   该文件包含 lpMySQLDBDrive 和 lpDBMySQLInquiryDrive 的类定义.
+*   该文件包含 lpMySQLDBDrive 和 lpMySQLDBInquiryDrive 的类定义.
 *
 *   @package LightPHP
 */
@@ -57,19 +57,16 @@ class lpMySQLDBDrive extends lpDBDrive
     *   
     *   @type enum(SelectConfig)
     */
-    const Num = "num";
+    const Limit = "limit";
 
 	/**
 	*	
 	*	该类会从 /lp-config.php 中的 `Default.lpMySQLDrive` 段读取默认连接选项, 可用的选项请参见 /lp-config.php .
 	*/
 
-    public function __construct($config=null)
+    public function __construct($config=[])
     {
         global $lpCfg;
-
-        if(!$config)
-            $config = [];
 
         $config = array_merge($lpCfg["Default.lpMySQLDBDrive"], $config);
 
@@ -124,12 +121,10 @@ class lpMySQLDBDrive extends lpDBDrive
     *   
     */
 
-    public function select($table, $if=null, $config=null)
+    public function select($table, $if=null, $config=[])
     {
         if(!$if)
             $if = $this->getInquiry();
-        if(!$config)
-            $config = [];
 
         $table = $this->escape($table);
 
@@ -147,12 +142,12 @@ class lpMySQLDBDrive extends lpDBDrive
         }
 
         $start = isset($config[$this::Start]) ? $config[$this::Start] : -1;
-        $num = isset($config[$this::Num]) ? $config[$this::Num] : -1;
+        $limit = isset($config[$this::Limit]) ? $config[$this::Limit] : -1;
 
-        if($num>-1 && $start>-1)
-            $sql .= " LIMIT {$start}, {$num} ";
-        if($num>-1 && !($start>-1))
-            $sql .= " LIMIT {$num} ";
+        if($limit>-1 && $start>-1)
+            $sql .= " LIMIT {$start}, {$limit} ";
+        if($limit>-1 && !($start>-1))
+            $sql .= " LIMIT {$limit} ";
 
         return mysql_query($sql, $this->connect);
     }
@@ -225,7 +220,7 @@ class lpMySQLDBDrive extends lpDBDrive
 
     static public function getInquiry()
     {
-        return new lpDBMySQLInquiryDrive;
+        return new lpMySQLDBInquiryDrive;
     }
 
     static public function rsReadRow($rs)
@@ -311,50 +306,98 @@ class lpMySQLDBDrive extends lpDBDrive
 *   @type value class
 */
 
-class lpDBMySQLInquiryDrive extends lpDBInquiryDrive
+class lpMySQLDBInquiryDrive extends lpDBInquiryDrive
 {
     /** @type string 当前条件的SQL WHERE表示. */
     private $where = "";
 
-    public function andC($key, $value, $operator=self::Equal)
+    public function andIf($if)
     {
-        $key = $this->escape($key);
-        $value = $this->escape($value);
-
-        if(!$this->where)
-            $this->where = "(`{$key}` {$operator} '{$value}')";
+        if(!is_array($if) && get_class($if))
+        {
+            if(!$this->where)
+                $this->where = $if->where;
+            else
+                $this->where = "({$this->where} AND {$if->where})";
+        }
         else
-            $this->where = "({$this->where} AND (`{$key}` {$operator} '{$value}'))";
-    }
+        {
+            if(count($if) > 1)
+            {
+                foreach($if as $k => $v)
+                {
+                    $this->andC([$k => $v]);
+                }
+            }
 
-    public function andOther($other)
-    {
-        if(!$this->where)
-            $this->where = $other->where;
-        else
-            $this->where = "({$this->where} AND {$other->where})";
+            $k = array_keys($if)[0];
+            $v = array_values($if)[0];
+
+            if(is_array($v))
+            {
+                $operator = array_keys($v)[0];
+                $value = array_values($v)[0];
+            }
+            else
+            {
+                $operator = $this::Equal;
+                $value = $v;
+            }
+
+            $k = $this->escape($k);
+            $value = $this->escape($value);
+
+            if(!$this->where)
+                $this->where = "(`{$k}` {$operator} '{$value}')";
+            else
+                $this->where = "({$this->where} AND (`{$k}` {$operator} '{$value}'))";
+        }
     }
     
-    public function orC($key, $value, $operator=self::Equal)
+    public function orIf($if)
     {
-        $key = $this->escape($key);
-        $value = $this->escape($value);
-
-        if(!$this->where)
-            $this->where = "(`{$key}` {$operator} '{$value}')";
+        if(!is_array($if) && get_class($if))
+        {
+            if(!$this->where)
+                $this->where = $if->where;
+            else
+                $this->where = "({$this->where} OR {$if->where})";
+        }
         else
-            $this->where = "({$this->where} OR (`{$key}` {$operator} '{$value}'))";
+        {
+            if(count($if) > 1)
+            {
+                foreach($if as $k => $v)
+                {
+                    $this->orC([$k => $v]);
+                }
+            }
+
+            $k = array_keys($if)[0];
+            $v = array_values($if)[0];
+
+            if(is_array($v))
+            {
+                $operator = array_keys($v)[0];
+                $value = array_values($v)[0];
+            }
+            else
+            {
+                $operator = $this::Equal;
+                $value = $v;
+            }
+
+            $k = $this->escape($k);
+            $value = $this->escape($value);
+
+            if(!$this->where)
+                $this->where = "(`{$k}` {$operator} '{$value}')";
+            else
+                $this->where = "({$this->where} OR (`{$k}` {$operator} '{$value}'))";
+        }
     }
 
-    public function orOther($other)
-    {
-        if(!$this->where)
-            $this->where = $other->where;
-        else
-            $this->where = "({$this->where} OR {$other->where})";
-    }
-
-    public function notC()
+    public function notIf()
     {
         if($this->where)
             $this->where = "( NOT {$this->where})";

@@ -203,54 +203,24 @@ abstract class lpDBInquiryDrive
     /**
     *   查询交集.
     *
-    *   @param string $key   列名
-    *   @param string $value 值
-    *   @param enum(Operator) $operator 操作符
-    *
-    *   @return $this
+    *   @param array|lpDBInquiryDrive $if   查询条件
     */
 
-    abstract public function andC($key, $value, $operator=self::Equal);
-
-    /**
-    *   查询交集.
-    *
-    *   @param lpDBInquiryDrive $other 其他实例
-    *
-    *   @return $this
-    */
-
-    abstract public function andOther($other);
+    abstract public function andIf($if);
 
     /**
     *   查询并集.
     *
-    *   @param string $key   列名
-    *   @param string $value 值
-    *   @param enum(Operator) $operator 操作符
-    *
-    *   @return $this
+    *   @param array|lpDBInquiryDrive $if   查询条件
     */
     
-    abstract public function orC($key, $value, $operator=self::Equal);
-
-    /**
-    *   查询并集.
-    *
-    *   @param lpDBInquiryDrive $other 其他实例
-    *
-    *   @return $this
-    */
-
-    abstract public function orOther($other);
+    abstract public function orIf($if);
 
     /**
     *   查询补集.
     *
     *   会对已有的所有条件取反.
-    *
-    *   @return $this
     */
     
-    abstract public function notC();
+    abstract public function notIf();
 }

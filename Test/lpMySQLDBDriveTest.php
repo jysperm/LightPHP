@@ -39,7 +39,7 @@ EOF;
         // -- 更新数据
 
         $if = $xxoo->getInquiry();
-        $if->andC("name", "jybox");
+        $if->andIf(["name" => "jybox"]);
 
         $xxoo->update("test", $if, ["info" => "正在编写LightPHP"]);
 
@@ -63,7 +63,7 @@ EOF;
 
         // -- 删除数据
 
-        $if->orC("age", 16);
+        $if->orIf(["age" => 16]);
 
         $xxoo->delete("test", $if);
 

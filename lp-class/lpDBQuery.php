@@ -25,6 +25,12 @@ class lpDBQuery
     /** @type lpDBInquiryDrive 当前的查询条件 */
     private $inquiry = null;
 
+    private $start = -1;
+
+    private $num = -1;
+
+    private $config = [];
+
     /**
     *   构造一个查询器.
     *
@@ -64,6 +70,38 @@ class lpDBQuery
     }
 
     /**
+    *   限制返回的结果行数
+    *
+    *   链式调用.
+    *
+    *   @param int $num 行数
+    *
+    *   @return $this
+    */
+
+    public function limit($num)
+    {
+        $this->config["limit"] = $num;
+
+        return $this;
+    }
+
+    public function skip($num)
+    {
+        $this->config["start"] = $num;
+
+        return $this;
+    }
+
+    public function sort($orderBy, $isAsc=true)
+    {
+        $this->config["orderby"] = $orderBy;
+        $this->config["isasc"] = $isAsc;
+
+        return $this;
+    }
+
+    /**
     *   向数据表插入一行.
     *
     *   终结链式调用.
@@ -85,8 +123,10 @@ class lpDBQuery
     *   @param array  $config 查询选项 [选项 => 值]
     */
 
-    public function select($config=null)
+    public function select($config=[])
     {
+        $config = array_merge($this->config, $config);
+
         $r = $this->conn->select($this->table, $this->inquiry, $config);
         $this->cleanUp();
         return new lpDBResult($r, $this->conn);
@@ -102,8 +142,10 @@ class lpDBQuery
     *   @return array|null
     */
 
-    public function top($config=null)
+    public function top($config=[])
     {
+        $config = array_merge($this->config, $config);
+
         $r = $this->conn->select($this->table, $this->inquiry, $config);
         $this->cleanUp();
         $r = new lpDBResult($r, $this->conn);
@@ -144,32 +186,14 @@ class lpDBQuery
     *
     *   链式调用.
     *
-    *   @param string $key   列名
-    *   @param string $value 值
-    *   @param enum(Operator) $operator 操作符
+    *   @param array|lpDBInquiryDrive $if   查询条件
     *
     *   @return $this
     */
 
-    public function where($key, $value, $operator=lpDBInquiryDrive::Equal)
+    public function where($if)
     {
-        $this->inquiry->andC($key, $value, $operator);
-        return $this;
-    }
-
-    /**
-    *   添加查询条件(AND操作).
-    *
-    *   链式调用.
-    *
-    *   @param lpDBInquiryDrive $other 查询条件
-    *
-    *   @return $this
-    */
-
-    public function whereI($other)
-    {
-        $this->inquiry->andOther($other);
+        $this->inquiry->andIf($if);
         return $this;
     }
 
@@ -178,32 +202,14 @@ class lpDBQuery
     *
     *   链式调用.
     *
-    *   @param string $key   列名
-    *   @param string $value 值
-    *   @param enum(Operator) $operator 操作符
+    *   @param array|lpDBInquiryDrive $if   查询条件
     *
     *   @return $this
     */
 
-    public function whereOr($key, $value, $operator=lpDBInquiryDrive::Equal)
+    public function whereOr($if)
     {
-        $this->inquiry->orC($key, $value, $operator);
-        return $this;
-    }
-
-    /**
-    *   添加查询条件(OR操作).
-    *
-    *   链式调用.
-    *
-    *   @param lpDBInquiryDrive $other 查询条件
-    *
-    *   @return $this
-    */
-
-    public function whereOrI($other)
-    {
-        $this->inquiry->orOther($other);
+        $this->inquiry->orIf($if);
         return $this;
     }
 
@@ -215,9 +221,9 @@ class lpDBQuery
     *   @return $this
     */
 
-    public function notC()
+    public function whereNot()
     {
-        $this->notC();
+        $this->notIf();
         return $this;
     }
 
@@ -229,5 +235,6 @@ class lpDBQuery
     {
         $this->table = null;
         $this->inquiry = $this->conn->getInquiry();
+        $this->config = [];
     }
 }

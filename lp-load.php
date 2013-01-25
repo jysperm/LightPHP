@@ -89,6 +89,8 @@ function lpLoader($name)
 
     $map = [
         "lpDBInquiryDrive" => "lpDBDrive",
+        "lpMySQLDBInquiryDrive" => "lpMySQLDBDrive",
+        "lpMongoDBInquiryDrive" => "lpMongoDBDrive",
         "lpFileLock" => "lpLock",
         "lpMySQLLock" => "lpLock",
         "lpMutex" => "lpLock"
