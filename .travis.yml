@@ -2,7 +2,11 @@ language: php
 php:
   - 5.4
 
+services:
+  - mongodb
+
 before_script:
   - mysql -e "create database IF NOT EXISTS mydb;" -uroot
+  - sudo pecl install mongo
 
 script: phpunit Test
