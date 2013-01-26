@@ -4,15 +4,13 @@ require_once("lp-load.php");
 
 class lpDBQueryTest extends PHPUnit_Framework_TestCase
 {
-    public function test()
+    private $xxoo = null;
+
+    public function testMySQL()
     {
-        // -- 建立实例
+        $this->xxoo = new lpDBQuery(new lpMySQLDBDrive(["user" => "root","passwd" => ""]));
 
-        $xxoo = new lpDBQuery(new lpMySQLDBDrive(["user" => "root","passwd" => ""]));
-
-        // -- 建立测试表
-
-        $xxoo->drive()->commandArgs("DROP TABLE `%s`", "test");
+        $this->xxoo->drive()->commandArgs("DROP TABLE `%s`", "test");
 
         $sql = <<<EOF
 
@@ -27,7 +25,23 @@ CREATE TABLE IF NOT EXISTS `test` (
 
 EOF;
 
-        $xxoo->drive()->command($sql);
+        $this->xxoo->drive()->command($sql);
+
+        $this->main();
+    }
+
+    public function testMongo()
+    {
+        $this->xxoo = new lpDBQuery(new lpMongoDBDrive);
+
+        $this->xxoo->drive()->command()->selectCollection("test")->remove([]);
+
+        $this->main();
+    }
+
+    public function main()
+    {
+        $xxoo = $this->xxoo;
 
         // -- 插入数据
 

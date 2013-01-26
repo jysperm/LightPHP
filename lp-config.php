@@ -50,7 +50,7 @@ $lpCfg["Passwd.Default.lpSmtp"] = "passwd123123";
 /**
 *	lpMySQLDrive 类的默认连接选项
 *
-*	* host 服务器IP或主机名(如`localhost`),还可以指定端口(如`localhost:4567`),也可以使用本地Socket(如`/var/run/mysqld/mysqld.sock`)
+*	* host 服务器IP或主机名(如`localhost`), 还可以指定端口(如`localhost:4567`), 也可以使用本地Socket(如`/var/run/mysqld/mysqld.sock`)
 *	* dbname 数据库名
 *	* user 数据库用户名
 *	* passwd 数据库密码
@@ -64,6 +64,23 @@ $lpCfg["Default.lpMySQLDBDrive"] = [
 	"user" => "myuser",
 	"passwd" => "mypasswd",
 	"charset" => "utf8"
+];
+
+/**
+*   lpMongoDrive 类的默认连接选项
+*
+*   * host 服务器IP或主机名(如`localhost`), 还可以指定端口(如`localhost:4567`), 可以指定多个服务器
+*   * dbname 数据库名
+*   * user 数据库用户名
+*   * passwd 数据库密码
+*
+*   @type array
+*/
+$lpCfg["Default.lpMongoDBDrive"] = [
+    "host" => "localhost",
+    "dbname" => "mydb",
+    "user" => "",
+    "passwd" => ""
 ];
 
 /**

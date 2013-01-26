@@ -25,10 +25,6 @@ class lpDBQuery
     /** @type lpDBInquiryDrive 当前的查询条件 */
     private $inquiry = null;
 
-    private $start = -1;
-
-    private $num = -1;
-
     private $config = [];
 
     /**

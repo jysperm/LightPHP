@@ -19,9 +19,10 @@
 class lpMySQLDBDrive extends lpDBDrive
 {
 	/** @type resource 到MySQL的连接. */
-	private $connect=null;
+	private $connect = null;
+    
     /** @type array 连接选项, 参见 connect() . */
-    private $config=null;
+    private $config = null;
 
     /** 
     *   排序字段.
@@ -72,7 +73,7 @@ class lpMySQLDBDrive extends lpDBDrive
 
         $this->config = $config;
 
-        $this->connect=mysql_connect($config["host"], $config["user"], $config["passwd"]);
+        $this->connect = mysql_connect($config["host"], $config["user"], $config["passwd"]);
 
         if(!$this->connect)
             throw new RuntimeException("连接到数据库失败(无法连接到服务器`{$config['host']}`,或密码错误)");
@@ -85,7 +86,13 @@ class lpMySQLDBDrive extends lpDBDrive
 
     public function __destruct()
     {
-    	mysql_close($this->connect);
+        try{
+            mysql_close($this->connect);
+        }
+        catch(Exception $e)
+        {
+            
+        }
     }
 
     public function insert($table, $row)
@@ -213,7 +220,7 @@ class lpMySQLDBDrive extends lpDBDrive
         return mysql_query($sql, $this->connect);
     }
 
-    public function command($command, $more=null)
+    public function command($command=null, $more=null)
     {
         return mysql_query($command, $this->connect);
     }

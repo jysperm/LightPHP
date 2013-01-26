@@ -109,7 +109,7 @@ abstract class lpDBDrive
     *   @return mixed 结果集资源句柄
     */
 
-    abstract public function command($command, $more=null);
+    abstract public function command($command=null, $more=null);
 
     /**
     *   获取当前驱动对应的查询器实例.
