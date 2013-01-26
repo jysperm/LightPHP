@@ -7,6 +7,6 @@ services:
 
 before_script:
   - mysql -e "create database IF NOT EXISTS mydb;" -uroot
-  - sudo pecl install mongo
+  - sudo pecl install mongo > /dev/null
 
 script: phpunit Test
