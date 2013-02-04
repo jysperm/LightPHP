@@ -30,7 +30,7 @@ class lpSmtp
     private $address;
 
     /** @type string    SMTP用户名 */
-    private $uname;
+    private $user;
 
     /** @type string    SMTP密码 */
     private $passwd;
@@ -85,7 +85,7 @@ class lpSmtp
     *
     *   @param  string=   $host       SMTP服务器
     *   @param  string=   $address    SMTP发信地址
-    *   @param  string=   $uname      SMTP用户名
+    *   @param  string=   $user       SMTP用户名
     *   @param  string=   $passwd     SMTP密码
     *   @param  int=      $port       SMTP连接端口
     *   @param  bool=     $isAuth     SMTP服务器是否需要验证
@@ -96,7 +96,7 @@ class lpSmtp
     *   @see send()
     */
 
-    public function __construct($host=null, $address=null, $uname=null, $passwd=null, 
+    public function __construct($host=null, $address=null, $user=null, $passwd=null, 
                                 $port=25, $isAuth=true, $isDebug=false, $timeOut=30, $myHostName="lpSmtpMail") 
     { 
         global $lpCfg;
@@ -108,18 +108,18 @@ class lpSmtp
         $this->myHostName = $myHostName;
         
         if(!$host)
-            $host = $lpCfg["Host.Default.lpSmtp"];
+            $host = $lpCfg["lpSmtp"]["Default"]["host"];
         if(!$address)
-            $address = $lpCfg["Address.Default.lpSmtp"];
-        if(!$uname)
-            $uname = $lpCfg["UName.Default.lpSmtp"];
+            $address = $lpCfg["lpSmtp"]["Default"]["address"];
+        if(!$user)
+            $user = $lpCfg["lpSmtp"]["Default"]["user"];
         if(!$passwd)
-            $passwd = $lpCfg["Passwd.Default.lpSmtp"];
+            $passwd = $lpCfg["lpSmtp"]["Default"]["passwd"];
 
             
         $this->host = $host;
         $this->address = $address;
-        $this->uname = $uname;
+        $this->user = $user;
         $this->passwd = $passwd;
     }
 
@@ -273,7 +273,7 @@ class lpSmtp
 
         if($this->isAuth) 
         { 
-            if(!$this->sendCmd("AUTH LOGIN", base64_encode($this->uname))) 
+            if(!$this->sendCmd("AUTH LOGIN", base64_encode($this->user))) 
                 return $this->error("sending AUTH command");
             if(!$this->sendCmd("", base64_encode($this->passwd))) 
                 return $this->error("sending AUTH command");

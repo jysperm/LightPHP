@@ -24,10 +24,11 @@ class lpDBResult implements ArrayAccess
     private $curData = null;
 
     /**
-    *   构建一个结果集实例.
-    *
-    *   @param resource $res 结果集资源句柄
-    */
+     *   构建一个结果集实例.
+     *
+     * @param resource $res 结果集资源句柄
+     * @param $conn
+     */
 
     public function __construct($res ,$conn)
     {
@@ -84,7 +85,7 @@ class lpDBResult implements ArrayAccess
     /**
     *   获取结果集的行数.
     *
-    *   @param mixed $rs  结果集资源句柄
+    *   @internal param mixed $rs 结果集资源句柄
     *
     *   @return int
     */
@@ -102,7 +103,7 @@ class lpDBResult implements ArrayAccess
     *   @return int
     */
     
-    static public function seek($s)
+    public function seek($s)
     {
         return $this->conn->rsSeek($this->res ,$s);
     }

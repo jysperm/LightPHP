@@ -19,11 +19,11 @@
 if(!defined("lpStartTime"))
 {
     /**
-    *   当前Unix时间戳, 小数, 精确到微妙(如果可能的话).
+    *   当前Unix时间戳, 小数, 精确到微秒(如果可能的话).
     *
     *   该常量可用于计算页面执行时间.
     */
-    define("lpStartTime",microtime(true));
+    define("lpStartTime", microtime(true));
 }
 
 /**
@@ -62,7 +62,7 @@ if(!class_exists("SaeObject",false))
     ini_set("short_open_tag","1");
 
 // 设置时区
-date_default_timezone_set($lpCfg["TimeZone.LightPHP"]);
+date_default_timezone_set($lpCfg["LightPHP"]["TimeZone"]);
 
 /**
 *   该函数用于加载 $name 所指定的类.
@@ -91,9 +91,7 @@ function lpLoader($name)
         "lpDBInquiryDrive" => "lpDBDrive",
         "lpMySQLDBInquiryDrive" => "lpMySQLDBDrive",
         "lpMongoDBInquiryDrive" => "lpMongoDBDrive",
-        "lpFileLock" => "lpLock",
-        "lpMySQLLock" => "lpLock",
-        "lpMutex" => "lpLock"
+        "lpMutex" => "lpFileLock"
     ];
 
     foreach($map as $key => $value)

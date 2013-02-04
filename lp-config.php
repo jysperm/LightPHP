@@ -28,24 +28,24 @@
 *
 *   @type string
 */
-$lpCfg["TimeZone.LightPHP"] = "Asia/Shanghai";
+$lpCfg["LightPHP"]["TimeZone"] = "Asia/Shanghai";
 
 /**  
-*   lpSmtp 类的默认发信服务器. 
+*   lpSmtp 类的默认发信帐号. 
 *
-*   @type string
-*   @see lpSmtp
+*   * host 发信服务器
+*   * address 发信地址
+*   * user 发信用户名
+*   * passwd 发信密码
+*
+*   @type array
 */
-$lpCfg["Host.Default.lpSmtp"] = "smtp.163.com";
-
-/**  @type string   lpSmtp 类的默认发信地址. */
-$lpCfg["Address.Default.lpSmtp"] = "lightphp_test@163.com";
-
-/**  @type string   lpSmtp 类的默认发信用户名. */
-$lpCfg["UName.Default.lpSmtp"] = "lightphp_test@163.com";
-
-/**  @type string   lpSmtp 类的默认发信密码. */
-$lpCfg["Passwd.Default.lpSmtp"] = "passwd123123";
+$lpCfg["lpSmtp"]["Default"] = [
+    "host" => "smtp.163.com",
+    "address" => "lightphp_test@163.com",
+    "user" => "lightphp_test@163.com",
+    "passwd" => "passwd123123"
+];
 
 /**
 *	lpMySQLDrive 类的默认连接选项
@@ -76,12 +76,50 @@ $lpCfg["Default.lpMySQLDBDrive"] = [
 *
 *   @type array
 */
-$lpCfg["Default.lpMongoDBDrive"] = [
+$lpCfg["lpMongoDBDrive"]["Default"] = [
     "host" => "localhost",
     "dbname" => "mydb",
     "user" => "",
     "passwd" => ""
 ];
+
+/**
+*   lpClasssicAuth 类的Cookie安全码
+*
+*   修改该项会导致所有已登录用户丢失登录状态.
+*
+*   @type string
+*/
+$lpCfg["lpClasssicAuth"]["SecurityCode"] = "140fd4bfdbd9a925fbf10245a58f603e541c9b82063b8339754aed509af11698";
+
+$lpCfg["lpClassicAuth"]["GetPasswd"]["Default"] = [
+    "table" => "user",
+    "user" => "user",
+    "passwd" => "passwd"
+];
+
+$lpCfg["lpClassicAuth"]["CookieName"] = [
+    "user" => "lp_cauth_user",
+    "passwd" => "lp_cauth_token"
+];
+
+$lpCfg["lpClassicAuth"]["Limit"] = 30 * 24 * 3600;
+
+$lpCfg["lpTrackAuth"]["GetPasswd"] = $lpCfg["lpClassicAuth"]["GetPasswd"];
+
+$lpCfg["lpTrackAuth"]["Default"] = [
+    "table" => "lptrackauth",
+    "user" => "user",
+    "token" => "token",
+    "lastactivitytime" => "lastactivitytime"
+];
+
+$lpCfg["lpTrackAuth"]["CookieName"] = [
+    "user" => "lp_tauth_user",
+    "passwd" => "lp_tauth_token"
+];
+
+$lpCfg["lpTrackAuth"]["Limit"] = 30 * 24 * 3600;
 
 /**
 *   关闭PHP版本号过低时显示的警告.
