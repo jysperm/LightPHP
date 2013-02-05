@@ -19,7 +19,7 @@ $lpApp = new lpApp;
 *   lpApp 用来管理全局的资源, 如数据库连接等等
 */
 
-class lpApp
+trait lpAppResourceManager
 {
     static private $dbs = [];
 
@@ -44,4 +44,26 @@ class lpApp
     {
         return $this->auths[$id];
     }
+}
+
+trait lpAppRoute
+{
+    static public $defaultFilter = function()
+    {
+        $url = strstr($_SERVER["REQUEST_URI"], 0, strlen($_SERVER["REQUEST_URI"]) - strlen($_SERVER["REQUEST_QUERY"]));
+
+        $args = array_filter(explode("/", $url));
+
+        self 
+    }
+
+    static public bindLambda($rx, $lambda)
+    {
+        
+    }
+}
+
+class lpApp
+{
+    use lpAppResourceManager, lpAppRoute;
 }
