@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
 *   该文件用于载入LightPHP库.
@@ -53,6 +53,9 @@ define("lpInLightPHP", true);
 */
 require("lp-config.php");
 
+if(!defined("lpMode"))
+    define("lpMode", $lpCfg["LightPHP"]["Mode"]);
+
 // 如果PHP版本过低, 显示警告.
 if(version_compare(PHP_VERSION, $lpCfg["RecommendedPHPVersion.LightPHP"]) <= 0 && !$lpCfg["PHPVersion.TrunOff.Warning"])
     trigger_error("Please install the newly version of PHP ({$lpCfg["RecommendedPHPVersion.LightPHP"]}+). Or edit `Version.TrunOff.Warning` in /lp-config.php ", E_WARNING);
@@ -94,14 +97,8 @@ function lpLoader($name)
         "lpMutex" => "lpFileLock"
     ];
 
-    foreach($map as $key => $value)
-    {
-        if($name == $key)
-        {
-            $name = $value;
-            break;
-        }
-    }
+    if(in_array($name, array_keys($map)))
+        $name = $map[$name];
 
     $path = "{$lpROOT}/lp-class/{$name}.php";
     if(file_exists($path))
@@ -123,6 +120,7 @@ spl_autoload_register("lpLoader");
 *   @param array $varList 错误发生时的符号表
 *
 *   @type closures
+*   @throws ErrorException
 *   @return true
 */
 
@@ -132,14 +130,20 @@ set_error_handler(function($no, $str, $file, $line, $varList)
     return true;
 });
 
-/**
-*   该函数会根据参数, 打印异常信息.
-*
-*   该函数将会被 set_exception_handler() 注册为PHP的默认异常处理程序, 对于未处理的异常显示错误信息.
-*
-*   @param Exception $exception 未处理的异常
-*/
+if(lpMode == "default")
+{
+    /**
+     *   该函数会根据参数, 打印异常信息.
+     *
+     *   该函数将会被 set_exception_handler() 注册为PHP的默认异常处理程序, 对于未处理的异常显示错误信息.
+     *
+     *   @param Exception $exception 未处理的异常
+     */
 
-set_exception_handler(function($exception) {
-  echo "Uncaught exception: " , $exception->getMessage(), "\n";
-});
+    set_exception_handler(function(Exception $exception)
+    {
+        header("Content-Type: text/plant; charset=UTF-8");
+        echo "Uncaught exception: {$exception->getMessage()}\n";
+    });
+}
+

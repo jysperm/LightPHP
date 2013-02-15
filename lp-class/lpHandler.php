@@ -6,8 +6,13 @@
 *   @package LightPHP
 */
 
-abstract class lpHander
+abstract class lpHandler
 {
+    static protected function isPost()
+    {
+        return $_SERVER["REQUEST_METHOD"] == "POST";
+    }
+
     public function __construct()
     {
         ob_start();
@@ -19,12 +24,12 @@ abstract class lpHander
     }
 }
 
-class lpPage extends lpHander
+class lpPage extends lpHandler
 {
 
 }
 
-class lpAction extends lpHander
+class lpAction extends lpHandler
 {
 
 }

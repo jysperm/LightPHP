@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
 *   该文件包含 lpMySQLDBDrive 和 lpMySQLDBInquiryDrive 的类定义.
@@ -139,7 +139,8 @@ class lpMySQLDBDrive extends lpDBDrive
 
         if(isset($config[$this::OrderBy]))
         {
-            $orderBy = $config[$this::OrderBy];
+            $orderBy = $this->escape($config[$this::OrderBy]);
+
             $sql .=" ORDER BY `{$orderBy}` ";
 
             if(isset($config[$this::IsAsc]) && !$config[$this::IsAsc])
@@ -232,7 +233,8 @@ class lpMySQLDBDrive extends lpDBDrive
 
     static public function rsReadRow($rs)
     {
-        return mysql_fetch_assoc($rs);
+        if($rs)
+            return mysql_fetch_assoc($rs);
     }
     
     static public function rsGetNum($rs)
@@ -247,7 +249,13 @@ class lpMySQLDBDrive extends lpDBDrive
 
     static public function rsDestroy($rs)
     {
-        return mysql_free_result($rs);
+        try {
+            return @mysql_free_result($rs);
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
     }
 
     /**
@@ -333,7 +341,7 @@ class lpMySQLDBInquiryDrive extends lpDBInquiryDrive
             {
                 foreach($if as $k => $v)
                 {
-                    $this->andC([$k => $v]);
+                    $this->andIf([$k => $v]);
                 }
             }
 
@@ -376,7 +384,7 @@ class lpMySQLDBInquiryDrive extends lpDBInquiryDrive
             {
                 foreach($if as $k => $v)
                 {
-                    $this->orC([$k => $v]);
+                    $this->orIf([$k => $v]);
                 }
             }
 

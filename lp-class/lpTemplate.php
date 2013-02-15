@@ -35,7 +35,11 @@ class lpTemplate
 
     public function __construct($filename)
     {
+        global $lpApp;
         ob_start();
+
+        if(!file_exists($filename))
+            trigger_error("file not exists");
 
         $this->filename = $filename;
     }
@@ -83,7 +87,8 @@ class lpTemplate
 
         $temp=function($lpFilename, $lpContents_, $lpVars_)
         {
-            define("lpInTemplate", ture);
+            if(!defined("lpInTemplate"))
+                define("lpInTemplate", true);
 
             foreach ($lpVars_ as $key => $value) 
             {
@@ -94,6 +99,7 @@ class lpTemplate
             $lpContents = $lpContents_;
 
             $lpCode_ = file_get_contents($lpFilename);
+
             eval("?>{$lpCode_} <?php ");
         };
 

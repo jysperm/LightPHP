@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
 *   该文件包含 lpDBDrive 的类定义.

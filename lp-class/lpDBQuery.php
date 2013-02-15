@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
 *   该文件包含 lpDBQuery 的类定义.

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
 *   该文件包含了LightPHP的全部可修改的配置信息
@@ -29,6 +29,16 @@
 *   @type string
 */
 $lpCfg["LightPHP"]["TimeZone"] = "Asia/Shanghai";
+
+
+/**
+ *  运行模式
+ *
+ *  * debug 调试模式, 会开启详细的日志记录和错误提示
+ *  * default 默认模式, 会输出错误提示
+ *  * production 生产模式, 不会执行任何额外操作, 最高效地执行代码
+ */
+$lpCfg["LightPHP"]["Mode"] = "default";
 
 /**  
 *   lpSmtp 类的默认发信帐号. 
@@ -94,7 +104,7 @@ $lpCfg["lpClasssicAuth"]["SecurityCode"] = "140fd4bfdbd9a925fbf10245a58f603e541c
 
 $lpCfg["lpClassicAuth"]["GetPasswd"]["Default"] = [
     "table" => "user",
-    "user" => "user",
+    "user" => "uname",
     "passwd" => "passwd"
 ];
 
@@ -113,6 +123,16 @@ $lpCfg["lpTrackAuth"]["Default"] = [
     "token" => "token",
     "lastactivitytime" => "lastactivitytime"
 ];
+
+/*
+CREATE TABLE IF NOT EXISTS `lptrackauth` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` varchar(255) NOT NULL,
+  `token` text NOT NULL,
+  `lastactivitytime` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+*/
 
 $lpCfg["lpTrackAuth"]["CookieName"] = [
     "user" => "lp_tauth_user",

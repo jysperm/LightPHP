@@ -12,46 +12,63 @@
 *   该类提供更为高级的验证功能, 该类将会跟踪记录每一次会话, 你可以单独控制这些会话.
 */
 
-class lpTrachAuth extends lpAuthDrive
+class lpTrackAuth extends lpAuthDrive
 {
-    static public $cbHash = function($data)
+    public $cbHash;
+    public $cbDBHash;
+    public $cbGetPasswd;
+
+    public function __call($name, $args)
     {
-        return hash("sha256", $data);
-    }
-
-    static public $cbDBHash = function($user, $passwd)
-    {
-        return self::$cbHash(self::$cbHash($user) . self::$cbHash($passwd));
-    }
-
-    static public $cbGetPasswd = function($uname, $conn=null)
-    {
-        global $lpCfg;
-        $cfg = $lpCfg["lpTrackAuth"]["GetPasswd"]["Default"];
-
-        if(!$conn)
-            $conn = $lpApp::getDB();
-        $q = new lpDBQuery($conn);
-
-        return $q($cfg["table"])->where([$cfg["user"] => $uname])->top()[$cfg["passwd"]];
-    }
-
-    public static function auth($user, $passwd)
-    {
-        global $lpCfg;
-
-        if(isset($passwd["raw"]))
-            $passwd = ["db" => slef::$cbDBHash($user, $passwd["raw"])];
-
-        if(isset($passwd["db"]))
+        $vars = get_object_vars($this);
+        if(isset($vars[$name]))
         {
-            if(slef::$cbGetPasswd($user) == $passwd["db"])
+            $func = $this->$name;
+            return call_user_func_array($func, $args);
+        }
+    }
+
+    public function __construct()
+    {
+        $this->cbHash = function($data)
+        {
+            return hash("sha256", $data);
+        };
+
+        $this->cbDBHash = function($user, $passwd)
+        {
+            return $this->cbHash($this->cbHash($user) . $this->cbHash($passwd));
+        };
+
+        $this->cbGetPasswd = function($uname, $conn=null)
+        {
+            global $lpCfg, $lpApp;
+            $cfg = $lpCfg["lpTrackAuth"]["GetPasswd"]["Default"];
+
+            if(!$conn)
+                $conn = $lpApp::getDB();
+            $q = new lpDBQuery($conn);
+
+            return $q($cfg["table"])->where([$cfg["user"] => $uname])->top()[$cfg["passwd"]];
+        };
+    }
+
+    public function auth($user, $passwd)
+    {
+        global $lpCfg, $lpApp;
+
+        if(array_key_exists("raw", $passwd))
+            $passwd = ["db" => $this->cbDBHash($user, $passwd["raw"])];
+
+        if(array_key_exists("db", $passwd))
+        {
+            if($this->cbGetPasswd($user) == $passwd["db"])
                 return true;
             else
                 return false;
         }
 
-        if(isset($paaswd["token"]))
+        if(array_key_exists("token", $passwd))
         {
             $cfg = $lpCfg["lpTrackAuth"]["Default"];
 
@@ -61,28 +78,26 @@ class lpTrachAuth extends lpAuthDrive
 
             if($r)
                 return true;
-            else
-                return false;
         }
 
         return false;
     }
 
-    static private function creatToken($user)
+    public function creatToken($user)
     {
-        global $lpCfg;
+        global $lpCfg, $lpApp;
         $cfg = $lpCfg["lpTrackAuth"]["Default"];
 
         $q = new lpDBQuery($lpApp::getDB());
 
-        $token = self::$cbHash($user . mt_rand());
+        $token = $this->cbHash($user . mt_rand());
 
         $q($cfg["table"])->insert([$cfg["user"] => $user, $cfg["token"] => $token, $cfg["lastactivitytime"] => time()]);
 
         return $token;
     }
 
-    static public function login($user=null, $passwd=null)
+    public function login($user=null, $passwd=null)
     {
         global $lpCfg;
         $cookieName = $lpCfg["lpTrackAuth"]["CookieName"];
@@ -92,7 +107,7 @@ class lpTrachAuth extends lpAuthDrive
             if(!$user && isset($_COOKIE[$cookieName["user"]]))
                 $user = $_COOKIE[$cookieName["user"]];
 
-            if(!$passwd && isset($_COOKIE[$cookieName["passwd"]))
+            if(!$passwd && isset($_COOKIE[$cookieName["passwd"]]))
                 $passwd = $_COOKIE[$cookieName["passwd"]];
 
             if(!$user || !$passwd)
@@ -101,15 +116,15 @@ class lpTrachAuth extends lpAuthDrive
             $passwd = ["token" => $passwd];
         }
 
-        if(lpAuth::auth($user, $passwd))
+        if($this->auth($user, $passwd))
         {
             if(isset($passwd["raw"]))
-                $passwd = ["db" => self::$cbHash($user, $passwd["raw"])];
+                $passwd = ["db" => $this->cbHash($user, $passwd["raw"])];
 
             if(isset($passwd["db"]))
                 $passwd = ["token" => self::creatToken($user)];
 
-            self::$cbSucceed();
+            $this->cbSucceed();
 
             $expire = time() + $lpCfg["lpTrackAuth"]["Limit"];
 
@@ -125,7 +140,7 @@ class lpTrachAuth extends lpAuthDrive
         }
     }
 
-    public static function getUName()
+    static public function getUName()
     {
         global $lpCfg;
         $userName = $lpCfg["lpTrackAuth"]["CookieName"]["user"];
@@ -136,7 +151,7 @@ class lpTrachAuth extends lpAuthDrive
             return null;
     }
 
-    public static function logout()
+    static public function logout()
     {
         global $lpCfg;
         $cookieName = $lpCfg["lpTrackAuth"]["CookieName"];
@@ -145,4 +160,3 @@ class lpTrachAuth extends lpAuthDrive
         setcookie($cookieName["passwd"], null, time()-1, "/");
     }
 }
-

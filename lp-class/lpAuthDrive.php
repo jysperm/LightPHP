@@ -8,17 +8,22 @@
 
 abstract class lpAuthDrive
 {
-    static public $cbSucceed = function($user)
-    {
+    public $cbSucceed;
 
+    public function __construct()
+    {
+        $this->cbSucceed = function($user)
+        {
+
+        };
     }
     
-    static public function auth($user, $passwd)
+    public function auth($user, $passwd)
     {
 
     }
 
-    static public function login($user, $passwd)
+    public function login($user, $passwd)
     {
 
     }
