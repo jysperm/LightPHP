@@ -111,9 +111,11 @@ trait lpAppRoute
         }
     }
 
-    static public function goUrl($url)
+    static public function goUrl($url, $isExit=false)
     {
         header("Location: {$url}");
+        if($isExit)
+            exit();
     }
 }
 
