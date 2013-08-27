@@ -27,7 +27,6 @@ LightPHP具有良好的代码风格和设计风格, 以及完整的中文注释,
 * 核心PHP代码使用 LGPL 授权
 * 文档/注释/Wiki使用 CC-SA 授权
 * 测试用例/示例(Examples)放弃版权
-* LightPHP可能包含其他开源项目
 
 LightPHP积极欢迎其他开发者提交修改(Pull Request), 你也可以在论坛或者Issue中提交建议, Bug, 质疑.  
 只要你是认真的, 我们会更加认真地处理.
