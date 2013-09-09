@@ -1,5 +1,12 @@
 <?php
 
+/* 选项 -- */
+
+// 令 LightPHP 不接管错误处理
+//const lpDisableErrorHandler = false;
+
+/* -- 选项 */
+
 const lpInLightPHP = true;
 
 const lpDebug = 2;
