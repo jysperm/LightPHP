@@ -13,13 +13,6 @@ function lpLoader($name)
 
     $lpROOT = dirname(__FILE__);
 
-    $map = [
-        "lpPHPException" => "lpDebug"
-    ];
-
-    if(in_array($name, array_keys($map)))
-        $name = $map[$name];
-
     $path = "{$lpROOT}/class/{$name}.php";
     if(file_exists($path))
         require_once($path);
