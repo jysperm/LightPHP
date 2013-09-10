@@ -18,7 +18,7 @@ class lpApp
             // 运行级别
             "RunLevel" => lpDefault,
             // 最低支持的 PHP 版本
-            "RecommendedPHPVersion" => "5.4"
+            "RecommendedPHPVersion" => "5.4.0"
         ]);
 
         $c->loadFromArray($config);
