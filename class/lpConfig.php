@@ -17,7 +17,7 @@ class lpConfig implements ArrayAccess
 
     public function loadFromArray($data)
     {
-        $this->data += $data;
+        $this->data = array_merge($this->data, $data);
     }
 
     public function data()
