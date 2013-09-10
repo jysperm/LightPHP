@@ -1,0 +1,12 @@
+language: php
+php:
+  - 5.4
+  - 5.5
+
+services:
+  - mongodb
+
+before_script:
+  - mysql -e "create database IF NOT EXISTS test;" -uroot
+
+script: phpunit Test
