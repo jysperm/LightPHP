@@ -27,8 +27,8 @@ class lpApp
         date_default_timezone_set($c["TimeZone"]);
 
         // 设置运行模式
-        if(!defined("lpRunMode"))
-            define("lpRunMode", $c["RunMode"]);
+        if(!defined("lpRunLevel"))
+            define("lpRunLevel", $c["RunLevel"]);
 
         // 如果PHP版本过低, 显示警告
         if(version_compare(PHP_VERSION, $c["lpRecommendedPHPVersion"]) <= 0)
