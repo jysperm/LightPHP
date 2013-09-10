@@ -69,7 +69,7 @@ class lpApp
             switch($flag)
             {
                 case "method":
-                    if(!in_array($_SERVER['REQUEST_METHOD'], $value))
+                    if(!in_array($_SERVER["REQUEST_METHOD"], $value))
                         return;
             }
         }
