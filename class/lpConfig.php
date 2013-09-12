@@ -33,7 +33,7 @@ class lpConfig implements ArrayAccess
     /* ArrayAccess */
     public function offsetSet($offset, $value)
     {
-
+        $this->data[$offset] = $value;
     }
 
     public function offsetExists($offset)
@@ -43,7 +43,7 @@ class lpConfig implements ArrayAccess
 
     public function offsetUnset($offset)
     {
-
+        unset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
