@@ -12,6 +12,8 @@ class lpApp
     public static $matchedUrl = "";
     public static $urlParam = [];
 
+    private static $routes = [];
+
     public static function helloWorld(array $config)
     {
         $c = new lpConfig;
@@ -53,38 +55,45 @@ class lpApp
 
     public static function bind($rx, callable $func, array $flags = [])
     {
-        if(!self::$url)
-        {
-            $queryStrLen = 0;
-            if(isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"])
-                $queryStrLen = strlen($_SERVER["QUERY_STRING"]) + 1;
+        self::$routes[$rx] = [$func, $flags];
+    }
 
-            self::$url = substr($_SERVER["REQUEST_URI"], 0, strlen($_SERVER["REQUEST_URI"]) - $queryStrLen);
-            if(substr(self::$url, -1, 1) == "?")
-                self::$url = substr(self::$url, 0, strlen(self::$url) - 1);
-        }
+    public static function exec()
+    {
+        $queryStrLen = 0;
+        if(isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"])
+            $queryStrLen = strlen($_SERVER["QUERY_STRING"]) + 1;
 
-        foreach($flags as $flag => $value)
+        self::$url = substr($_SERVER["REQUEST_URI"], 0, strlen($_SERVER["REQUEST_URI"]) - $queryStrLen);
+        if(substr(self::$url, -1, 1) == "?")
+            self::$url = substr(self::$url, 0, strlen(self::$url) - 1);
+
+        foreach(self::$routes as $rx => $route)
         {
-            switch($flag)
+            list($func, $flags) = $route;
+
+            foreach($flags as $flag => $value)
             {
-                case "method":
-                    if(!in_array($_SERVER["REQUEST_METHOD"], $value))
-                        return;
+                switch($flag)
+                {
+                    case "method":
+                        if(!in_array($_SERVER["REQUEST_METHOD"], $value))
+                            continue 3;
+                }
             }
-        }
 
-        $rf = isset($flags["regex.flags"]) ? $flags["regex.flags"] : "";
-        $rs = isset($flags["regex.split"]) ? $flags["regex.split"] : "%";
+            $rf = isset($flags["regex.flags"]) ? $flags["regex.flags"] : "";
+            $rs = isset($flags["regex.split"]) ? $flags["regex.split"] : "%";
 
-        if(!$rx | preg_match("{$rs}{$rx}{$rs}{$rf}", self::$url, $result))
-        {
-            self::$matchedUrl = array_shift($result);
-            self::$urlParam = $result;
+            if(!$rx | preg_match("{$rs}{$rx}{$rs}{$rf}", self::$url, $result))
+            {
+                self::$matchedUrl = array_shift($result);
+                self::$urlParam = $result;
 
-            call_user_func_array($func, $result);
+                call_user_func_array($func, $result);
 
-            self::bye();
+                return $rx;
+            }
         }
     }
 }
