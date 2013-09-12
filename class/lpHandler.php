@@ -8,6 +8,39 @@ defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 
 abstract class lpHandler
 {
+    public static function invoke($action, $param)
+    {
+        try {
+            ob_start();
+
+            $handler = get_called_class();
+
+            if(!$action)
+                $action = "__invoke";
+
+            $reflection = new ReflectionMethod($handler, $action);
+            if(!$reflection->isPublic() || $reflection->isStatic())
+                throw new lpHandlerException("unknown action", ["handler" => $handler, "operator" => $action]);
+
+            $handler = new $handler;
+            return $reflection->invokeArgs($handler, $param);
+        }
+        catch(lpHandlerException $e)
+        {
+            static::onException($e->getMessage(), $e->getData());
+        }
+        catch(ReflectionException $e)
+        {
+            throw new lpException("action not found");
+        }
+    }
+
+    protected static function onException($message, $data)
+    {
+        echo "Exception {$message}\n";
+        print_r($data);
+    }
+
     protected function result($data)
     {
         print $data;
@@ -33,7 +66,7 @@ abstract class lpHandler
             if(!$rx || preg_match($rx, $value))
                 $result[]= $value;
             else
-                throw new lpException("missing request data", ["name" => $name, "assert" => $rx]);
+                throw new lpHandlerException("missing request data", ["name" => $name, "assert" => $rx]);
         }
         return $result;
     }
