@@ -30,9 +30,6 @@ class lpApp
 
         $c->loadFromArray($config);
 
-        // 设置时区
-        date_default_timezone_set($c["TimeZone"]);
-
         // 设置运行模式
         if(!defined("lpRunLevel"))
             define("lpRunLevel", $c["RunLevel"]);
@@ -40,6 +37,17 @@ class lpApp
         // 如果PHP版本过低, 显示警告
         if(version_compare(PHP_VERSION, $c["lpRecommendedPHPVersion"]) <= 0)
             trigger_error("Please install the newly version of PHP ({$c["RecommendedPHPVersion"]}+).");
+
+        // 设置时区
+        date_default_timezone_set($c["TimeZone"]);
+
+        if(!defined("lpDisableErrorHandling") || !lpDisableErrorHandling)
+            self::registerErrorHandling();
+    }
+
+    public static function registerErrorHandling()
+    {
+
     }
 
     public static function registerAtExit(callable $func)

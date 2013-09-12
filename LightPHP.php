@@ -3,7 +3,7 @@
 /* 选项 -- */
 
 // 令 LightPHP 不接管错误处理
-//const lpDisableErrorHandler = true;
+//const lpDisableErrorHandling = true;
 
 /* -- 选项 */
 
@@ -27,7 +27,7 @@ function lpLoader($name)
 
 spl_autoload_register("lpLoader");
 
-if(!defined("lpDisableErrorHandler") || !lpDisableErrorHandler)
+if(!defined("lpDisableErrorHandling") || !lpDisableErrorHandling)
 {
     set_error_handler(function($no, $str, $file, $line, $varList)
     {
