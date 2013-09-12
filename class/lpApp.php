@@ -13,6 +13,7 @@ class lpApp
     public static $urlParam = [];
 
     private static $routes = [];
+    private static $atExit = [];
 
     public static function helloWorld(array $config)
     {
@@ -39,6 +40,11 @@ class lpApp
         // 如果PHP版本过低, 显示警告
         if(version_compare(PHP_VERSION, $c["lpRecommendedPHPVersion"]) <= 0)
             trigger_error("Please install the newly version of PHP ({$c["RecommendedPHPVersion"]}+).");
+    }
+
+    public static function registerAtExit(callable $func)
+    {
+        self::$atExit[] = $func;
     }
 
     public static function bye()
@@ -95,5 +101,8 @@ class lpApp
                 return $rx;
             }
         }
+
+        foreach(self::$atExit as $func)
+            $func();
     }
 }
