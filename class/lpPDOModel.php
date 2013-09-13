@@ -37,7 +37,7 @@ abstract class lpPDOModel implements ArrayAccess
     }
 
     /**
-     * 获取数据形式的数据
+     * 获取数组形式的数据
      *
      * @return array|null
      */
@@ -85,22 +85,27 @@ abstract class lpPDOModel implements ArrayAccess
     const PRIMARY = "PRIMARY";
     const NOTNULL = "NOT NULL";
 
+    protected static function meta($data)
+    {
+        $default = [
+            "db" => lpFactory::get("PDO.lpPDODB"),
+            "table" => null,
+            "engine" => "MyISAM",
+            "charset" => "utf8"
+        ];
+
+        return array_merge($default, $data);
+    }
+
     /**
-     * 子类需要重写这个函数来提供元信息，目前的元信息仅有一项，即表名：
-     *
-     * ['table' => 'table_name']
+     * 子类需要重写这个函数来提供元信息
      *
      * @return array
      */
     protected static function metaData()
     {
-        return null;
-    }
 
-    /**
-     * @var int 默认结果抓取方式
-     */
-    protected static $defaultDataType = PDO::FETCH_ASSOC;
+    }
 
     /**
      * 获取数据库连接，子类可以重写该函数提供不同的数据库连接
@@ -109,24 +114,35 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function getDB()
     {
-        return lpFactory::get("lpPDODB");
+        return self::metaData()["db"];
     }
 
     // 数据库操作部分
 
     /**
      * 检索数据
-     * @param array $if      条件: [<字段1> => <值1>, <字段1> => <值2>]
-     * @param array $options 选项: ["sort" => [<排序字段>, <是否为正序>],
-     *                           或者 "sort" => [[<排序字段>, <是否为正序>], [<排序字段>, <是否为正序>], ...],
-     *                               "select" => [<要检索的字段>],
-     *                               "skip" => <跳过条数>,
-     *                               "limit" => <检索条数>,
-     *                               "mode" => <抓取方式>,
-     *                               "count" => <是否只获取结果数>]
+     *
+     * @param array $if 检索条件 [
+     *     <字段> => <值>,
+     *     q("OR") => [<字段> => <值>, ...],
+     *     q(">") => [<字段> => <值>],
+     *     "原始 SQL", ...
+     * ]
+     *
+     * @param array $options 选项 [
+     *     "sort" => [<排序字段> => <是否为正序>, <排序字段> => <是否为正序>],
+     *     "select" => [<要检索的字段>],
+     *     "skip" => <跳过条数>,
+     *     "limit" => <检索条数>
+     *     "count" => <是否只获取结果数>
+     * ]
+     *
+     * ## q() 操作符列表
+     * * OR
+     * * >, >=, <, <=
+     * * LIKE, %LIKE%
      *
      * @return PDOStatement
-     * @throws Exception
      */
     public static function select($if = [], $options = [])
     {
@@ -136,7 +152,6 @@ abstract class lpPDOModel implements ArrayAccess
         $where = static::buildWhere($if);
         $orderBy = "";
         $sqlLimit = "";
-        $mode = self::$defaultDataType;
 
         foreach($options as $option => $value)
         {
@@ -147,21 +162,15 @@ abstract class lpPDOModel implements ArrayAccess
                         $select = "COUNT(*)";
                     break;
                 case "sort":
-                    if (is_array($value[0]))
+                    foreach($value as $k => $v)
                     {
-                        $orderBy = " ORDER BY " . implode(", ", array_map(function($order){
-                                return "`{$order[0]}`" . ($order[1] ? " ASC" : " DESC");
-                            }, $value));
+                        if(!$orderBy)
+                            $orderBy = " ORDER BY ";
+                        else
+                            $orderBy .= ", ";
+
+                        $orderBy .= "`{$k}` " . ($v ? "ASC" : "DESC");
                     }
-                    else
-                    {
-                        $orderByFiled = $value[0];
-                        $orderBy = " ORDER BY `{$orderByFiled}`";
-                        $orderBy .= $value[1] ? " ASC" : " DESC";
-                    }
-                    break;
-                case "mode":
-                    $mode = $value;
                     break;
                 case "select":
                     foreach($value as &$i)
@@ -182,7 +191,7 @@ abstract class lpPDOModel implements ArrayAccess
         $sql = "SELECT {$select} FROM `{$table}` {$where} {$orderBy} {$sqlLimit}";
 
         $result = static::getDB()->query($sql);
-        $result->setFetchMode($mode);
+        $result->setFetchMode(PDO::FETCH_ASSOC);
         return $result;
     }
 
@@ -197,8 +206,6 @@ abstract class lpPDOModel implements ArrayAccess
     {
         $options = array_merge($options, ["limit" => 1]);
         $data = static::select($if, $options)->fetch();
-
-
 
         return $data ? static::jsonDecode($data) : null;
     }
