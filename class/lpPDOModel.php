@@ -7,7 +7,7 @@
  * * 静态成员部分：子类需要重写 metaData() 来向该类提供表名等元信息
  * * 数据库操作部分：无需 SQL 的 CRUD.
  */
-abstract class lgPDOModel implements ArrayAccess
+abstract class lpPDOModel implements ArrayAccess
 {
     // 实例化部分
 
@@ -19,7 +19,7 @@ abstract class lgPDOModel implements ArrayAccess
      *
      * @param string $k
      * @param mixed $v
-     * @return lgPDOModel
+     * @return lpPDOModel
      */
     public static function by($k, $v)
     {
