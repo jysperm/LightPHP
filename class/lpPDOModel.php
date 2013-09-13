@@ -225,6 +225,14 @@ abstract class lpPDOModel implements ArrayAccess
         return $rs;
     }
 
+    public static function selectList($k, $if = [], $options = [])
+    {
+        $rs = static::select($if, $options)->fetchAll();
+        foreach($rs as &$v)
+            $v = static::jsonDecode($v)[$k];
+        return $rs;
+    }
+
     /**
      * 获取符合条件的行数
      * @param array $if
