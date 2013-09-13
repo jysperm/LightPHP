@@ -124,8 +124,8 @@ abstract class lpPDOModel implements ArrayAccess
      *
      * @param array $if 检索条件 [
      *     <字段> => <值>,
-     *     q("OR") => [<字段> => <值>, ...],
-     *     q(">") => [<字段> => <值>],
+     *     '$OR' => [<字段> => <值>, ...],
+     *     '$LT' => [<字段> => <值>],
      *     "原始 SQL", ...
      * ]
      *
@@ -137,9 +137,9 @@ abstract class lpPDOModel implements ArrayAccess
      *     "count" => <是否只获取结果数>
      * ]
      *
-     * ## q() 操作符列表
+     * ## 操作符列表
      * * OR
-     * * >, >=, <, <=
+     * * LT, LTE, GT, GTE
      * * LIKE, %LIKE%
      *
      * @return PDOStatement
@@ -198,7 +198,7 @@ abstract class lpPDOModel implements ArrayAccess
     /**
      * 获取符合条件的第一条数据
      * @param array $if     条件
-     * @param array $options 额外参数
+     * @param array $options 选项
      *
      * @return array|null  成功返回数组, 失败返回null
      */
@@ -213,13 +213,13 @@ abstract class lpPDOModel implements ArrayAccess
     /**
      * 获取所有符合条件的记录为二维数组
      * @param array $if     条件
-     * @param array $config 额外参数
+     * @param array $options 选项
      *
      * @return array
      */
-    public static function selectArray($if = [], $config = [])
+    public static function selectArray($if = [], $options = [])
     {
-        $rs = static::select($if, $config)->fetchAll();
+        $rs = static::select($if, $options)->fetchAll();
         foreach($rs as &$v)
             $v = static::jsonDecode($v);
         return $rs;
@@ -228,14 +228,14 @@ abstract class lpPDOModel implements ArrayAccess
     /**
      * 获取符合条件的行数
      * @param array $if
-     * @param array $config
+     * @param array $options
      *
      * @return int
      */
-    public static function count($if = [], $config = [])
+    public static function count($if = [], $options = [])
     {
-        $config = array_merge($config, ["count" => true]);
-        return static::select($if, $config)->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
+        $options = array_merge($options, ["count" => true]);
+        return static::select($if, $options)->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
     }
 
     /**
