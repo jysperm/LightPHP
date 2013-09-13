@@ -1,49 +1,53 @@
 <?php
 
-defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
-
 /**
- * Class lpPDOModel PDO Model
- * 该类提供了简单的PDO数据源的访问,
- * 使用时需要继承该类并重写 metaData() 函数, 返回有关数据表的信息.
+ * 该类提供了简单的PDO数据源的访问，大概分三个部分：
+ *
+ * * 实例化部分：每个实例表示相应数据表中的一个条目
+ * * 静态成员部分：子类需要重写 metaData() 来向该类提供表名等元信息
+ * * 数据库操作部分：无需 SQL 的 CRUD.
  */
-
-abstract class lpPDOModel implements ArrayAccess
+abstract class lgPDOModel implements ArrayAccess
 {
-    protected $id = null;
-    protected $data = [];
+    // 实例化部分
 
-    public function __construct($id)
+    protected $data = [];
+    protected $id = null;
+
+    /**
+     * 根据指定的列来构造实例
+     *
+     * @param string $k
+     * @param mixed $v
+     * @return lgPDOModel
+     */
+    public static function by($k, $v)
     {
-        if($id)
-        {
-            $this->id = $id;
-            $this->data = static::find([static::metaData()[self::PRIMARY] => $id]);
-        }
+        $i = new static();
+        $i->data = static::find([$k => $v]);
+        $i->id = isset($i->data["id"]) ? $i->data["id"] : null;
+        return $i;
     }
 
+    public static function byID($id)
+    {
+        if(!$id)
+            return new static();
+        return static::by("id", $id);
+    }
+
+    /**
+     * 获取数据形式的数据
+     *
+     * @return array|null
+     */
     public function data()
     {
         return $this->data;
     }
 
-    public function isNull()
-    {
-        if($this->data)
-            return false;
-        return true;
-    }
+    // implements ArrayAccess
 
-    static public function by($k, $v)
-    {
-        /** @var lpPDOModel $i */
-        $i = new static(null);
-        $i->data = static::find([$k => $v]);
-        $i->id = $i->data[static::metaData()[self::PRIMARY]];
-        return $i;
-    }
-
-    /* ArrayAccess */
     public function offsetSet($offset, $value)
     {
         if(is_null($offset))
@@ -67,10 +71,7 @@ abstract class lpPDOModel implements ArrayAccess
         return isset($this->data[$offset]) ? $this->data[$offset] : null;
     }
 
-    /**
-     * @var int 默认结果抓取方式
-     */
-    static protected $defaultDataType = PDO::FETCH_ASSOC;
+    // 静态成员部分
 
     /* 数据类型 */
     const INT = "INT";
@@ -84,69 +85,122 @@ abstract class lpPDOModel implements ArrayAccess
     const PRIMARY = "PRIMARY";
     const NOTNULL = "NOT NULL";
 
-    static protected function metaData()
+    /**
+     * 子类需要重写这个函数来提供元信息，目前的元信息仅有一项，即表名：
+     *
+     * ['table' => 'table_name']
+     *
+     * @return array
+     */
+    protected static function metaData()
     {
         return null;
     }
 
     /**
+     * @var int 默认结果抓取方式
+     */
+    protected static $defaultDataType = PDO::FETCH_ASSOC;
+
+    /**
+     * 获取数据库连接，子类可以重写该函数提供不同的数据库连接
+     *
+     * @return PDO
+     */
+    public static function getDB()
+    {
+        return lpFactory::get("lpPDODB");
+    }
+
+    // 数据库操作部分
+
+    /**
      * 检索数据
-     * @param array $if     条件: [<字段1> => <值1>, <字段1> => <值2>]
-     * @param array $config 额外参数: ["sort" => [<排序字段>, <是否为正序>], "skip" => <跳过条数>, "limit" => <检索条数>, "mode" => <抓取方式>, "count" => <只获取结果数>]
+     * @param array $if      条件: [<字段1> => <值1>, <字段1> => <值2>]
+     * @param array $options 选项: ["sort" => [<排序字段>, <是否为正序>],
+     *                           或者 "sort" => [[<排序字段>, <是否为正序>], [<排序字段>, <是否为正序>], ...],
+     *                               "select" => [<要检索的字段>],
+     *                               "skip" => <跳过条数>,
+     *                               "limit" => <检索条数>,
+     *                               "mode" => <抓取方式>,
+     *                               "count" => <是否只获取结果数>]
      *
      * @return PDOStatement
      * @throws Exception
      */
-    static public function select($if = [], $config = [])
+    public static function select($if = [], $options = [])
     {
-        $meta = static::metaData();
+        $table = static::metaData()["table"];
 
+        $select = "*";
         $where = static::buildWhere($if);
-        if(isset($config["count"]) && $config["count"])
-            $sql = "SELECT COUNT(*) FROM `{$meta['table']}` {$where}";
-        else
-            $sql = "SELECT * FROM `{$meta['table']}` {$where}";
+        $orderBy = "";
+        $sqlLimit = "";
+        $mode = self::$defaultDataType;
 
-        if(isset($config["sort"][0]) && $config["sort"][0]) {
-            $orderBy = $config["sort"][0];
-
-            if(!array_key_exists($orderBy, $meta["struct"]))
-                throw new Exception("lpPDOModel: Field name is not in the struct");
-
-            $sql .= " ORDER BY `{$orderBy}`";
-
-            if(isset($config["sort"][1]))
-                $sql .= $config["sort"][1] ? " ASC" : " DESC";
+        foreach($options as $option => $value)
+        {
+            switch($option)
+            {
+                case "count":
+                    if($value)
+                        $select = "COUNT(*)";
+                    break;
+                case "sort":
+                    if (is_array($value[0]))
+                    {
+                        $orderBy = " ORDER BY " . implode(", ", array_map(function($order){
+                                return "`{$order[0]}`" . ($order[1] ? " ASC" : " DESC");
+                            }, $value));
+                    }
+                    else
+                    {
+                        $orderByFiled = $value[0];
+                        $orderBy = " ORDER BY `{$orderByFiled}`";
+                        $orderBy .= $value[1] ? " ASC" : " DESC";
+                    }
+                    break;
+                case "mode":
+                    $mode = $value;
+                    break;
+                case "select":
+                    foreach($value as &$i)
+                        $i = "`{$i}`";
+                    $select = implode(", ", $value);
+                    break;
+            }
         }
 
-        $skip = isset($config["skip"]) ? $config["skip"] : -1;
-        $limit = isset($config["limit"]) ? $config["limit"] : -1;
+        $skip = isset($options["skip"]) ? $options["skip"] : -1;
+        $limit = isset($options["limit"]) ? $options["limit"] : -1;
 
         if($limit > -1 && $skip > -1)
-            $sql .= " LIMIT {$skip}, {$limit}";
-        if($limit > -1 && !($skip > -1))
-            $sql .= " LIMIT {$limit}";
+            $sqlLimit = " LIMIT {$skip}, {$limit}";
+        else if($limit > -1 && !($skip > -1))
+            $sqlLimit = " LIMIT {$limit}";
 
-        $rs = static::getDB()->query($sql);
-        $rs->setFetchMode(isset($config["mode"]) ? : static::$defaultDataType);
-        return $rs;
+        $sql = "SELECT {$select} FROM `{$table}` {$where} {$orderBy} {$sqlLimit}";
+
+        $result = static::getDB()->query($sql);
+        $result->setFetchMode($mode);
+        return $result;
     }
 
     /**
      * 获取符合条件的第一条数据
      * @param array $if     条件
-     * @param array $config 额外参数
+     * @param array $options 额外参数
      *
      * @return array|null  成功返回数组, 失败返回null
      */
-    static public function find($if = [], $config = [])
+    public static function find($if = [], $options = [])
     {
-        $config = array_merge($config, ["limit" => 1]);
-        $data = static::select($if, $config)->fetch();
-        if($data)
-            return static::jsonDecode($data);
-        else
-            return null;
+        $options = array_merge($options, ["limit" => 1]);
+        $data = static::select($if, $options)->fetch();
+
+
+
+        return $data ? static::jsonDecode($data) : null;
     }
 
     /**
@@ -156,7 +210,7 @@ abstract class lpPDOModel implements ArrayAccess
      *
      * @return array
      */
-    static public function selectArray($if = [], $config = [])
+    public static function selectArray($if = [], $config = [])
     {
         $rs = static::select($if, $config)->fetchAll();
         foreach($rs as &$v)
@@ -171,7 +225,7 @@ abstract class lpPDOModel implements ArrayAccess
      *
      * @return int
      */
-    static public function count($if = [], $config = [])
+    public static function count($if = [], $config = [])
     {
         $config = array_merge($config, ["count" => true]);
         return static::select($if, $config)->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
@@ -183,9 +237,9 @@ abstract class lpPDOModel implements ArrayAccess
      *
      * @return string   Last Insert ID
      */
-    static public function insert($data)
+    public static function insert($data)
     {
-        $meta = static::metaData();
+        $table = static::metaData()["table"];
         $db = static::getDB();
 
         $data = static::jsonEncode($data);
@@ -204,7 +258,7 @@ abstract class lpPDOModel implements ArrayAccess
         $columns = implode(", ", $columns);
         $values = implode(", ", $values);
 
-        $sql = "INSERT INTO `{$meta['table']}` ({$columns}) VALUES ({$values});";
+        $sql = "INSERT INTO `{$table}` ({$columns}) VALUES ({$values});";
 
         $db->query($sql);
         return $db->lastInsertId();
@@ -215,17 +269,18 @@ abstract class lpPDOModel implements ArrayAccess
      * @param $if   条件
      * @param $data 新数据
      *
-     * @return int  被更新行数
+     * @return int  被更新的行数
      */
-    static public function update($if, $data)
+    public static function update($if, $data)
     {
+        $table = static::metaData()["table"];
         $db = static::getDB();
-        $meta = static::metaData();
 
         $data = static::jsonEncode($data);
 
         $sqlSet = [];
-        foreach($data as $k => $v) {
+        foreach($data as $k => $v)
+        {
             $v = $db->quote($v);
             $sqlSet[] = "`{$k}` = {$v}";
         }
@@ -233,7 +288,7 @@ abstract class lpPDOModel implements ArrayAccess
         $sqlSet = implode(", ", $sqlSet);
         $where = static::buildWhere($if);
 
-        $sql = "UPDATE `{$meta['table']}` SET {$sqlSet} {$where}";
+        $sql = "UPDATE `{$table}` SET {$sqlSet} {$where}";
 
         return $db->exec($sql);
     }
@@ -242,14 +297,14 @@ abstract class lpPDOModel implements ArrayAccess
      * 删除数据
      * @param $if   条件
      *
-     * @return int  删除行数
+     * @return int  被删除的行数
      */
-    static public function delete($if)
+    public static function delete($if)
     {
-        $meta = static::metaData();
+        $table = static::metaData()["table"];
 
         $where = static::buildWhere($if);
-        $sql = "DELETE FROM `{$meta['table']}` {$where}";
+        $sql = "DELETE FROM `{$table}` {$where}";
 
         return static::getDB()->exec($sql);
     }
@@ -257,7 +312,7 @@ abstract class lpPDOModel implements ArrayAccess
     /**
      *  安装数据表
      */
-    static public function install()
+    public static function install()
     {
         $meta = static::metaData();
         $db = static::getDB();
@@ -294,21 +349,27 @@ abstract class lpPDOModel implements ArrayAccess
         $db->exec($sql);
     }
 
-    /**
-     * @return PDO
-     */
-    static protected function getDB()
+    public static function jsonEncode($data)
     {
-        return static::metaData()["db"];
+        foreach(static::metaData()["struct"] as $k => $v)
+            if($v["type"] == self::JSON && array_key_exists($k, $data))
+                $data[$k] = json_encode($data[$k]);
+        return $data;
     }
 
-    static protected function buildWhere($if)
+    public static function jsonDecode($data)
+    {
+        foreach(static::metaData()["struct"] as $k => $v)
+            if($v["type"] == self::JSON && array_key_exists($k, $data))
+                $data[$k] = json_decode($data[$k], true);
+        return $data;
+    }
+
+    protected static function buildWhere($if)
     {
         $where = "";
-        foreach($if as $k => $v) {
-            if(!array_key_exists($k, static::metaData()["struct"]))
-                throw new Exception("lpPDOModel: Field name is not in the struct");
-
+        foreach($if as $k => $v)
+        {
             $v = static::getDB()->quote($v);
 
             if(!$where)
@@ -321,25 +382,5 @@ abstract class lpPDOModel implements ArrayAccess
             $where = "WHERE {$where}";
 
         return $where;
-    }
-
-    static public function jsonEncode($data)
-    {
-        foreach(static::metaData()["struct"] as $k => $v)
-        {
-            if($v["type"] == self::JSON && array_key_exists($k, $data))
-                $data[$k] = json_encode($data[$k]);
-        }
-        return $data;
-    }
-
-    static public function jsonDecode($data)
-    {
-        foreach(static::metaData()["struct"] as $k => $v)
-        {
-            if($v["type"] == self::JSON && array_key_exists($k, $data))
-                $data[$k] = json_decode($data[$k], true);
-        }
-        return $data;
     }
 }
