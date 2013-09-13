@@ -36,13 +36,20 @@ class lpFactory
     {
         if(!isset(self::$data[$name][$tag]))
         {
-            $creator = self::$creator[$name];
-            self::$data[$name][$tag] = $creator($tag);
+            if(isset(self::$creator[$name]))
+            {
+                $creator = self::$creator[$name];
+                self::$data[$name][$tag] = $creator($tag);
+            }
+            else
+            {
+                self::$data[$name][$tag] = new $name;
+            }
         }
 
         return self::$data[$name][$tag];
     }
-
+    
     /**
      * 强制修改一个对象的值
      * 慎用
