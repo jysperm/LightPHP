@@ -42,12 +42,7 @@ class lpApp
         date_default_timezone_set($c["TimeZone"]);
 
         if(!defined("lpDisableErrorHandling") || !lpDisableErrorHandling)
-            self::registerErrorHandling();
-    }
-
-    public static function registerErrorHandling()
-    {
-
+            lpDebug::registerErrorHandling();
     }
 
     public static function registerAtExit(callable $func)
