@@ -342,7 +342,6 @@ abstract class lpPDOModel implements ArrayAccess
         {
             $type = "";
 
-
             foreach($data as $k => $v)
             {
                 if(is_int($k))
