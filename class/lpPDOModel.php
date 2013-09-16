@@ -120,7 +120,7 @@ abstract class lpPDOModel implements ArrayAccess
 
     // 数据库操作部分
 
-    const queryEscape = '$';
+    const QueryEscape = '$';
 
     /**
      * 检索数据
@@ -132,6 +132,15 @@ abstract class lpPDOModel implements ArrayAccess
      *     "原始 SQL", ...
      * ]
      *
+     * ## 操作符列表
+     * * OR
+     * * LT, LTE, GT, GTE, NE
+     * * LIKE, %LIKE%
+     *
+     * $OR 操作符需提供一个数组，数组中的条件将会被以 OR 连接。
+     * $LT, $LTE, $GT, $GTE, $NE 需提供一个具有单一元素的数组。
+     * $LIKE, $%LIKE% 需提供一个字符串。
+     *
      * @param array $options 选项 [
      *     "sort" => [<排序字段> => <是否为正序>, <排序字段> => <是否为正序>],
      *     "select" => [<要检索的字段>],
@@ -139,11 +148,6 @@ abstract class lpPDOModel implements ArrayAccess
      *     "limit" => <检索条数>
      *     "count" => <是否只获取结果数>
      * ]
-     *
-     * ## 操作符列表
-     * * OR
-     * * LT, LTE, GT, GTE
-     * * LIKE, %LIKE%
      *
      * @return PDOStatement
      */
@@ -191,7 +195,7 @@ abstract class lpPDOModel implements ArrayAccess
         else if($limit > -1 && !($skip > -1))
             $sqlLimit = " LIMIT {$limit}";
 
-        $sql = "SELECT {$select} FROM `{$table}` {$where} {$orderBy} {$sqlLimit}";
+        $sql = "SELECT {$select} FROM `{$table}` WHERE {$where} {$orderBy} {$sqlLimit}";
 
         $result = static::getDB()->query($sql);
         $result->setFetchMode(PDO::FETCH_ASSOC);
@@ -306,7 +310,7 @@ abstract class lpPDOModel implements ArrayAccess
         $sqlSet = implode(", ", $sqlSet);
         $where = static::buildWhere($if);
 
-        $sql = "UPDATE `{$table}` SET {$sqlSet} {$where}";
+        $sql = "UPDATE `{$table}` SET {$sqlSet} WHERE {$where}";
 
         return $db->exec($sql);
     }
@@ -322,7 +326,7 @@ abstract class lpPDOModel implements ArrayAccess
         $table = static::metaData()["table"];
 
         $where = static::buildWhere($if);
-        $sql = "DELETE FROM `{$table}` {$where}";
+        $sql = "DELETE FROM `{$table}` WHERE {$where}";
 
         return static::getDB()->exec($sql);
     }
@@ -410,22 +414,59 @@ abstract class lpPDOModel implements ArrayAccess
         return $data;
     }
 
-    protected static function buildWhere($if)
+    protected static function buildWhere($if, $isAndOrOr = true)
     {
-        $where = "";
+        $where = [];
+
         foreach($if as $k => $v)
         {
-            $v = static::getDB()->quote($v);
+            if(substr($k, 0, 1) == self::QueryEscape)
+            {
+                $op = strtolower(substr($k, 1));
 
-            if(!$where)
-                $where = "(`{$k}` = {$v})";
+                switch($op)
+                {
+                    case "or":
+                        $where[] = self::buildWhere($if, false);
+                        break;
+                    case "lt":
+                    case "lte":
+                    case "gt":
+                    case "gte":
+                    case "ne":
+                    case "like":
+                        $opMap = [
+                            "lt" => "<",
+                            "lte" => "<=",
+                            "gt" => ">",
+                            "gte" => ">=",
+                            "ne" => "<>",
+                            "like" => "LIKE"
+                        ];
+
+                        $v = self::getDB()->quote($v);
+                        $where[] = "(`{$k}` {$opMap[$op]} {$v})";
+                        break;
+                    case "%like%":
+                        $v = self::getDB()->quote("%{$v}%");
+                        $where[] = "(`{$k}` LIKE {$v})";
+                        break;
+
+                }
+            }
+            else if(is_int($k))
+            {
+                $where[] = $v;
+            }
             else
-                $where = "{$where} AND (`{$k}` = {$v})";
+            {
+                $where[] = "(`{$k}` = {$v})";
+            }
         }
 
-        if($where)
-            $where = "WHERE {$where}";
+        $connector = $isAndOrOr ? " AND " : " OR ";
+        $where = implode($connector, $where);
 
-        return $where;
+        return "($where)";
     }
 }
