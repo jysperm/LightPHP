@@ -76,14 +76,15 @@ abstract class lpPDOModel implements ArrayAccess
     /* 数据类型 */
     const INT = "INT";
     const UINT = "INT UNSIGNED";
-    const AI = "AUTO_INCREMENT";
     const VARCHAR = "VARCHAR";
     const TEXT = "TEXT";
-    const JSON = "JSON";
 
     /* 数据修饰 */
     const PRIMARY = "PRIMARY";
     const NOTNULL = "NOT NULL";
+    const DEFALT = "DEFAULT";
+    const JSON = "JSON";
+    const AI = "AUTO_INCREMENT";
 
     protected static function meta($data)
     {
@@ -118,6 +119,8 @@ abstract class lpPDOModel implements ArrayAccess
     }
 
     // 数据库操作部分
+
+    const queryEscape = '$';
 
     /**
      * 检索数据
@@ -333,33 +336,61 @@ abstract class lpPDOModel implements ArrayAccess
         $db = static::getDB();
 
         $sql = "CREATE TABLE IF NOT EXISTS `{$meta['table']}` (";
+        $primary = [];
 
-        foreach($meta["struct"] as $k => $v)
+        foreach($meta["struct"] as $name => $data)
         {
-            switch($v["type"])
+            $type = "";
+
+
+            foreach($data as $k => $v)
             {
-                case self::AI:
-                    $type = self::INT . " " . self::AI;
-                    break;
-                case self::JSON:
-                    $type = self::TEXT;
-                    break;
-                case self::VARCHAR:
-                    $type = self::VARCHAR . "({$v['length']})";
-                    break;
-                default:
-                    $type = $v["type"];
+                if(is_int($k))
+                {
+                    $k = $v;
+                    $v = null;
+                }
+
+                switch($k)
+                {
+                    case self::INT:
+                        $type = self::INT;
+                        break;
+                    case self::UINT:
+                        $type = self::UINT;
+                        break;
+                    case self::TEXT:
+                        $type = self::TEXT;
+                        break;
+                    case self::VARCHAR:
+                        $type = self::VARCHAR . "({$v})";
+                        break;
+                    case self::PRIMARY:
+                        $primary[] = $name;
+                        break;
+                }
             }
-            if(isset($v[self::NOTNULL]) && $v[self::NOTNULL])
-                $type .= " " . self::NOTNULL;
 
-            if(isset($v["default"]))
-                $type .= " DEFAULT " . $db->quote($v["default"]);
+            $suffix = in_array(self::NOTNULL, $data) ? "NOT NULL" : "NULL";
+            if(in_array(self::AI, $data))
+                $suffix .= "AUTO_INCREMENT";
 
-            $sql .= "`{$k}` {$type},";
+            if(isset($data[self::DEFALT]))
+                $type .= " DEFAULT " . $db->quote($data[self::DEFALT]);
+
+            $sql .= "`{$name}` {$type} {$suffix},";
         }
 
-        $sql .= " PRIMARY KEY (`{$meta['PRIMARY']}`) ) ENGINE={$meta['engine']} CHARSET={$meta['charset']};";
+        $sqlPrimary = "";
+        foreach($primary as $i)
+        {
+            if($sqlPrimary)
+                $sql .= ", PRIMARY KEY (`{$i}`)";
+            else
+                $sql .= " PRIMARY KEY (`{$i}`)";
+        }
+
+        $sql .= " {$sqlPrimary} ) ENGINE={$meta['engine']} CHARSET={$meta['charset']};";
 
         $db->exec($sql);
     }
@@ -367,7 +398,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function jsonEncode($data)
     {
         foreach(static::metaData()["struct"] as $k => $v)
-            if($v["type"] == self::JSON && array_key_exists($k, $data))
+            if(in_array(self::JSON, $v) && array_key_exists($k, $data))
                 $data[$k] = json_encode($data[$k]);
         return $data;
     }
@@ -375,7 +406,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function jsonDecode($data)
     {
         foreach(static::metaData()["struct"] as $k => $v)
-            if($v["type"] == self::JSON && array_key_exists($k, $data))
+            if(in_array(self::JSON, $v) && array_key_exists($k, $data))
                 $data[$k] = json_decode($data[$k], true);
         return $data;
     }
