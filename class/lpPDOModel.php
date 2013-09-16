@@ -118,6 +118,13 @@ abstract class lpPDOModel implements ArrayAccess
         return self::metaData()["db"];
     }
 
+    public static function query($query, array $params)
+    {
+        foreach($params as $index => $value)
+            $query = str_replace("{{$index}}", $value, $query);
+        return $query;
+    }
+
     // 数据库操作部分
 
     const QueryEscape = '$';
