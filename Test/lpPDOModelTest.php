@@ -83,6 +83,7 @@ class lpPDOModelTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(["orzfly"], UserModel::selectValueList("uname", ['$%LIKE%' => ["email" => "fly"]]));
         $this->assertEquals(["orzfly"], UserModel::selectValueList("uname", ['$LIKE' => ["email" => "i%"]]));
         $this->assertEquals(["faceair"], UserModel::selectValueList("uname", ['$REGEXP' => ["email" => "^f"]]));
+        $this->assertEquals(["orzfly", "faceair"], UserModel::selectValueList("uname", ["`signup_at` BETWEEN '10000' AND '20000'"]));
 
         // 查询选项
         $this->assertEquals(["orzfly", "faceair", "jySperm"], UserModel::selectValueList("uname", [], ["sort" => ["signup_at", "uname" => false]]));
