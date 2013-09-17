@@ -289,8 +289,6 @@ abstract class lpPDOModel implements ArrayAccess
 
         $sql = "SELECT {$select} FROM `{$table}` WHERE {$where} {$orderBy} {$sqlLimit}";
 
-        print "{$sql}\n";
-
         $result = $db->query($sql);
         if(!$result)
             throw new lpSQLException($sql, $db->errorInfo());
