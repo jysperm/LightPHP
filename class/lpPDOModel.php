@@ -131,7 +131,7 @@ abstract class lpPDOModel implements ArrayAccess
     protected static function meta(array $data)
     {
         $default = [
-            "db" => lpFactory::get("PDO.lpPDODB"),
+            "db" => lpFactory::get("PDO.LightPHP"),
             "primary" => "id",
             "engine" => "MyISAM",
             "charset" => "utf8"
@@ -168,7 +168,7 @@ abstract class lpPDOModel implements ArrayAccess
      */
     protected static function metaData()
     {
-
+        return self::meta([]);
     }
 
     /**
@@ -193,7 +193,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function query($query, array $params)
     {
         foreach($params as $index => $value)
-            $query = str_replace("{{$index}}", self::getDB()->quote($value), $query);
+            $query = str_replace("{{$index}}", substr(self::getDB()->quote($value), 1, -1), $query);
         return $query;
     }
 
@@ -492,7 +492,7 @@ abstract class lpPDOModel implements ArrayAccess
                 }
             }
 
-            $suffix = in_array(self::NOTNULL, $data) ? "NOT NULL" : "NULL";
+            $suffix = in_array(self::NOTNULL, $data) ? "NOT NULL " : "NULL ";
             if(in_array(self::AI, $data))
                 $suffix .= self::AI;
 
@@ -502,7 +502,7 @@ abstract class lpPDOModel implements ArrayAccess
             $sql .= "`{$name}` {$type} {$suffix},";
         }
 
-        $sql .= " PRIMARY KEY (`{$meta["primary"]}`) ) ENGINE={$meta['engine']} CHARSET={$meta['charset']};";
+        $sql .= " PRIMARY KEY (`{$meta["primary"]}`) ) ENGINE={$meta['engine']} CHARSET={$meta['charset']}";
 
         $db->exec($sql);
     }
