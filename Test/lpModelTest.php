@@ -21,18 +21,18 @@ class UserModel extends lpPDOModel
     }
 }
 
-class lpPDOModelTest extends PHPUnit_Framework_TestCase
+class lpModelTest extends PHPUnit_Framework_TestCase
 {
     public function test()
     {
-        $funcRunTest = function($db) {
+        $funcRunTest = function($db, callable $dropDB) {
             // 注册数据库连接对象
             lpFactory::register("PDO.LightPHP", function() use($db) {
                 return $db;
             });
 
             // 删除旧的数据表
-            lpPDOModel::getDB()->exec(lpPDOModel::query("DROP TABLE `{0}`", ["user"]));
+            $dropDB();
 
             // 创建数据表
             UserModel::install();
@@ -97,6 +97,8 @@ class lpPDOModelTest extends PHPUnit_Framework_TestCase
             $this->assertEquals(["jySperm", "orzfly"], UserModel::selectValueList("uname", [], ["limit" => 2]));
         };
 
-        $funcRunTest(new PDO("mysql:host=localhost;dbname=test", "test", "passwd"));
+        $funcRunTest(new PDO("mysql:host=localhost;dbname=test", "test", "passwd"), function() {
+            lpPDOModel::getDB()->exec(lpPDOModel::query("DROP TABLE `{0}`", ["user"]));
+        });
     }
 }
