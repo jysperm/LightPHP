@@ -9,6 +9,6 @@ services:
 before_script:
   - mysql -e "create database IF NOT EXISTS test;"
   - mysql -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'passwd';"
-  - mysql -e "GRANT ALL PRIVILEGES ON  `test` . * TO  'test'@'localhost';"
+  - mysql -e "GRANT ALL PRIVILEGES ON  `test`.* TO  'test'@'localhost';"
 
 script: phpunit Test
