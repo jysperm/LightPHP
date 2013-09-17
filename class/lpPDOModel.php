@@ -34,7 +34,7 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function by($k, $v)
     {
-        $primary = self::metaData()["primary"];
+        $primary = static::metaData()["primary"];
 
         /** @var lpPDOModel $i */
         $i = new static();
@@ -53,7 +53,7 @@ abstract class lpPDOModel implements ArrayAccess
     {
         if(!$id)
             return new static();
-        return static::by("id", $id);
+        return static::by(static::metaData()["primary"], $id);
     }
 
     /**
@@ -180,7 +180,7 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function getDB()
     {
-        return self::metaData()["db"];
+        return static::metaData()["db"];
     }
 
     /**
@@ -205,7 +205,7 @@ abstract class lpPDOModel implements ArrayAccess
     const QueryEscape = '$';
 
     /**
-     * 检索数据
+     * 查询数据
      *
      * @param array $if 检索条件 [
      *     <字段> => <值>,
@@ -217,11 +217,15 @@ abstract class lpPDOModel implements ArrayAccess
      * ## 操作符列表
      * * OR
      * * LT, LTE, GT, GTE, NE
-     * * LIKE, %LIKE%
+     * * LIKE, %LIKE%, REGEXP
      *
-     * $OR 操作符需提供一个数组，数组中的条件将会被以 OR 连接。
+     * $OR 操作符需提供一个数组，数组中的条件将会被以 OR 连接，如果需要用 OR 查询几个字段，可以使用这样的语法：
+     *
+     *     ['$OR' => [["uid" => 2], ["uid" => 3]]]
+     *
      * $LT, $LTE, $GT, $GTE, $NE 需提供一个具有单一元素的数组。
-     * $LIKE, $%LIKE% 需提供一个字符串。
+     *
+     * $LIKE 需手动在参数中包含通配符，$%LIKE% 自动在参数两端添加通配符，$REGEXP 是正则表达式匹配。
      *
      * @param array $options 选项 [
      *     "sort" => [<排序字段> => <(bool)是否为正序>, <排序字段> => <(bool)是否为正序>],
@@ -231,11 +235,15 @@ abstract class lpPDOModel implements ArrayAccess
      *     "count" => <(bool)是否只获取结果数>
      * ]
      *
+     * 只有在使用了 limit 后才能使用 skip.
+     *
+     * @throws lpSQLException
      * @return PDOStatement
      */
     public static function select(array $if = [], array $options = [])
     {
         $table = static::metaData()["table"];
+        $db = static::getDB();
 
         $select = "*";
         $where = static::buildWhere($if);
@@ -253,7 +261,13 @@ abstract class lpPDOModel implements ArrayAccess
                 case "sort":
                     foreach($value as $k => $v)
                     {
-                        $orderBy = $orderBy ? " ORDER BY " : "{$orderBy}, ";
+                        if(is_int($k))
+                        {
+                            $k = $v;
+                            $v = true;
+                        }
+
+                        $orderBy = $orderBy ? "{$orderBy}, " : " ORDER BY ";
                         $orderBy .= "`{$k}` " . ($v ? "ASC" : "DESC");
                     }
                     break;
@@ -275,7 +289,11 @@ abstract class lpPDOModel implements ArrayAccess
 
         $sql = "SELECT {$select} FROM `{$table}` WHERE {$where} {$orderBy} {$sqlLimit}";
 
-        $result = static::getDB()->query($sql);
+        print "{$sql}\n";
+
+        $result = $db->query($sql);
+        if(!$result)
+            throw new lpSQLException($sql, $db->errorInfo());
         $result->setFetchMode(PDO::FETCH_ASSOC);
         return $result;
     }
@@ -349,7 +367,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function selectPrimaryArray($field, array $if = [], array $options = [])
     {
         if(!$field)
-            $field = self::metaData()["primary"];
+            $field = static::metaData()["primary"];
 
         $rs = static::select($if, $options)->fetchAll();
         $result = [];
@@ -369,7 +387,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function count(array $if = [], array $options = [])
     {
         $options = array_merge($options, ["count" => true]);
-        return static::select($if, $options)->fetch(PDO::FETCH_ASSOC)["COUNT(*)"];
+        return static::select($if, $options)->fetch()["COUNT(*)"];
     }
 
     /**
@@ -417,7 +435,7 @@ abstract class lpPDOModel implements ArrayAccess
     {
         $result = [];
         foreach($data as $i)
-            $result[] = self::insert($i);
+            $result[] = static::insert($i);
         return $result;
     }
 
@@ -562,7 +580,7 @@ abstract class lpPDOModel implements ArrayAccess
      */
     protected static function buildWhere(array $if, $isAndOrOr = true)
     {
-        $db = self::getDB();
+        $db = static::getDB();
         $where = [];
 
         foreach($if as $k => $v)
@@ -574,7 +592,7 @@ abstract class lpPDOModel implements ArrayAccess
                 switch($op)
                 {
                     case "or":
-                        $where[] = self::buildWhere($if, false);
+                        $where[] = static::buildWhere($v, false);
                         break;
                     case "lt":
                     case "lte":
@@ -582,28 +600,43 @@ abstract class lpPDOModel implements ArrayAccess
                     case "gte":
                     case "ne":
                     case "like":
+                    case "regexp":
                         $opMap = [
                             "lt" => "<",
                             "lte" => "<=",
                             "gt" => ">",
                             "gte" => ">=",
                             "ne" => "<>",
-                            "like" => "LIKE"
+                            "like" => "LIKE",
+                            "regexp" => "REGEXP"
                         ];
 
-                        $v = $db->quote($v);
-                        $where[] = "(`{$k}` {$opMap[$op]} {$v})";
+                        $kk = array_keys($v)[0];
+                        $vv = array_values($v)[0];
+
+                        $vv = $db->quote($vv);
+                        $where[] = "(`{$kk}` {$opMap[$op]} {$vv})";
                         break;
                     case "%like%":
-                        $v = $db->quote("%{$v}%");
-                        $where[] = "(`{$k}` LIKE {$v})";
-                        break;
+                        $kk = array_keys($v)[0];
+                        $vv = array_values($v)[0];
 
+                        $vv = $db->quote("%{$vv}%");
+                        $where[] = "(`{$kk}` LIKE {$vv})";
+                        break;
                 }
             }
-            else if(is_int($k))
+            else if(is_int($k) && is_string($v))
             {
                 $where[] = $v;
+            }
+            else if(is_array($v))
+            {
+                foreach($v as $kk => $vv)
+                {
+                    $vv = $db->quote($vv);
+                    $where[] = "(`{$kk}` = {$vv})";
+                }
             }
             else
             {
@@ -616,7 +649,7 @@ abstract class lpPDOModel implements ArrayAccess
         $where = implode($connector, $where);
 
         if($where)
-            return "($where)";
+            return $where;
         return "TRUE";
     }
 }
