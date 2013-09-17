@@ -111,13 +111,15 @@ abstract class lpPDOModel implements ArrayAccess
     /**
      * 标记该字段的类型为 JSON
      *
-     * lpPDOModel 特有，在读写时 lpPDOModel 会自动对 JSON 进行序列化和反序列化。
+     * 该特征为 lpPDOModel 特有，在读写时 lpPDOModel 会自动对 JSON 进行序列化和反序列化。
      *
      * * 读取部分
-     *    find(), selectArray(), selectFieldList(), selectPrimaryArray() 会对 JSON 进行反序列化，
+     *    find(), selectArray(), selectVauleList(), selectPrimaryArray() 会对 JSON 进行反序列化，
      *    而 select() 不会，因为 select() 的返回值是 PDOStatement.
      * * 写入部分
      *    insert() 和 update() 都会对 JSON 进行序列化。
+     * * 查询部分
+     *    该类不会对查询条件中的 JSON 字段进行处理。
      */
     const JSON = "JSON";
 
@@ -324,7 +326,7 @@ abstract class lpPDOModel implements ArrayAccess
      *     "value1", "value2", "value3"
      * ]
      */
-    public static function selectFieldList($field, array $if = [], array $options = [])
+    public static function selectValueList($field, array $if = [], array $options = [])
     {
         $rs = static::select($if, $options)->fetchAll();
         foreach($rs as &$v)
@@ -350,9 +352,10 @@ abstract class lpPDOModel implements ArrayAccess
             $field = self::metaData()["primary"];
 
         $rs = static::select($if, $options)->fetchAll();
-        foreach($rs as &$v)
-            $v = static::jsonDecode($v)[$field];
-        return $rs;
+        $result = [];
+        foreach($rs as $v)
+            $result[$v[$field]] = static::jsonDecode($v);
+        return $result;
     }
 
     /**
@@ -401,6 +404,21 @@ abstract class lpPDOModel implements ArrayAccess
 
         $db->query($sql);
         return $db->lastInsertId();
+    }
+
+    /**
+     * 插入多条数据
+     *
+     * @param array $data 数据
+     *
+     * @return array Last Insert ID 数组
+     */
+    public static function insertArray(array $data)
+    {
+        $result = [];
+        foreach($data as $i)
+            $result[] = self::insert($i);
+        return $result;
     }
 
     /**
@@ -544,6 +562,7 @@ abstract class lpPDOModel implements ArrayAccess
      */
     protected static function buildWhere(array $if, $isAndOrOr = true)
     {
+        $db = self::getDB();
         $where = [];
 
         foreach($if as $k => $v)
@@ -572,11 +591,11 @@ abstract class lpPDOModel implements ArrayAccess
                             "like" => "LIKE"
                         ];
 
-                        $v = self::getDB()->quote($v);
+                        $v = $db->quote($v);
                         $where[] = "(`{$k}` {$opMap[$op]} {$v})";
                         break;
                     case "%like%":
-                        $v = self::getDB()->quote("%{$v}%");
+                        $v = $db->quote("%{$v}%");
                         $where[] = "(`{$k}` LIKE {$v})";
                         break;
 
@@ -588,6 +607,7 @@ abstract class lpPDOModel implements ArrayAccess
             }
             else
             {
+                $v = $db->quote($v);
                 $where[] = "(`{$k}` = {$v})";
             }
         }
@@ -595,6 +615,8 @@ abstract class lpPDOModel implements ArrayAccess
         $connector = $isAndOrOr ? " AND " : " OR ";
         $where = implode($connector, $where);
 
-        return "($where)";
+        if($where)
+            return "($where)";
+        return "TRUE";
     }
 }
