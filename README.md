@@ -1,43 +1,38 @@
 ## LightPHP
+A Light PHP Library
 
-LightPHP是一个较轻量级, 代码风格良好, 有完整中文注释, 积极支持自由软件, 乐于进行新的尝试的PHP库.
+LightPHP 致力于用 20% 的代码实现 80% 的功能，至于剩下 20% 的功能，LightPHP 就不管了。这意味着 LightPHP 非常轻量级。
 
-该文件将会是LightPHP今后的发展宗旨.
+LightPHP 是由若干组件组成的，它们彼此联系并不紧密，你可以单独地使用它们，因此 LightPHP 是一个库而非框架。
+LightPHP 在全局空间内的所有标识符均以 `lp` 开头，因此并不影响你与其他框架一同使用。
 
-### LightPHP 不是一个框架, 而是库
-你不需要按照LightPHP的思路去编写应用, 你可以用非常简单的方式让LightPHP像你希望得那样工作.
+LightPHP 在设计上充分利用了 PHP 的两个最为好用的特征：数组和匿名函数。
+因此 LightPHP 选择了抛掉了大量历史包袱的 PHP 5.4 进行编写。
 
-### LightPHP 依旧轻量级
-虽然目前LightPHP包含了很多的组件, 但它们只会在需要时才会被加载.  
-LightPHP内部的依赖关系非常简单, 不会加载过多的依赖.
+### 功能
 
-代码中更多的是注释, 和更易读的书写形式, 不会影响运行效率, 尤其是当你安装了 APC(推荐) 一类的 OPCode 缓存工具.
+* 接管错误处理(可选)
+* 对象构造器
+* 配置文件和 Session 管理，用户登录状态管理
+* MVC 分层模式，无需 SQL 的数据库读写(支持 MySQL 和 Mongo)
+* 缓存(APC, MemCache)
+* HTML 模版解析
+* 国际化，邮件，锁
 
-### LightPHP 将为PHP入门者提供很大的帮助
-LightPHP是作者逐步摸索, 参考其他框架, 类库, 参考其他语言的过程中, 历时几年, 不断改进而成的.  
+### 运行环境
+[![Build Status](https://travis-ci.org/jybox/LightPHP.png?branch=master)](https://travis-ci.org/jybox/LightPHP)
 
-LightPHP具有良好的代码风格和设计风格, 以及完整的中文注释, 除了注释使用方法外, 还注释了API接口为何如此设计, 以及关于实现的细节.  
-这些注释只假定读者有基本的PHP语法知识和常用函数基础, 并在适当的地方给出了需要了解的关键词或链接.
+* PHP 5.4 / 5.5
+* Linux
+* PHP-FPM / Apache2
 
-通过LightPHP, 入门者可以了解到如何更好地利用PHP的特征, 甚至如何构建和设计一个PHP框架(库).  
-同时, 作者也乐于解答LightPHP用户的疑问.
+### 授权
 
-### LightPHP 是积极的自由软件
+* 核心代码以 GPLv3 授权
+* 测试用例和示例不保留版权
 
-* 核心PHP代码使用 LGPL 授权
-* 文档/注释/Wiki使用 CC-SA 授权
-* 测试用例/示例(Examples)放弃版权
+欢迎协助改进代码或提交 Issue.
 
-LightPHP积极欢迎其他开发者提交修改(Pull Request), 你也可以在论坛或者Issue中提交建议, Bug, 质疑.  
-只要你是认真的, 我们会更加认真地处理.
+### 协作者
 
-但LightPHP的宗旨(即该文件)是不会被修改的. 如果你非要改的话, 请使用LightPHP的代码, 用一个新的名字创建一个新的项目, 来实施你的想法.
-
-### LightPHP 乐于进行新的尝试
-LightPHP将会尝试一些新的, 有趣的理念, 并将积极地使用PHP的新特征.
-
-当然, 这决定了LightPHP不适用于一些对稳定性要求极高的情景, 如大型企业/政府应用, 服务器不方便进行调整等.  
-对于普通的开发者而言, 不必过于担心稳定性, LightPHP的开发人员是很活跃的, 可以很快修正Bug.
-
-master 上的代码都是经过确认无误的, 但也可能存在疏忽, 请留意 Travis CI 的自动化测试标记. 如果有问题请联系我们.  
-而被打 tag 的版本是经过大量测试的版本, 可放心使用.
+* 精英王子(<http://jyprince.me>)
