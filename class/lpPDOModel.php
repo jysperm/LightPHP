@@ -26,7 +26,7 @@ abstract class lpPDOModel implements ArrayAccess
     protected $id = null;
 
     /**
-     * 根据指定的列来构造实例
+     * 根据指定的字段来构造实例
      *
      * @param string $k 字段名
      * @param string $v 值
@@ -57,7 +57,7 @@ abstract class lpPDOModel implements ArrayAccess
     }
 
     /**
-     * 以数组的形式获取实例的数据。
+     * 以数组的形式获取实例的数据
      *
      * 可通过 !$i->data() 来判断实例是否有效(是否有数据)。
      *
@@ -114,7 +114,7 @@ abstract class lpPDOModel implements ArrayAccess
      * lpPDOModel 特有，在读写时 lpPDOModel 会自动对 JSON 进行序列化和反序列化。
      *
      * * 读取部分
-     *    find(), selectArray(), selectFieldList(), selectFieldArray() 会对 JSON 进行反序列化，
+     *    find(), selectArray(), selectFieldList(), selectPrimaryArray() 会对 JSON 进行反序列化，
      *    而 select() 不会，因为 select() 的返回值是 PDOStatement.
      * * 写入部分
      *    insert() 和 update() 都会对 JSON 进行序列化。
@@ -333,9 +333,9 @@ abstract class lpPDOModel implements ArrayAccess
     }
 
     /**
-     * 获取以某个字段为键的二维数组
+     * 获取以主键为键的二维数组
      *
-     * @param $field 作为键的字段
+     * @param string|null $field 作为键的字段，null 表示使用主键
      * @param array $if 条件
      * @param array $options 选项
      *
@@ -344,8 +344,11 @@ abstract class lpPDOModel implements ArrayAccess
      *     "value2" => ["field1" => "value1", "field2" => "value2"]
      * ]
      */
-    public static function selectFieldArray($field, array $if = [], array $options = [])
+    public static function selectPrimaryArray($field, array $if = [], array $options = [])
     {
+        if(!$field)
+            $field = self::metaData()["primary"];
+
         $rs = static::select($if, $options)->fetchAll();
         foreach($rs as &$v)
             $v = static::jsonDecode($v)[$field];
@@ -448,7 +451,10 @@ abstract class lpPDOModel implements ArrayAccess
     }
 
     /**
-     *  安装数据表
+     * 安装数据表
+     *
+     * 该函数会使用 IF NOT EXISIS 语法，仅当数据表不存在时才会创建。
+     * 目前该函数还功能有限，只支持一部分的数据表结构。
      */
     public static function install()
     {
