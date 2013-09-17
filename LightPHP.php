@@ -18,9 +18,7 @@ function lpLoader($name)
     if(class_exists($name, false))
         return;
 
-    $lpROOT = dirname(__FILE__);
-
-    $path = "{$lpROOT}/class/{$name}.php";
+    $path = dirname(__FILE__) ."/class/{$name}.php";
     if(file_exists($path))
         require_once($path);
 }
