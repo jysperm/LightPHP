@@ -15,5 +15,9 @@ class lpFactoryTest extends PHPUnit_Framework_TestCase
         });
 
         $this->assertEquals("user42", lpFactory::get("User", 42));
+
+        lpFactory::modify("User", "user42-modify", 42);
+
+        $this->assertEquals("user42-modify", lpFactory::get("User", 42));
     }
 }
