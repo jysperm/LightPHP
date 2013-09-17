@@ -33,5 +33,7 @@ PHP;
             "key2" => "value2",
             "key3" => "value3"
         ], $cfg->data());
+
+        unlink($tmpFile);
     }
 }
