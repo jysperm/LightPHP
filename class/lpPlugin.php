@@ -47,6 +47,18 @@ class lpPlugin
         }
     }
 
+    public static function registerPlugin($instance, $dir = null)
+    {
+        $pluginClassName = get_class($instance);
+        $name = substr($pluginClassName, strlen(self::ClassNamePrefix));
+
+        /** @var $pluginClassName lpPlugin */
+        self::$pluginMeta[$name] = $pluginClassName::metaData();
+
+        $plugin = new $pluginClassName($dir);
+        self::$pluginMeta[$name]["instance"] = $plugin;;
+    }
+
     public static function initPlugin()
     {
         foreach(self::$pluginMeta as $plugin)
