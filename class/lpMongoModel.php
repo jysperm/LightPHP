@@ -127,4 +127,140 @@ abstract class lpMongoModel
 
     /** 查询操作符 */
     const QueryEscape = '$';
+
+    /**
+     * 查询数据
+     *
+     * @param array $if 检索条件(Mongo 语法)
+     * @param array $select 要检索的字段(传递给 Mongo)
+     * @return MongoCursor
+     */
+    public static function select(array $if = [], array $select = [])
+    {
+        $c = static::getDB()->selectCollection(static::metaData()["table"]);
+        return $c->find($if, $select);
+    }
+
+    /**
+     * 获取符合条件的第一条数据
+     *
+     * @param array $if 条件(Mongo 语法)
+     * @param array $select 要检索的字段(传递给 Mongo)
+     *
+     * @return array|null  成功返回数组，失败返回null
+     */
+    public static function find(array $if = [], array $select = [])
+    {
+        $c = static::getDB()->selectCollection(static::metaData()["table"]);
+        return $c->findOne($if, $select);
+    }
+
+    /**
+     * 获取所有符合条件的记录为二维数组
+     *
+     * @param array $if 条件(Mongo 语法)
+     * @param array $select 要检索的字段(传递给 Mongo)
+     *
+     * @return array [
+     *     ["field1" => "value1", "field2" => "value2"],
+     *     ["field1" => "value1", "field2" => "value2"]
+     * ]
+     */
+    public static function selectArray(array $if = [], array $select = [])
+    {
+        $cur = static::select($if, $select);
+        $result = [];
+        foreach($cur as $row)
+            $result[] = $row;
+        return $result;
+    }
+
+    /**
+     * 获取某个字段的值的数组
+     *
+     * @param $field 字段
+     * @param array $if 条件(Mongo 语法)
+     * @param array $select 要检索的字段(传递给 Mongo)
+     *
+     * @return array [
+     *     "value1", "value2", "value3"
+     * ]
+     */
+    public static function selectValueList($field, array $if = [], array $select = [])
+    {
+        $cur = static::select($if, $select);
+        $result = [];
+        foreach($cur as $row)
+            $result[] = $row[$field];
+        return $result;
+    }
+
+    /**
+     * 获取以主键为键的二维数组
+     *
+     * @param string|null $field 作为键的字段，null 表示使用主键
+     * @param array $if 条件(Mongo 语法)
+     * @param array $select 要检索的字段(传递给 Mongo)
+     *
+     * @return array [
+     *     "value1" => ["field1" => "value1", "field2" => "value2"],
+     *     "value2" => ["field1" => "value1", "field2" => "value2"]
+     * ]
+     */
+    public static function selectPrimaryArray($field, array $if = [], array $select = [])
+    {
+        if(!$field)
+            $field = static::metaData()["primary"];
+
+        $cur = static::select($if, $select);
+        $result = [];
+        foreach($cur as $row)
+            $result[$row[$field]] = $row;
+        return $result;
+    }
+
+    /**
+     * 插入数据
+     *
+     * @param array $data 数据
+     */
+    public static function insert(array $data)
+    {
+        $c = static::getDB()->selectCollection(static::metaData()["table"]);
+        $c->insert($data);
+    }
+
+    /**
+     * 插入多条数据
+     *
+     * @param array $data 数据
+     */
+    public static function insertArray(array $data)
+    {
+        foreach($data as $i)
+            static::insert($i);
+    }
+
+    /**
+     * 更新数据
+     *
+     * @param array $if 条件(Mongo 语法)
+     * @param array $data 新数据
+     */
+    public static function update(array $if, array $data)
+    {
+        $c = static::getDB()->selectCollection(static::metaData()["table"]);
+        $c->update($if, $data, ["upsert" => true, "multiple" => true]);
+    }
+
+    /**
+     * 删除数据
+     *
+     * @param array $if 条件(Mongo 语法)
+     */
+    public static function delete(array $if)
+    {
+        $c = static::getDB()->selectCollection(static::metaData()["table"]);
+        $c->remove($if);
+    }
 }
