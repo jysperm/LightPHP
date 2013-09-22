@@ -243,14 +243,29 @@ abstract class lpMongoModel
 
     /**
      * 更新数据
+     * 仅更新列出的字段
      *
      * @param array $if 条件(Mongo 语法)
      * @param array $data 新数据
+     * @param array $options 选项(传递给 Mongo)
      */
-    public static function update(array $if, array $data)
+    public static function update(array $if, array $data, array $options = [])
     {
         $c = static::getDB()->selectCollection(static::metaData()["table"]);
-        $c->update($if, $data, ["upsert" => true, "multiple" => true]);
+        $c->update($if, ['$set' => $data], $options);
+    }
+
+    /**
+     * 替换数据
+     *
+     * @param array $if 条件(Mongo 语法)
+     * @param array $data 新数据
+     * @param array $options 选项(传递给 Mongo)
+     */
+    public static function replace(array $if, array $data, array $options = [])
+    {
+        $c = static::getDB()->selectCollection(static::metaData()["table"]);
+        $c->update($if, $data, $options);
     }
 
     /**
