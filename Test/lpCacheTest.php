@@ -33,7 +33,5 @@ class lpCacheTest extends PHPUnit_Framework_TestCase
         };
 
         $funcRunTest(new lpMemCache);
-        if(version_compare(PHP_VERSION, "5.4.0") >= 0 and version_compare(PHP_VERSION, "5.5.0") < 0)
-            $funcRunTest(new lpAPCCache);
     }
 }
