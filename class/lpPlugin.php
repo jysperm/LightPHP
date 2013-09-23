@@ -31,7 +31,7 @@ class lpPlugin
             if(!$fileinfo->isDot() && $fileinfo->isDir())
             {
                 $file = "{$fileinfo->getPathname()}/" . self::ClassNamePrefix . "{$fileinfo->getFilename()}.php";
-                if(file_exists($file));
+                if(file_exists($file))
                 {
                     require_once($file);
                     $name = $fileinfo->getFilename();
@@ -41,7 +41,7 @@ class lpPlugin
                     self::$pluginMeta[$name] = $pluginClassName::metaData();
 
                     $plugin = new $pluginClassName($fileinfo->getPathname());
-                    self::$pluginMeta[$name]["instance"] = $plugin;;
+                    self::$pluginMeta[$name]["instance"] = $plugin;
                 }
             }
         }
