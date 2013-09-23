@@ -21,7 +21,7 @@ class lpAPCCache implements ArrayAccess
     public function get($k)
     {
         $r = apc_fetch($k, $s);
-        if($s)
+        if($r || $s)
             return $r;
         return null;
     }
