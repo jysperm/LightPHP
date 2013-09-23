@@ -142,7 +142,7 @@ class lpDebug
             register_shutdown_function(function() {
                 $error = error_get_last();
 
-                if($error && ($error["type"] == E_ERROR || $error["type"] == E_PARSE))
+                if($error && in_array($error["type"], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR]))
                 {
                     $exceptionHandler = set_exception_handler(function() {});
                     restore_exception_handler();
