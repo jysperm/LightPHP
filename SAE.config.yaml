@@ -1,0 +1,5 @@
+name: lightphp
+version: 1
+handle:
+  - rewrite: if(!is_dir() && !is_file()) goto "index.php?%{QUERY_STRING}"
+  - directoryindex: index.html index.php
