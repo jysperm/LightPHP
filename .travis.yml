@@ -7,7 +7,10 @@ services:
   - mongodb
 
 before_script:
+  - printf "\n"| pecl install apcu
   - echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension = apcu.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension = memcache.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - mysql -e "create database IF NOT EXISTS test;" -uroot
   - mysql -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'passwd';" -uroot
   - mysql -e "GRANT ALL PRIVILEGES ON  test.* TO 'test'@'localhost';" -uroot
