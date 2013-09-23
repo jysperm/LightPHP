@@ -27,6 +27,21 @@ LightPHP 在设计上充分利用了 PHP 最为好用的两个特征：数组和
 * Linux
 * PHP-FPM / Apache2
 
+所需 PHP 扩展(来自 PECL)：
+
+* mongo (被 lpMongoModel 依赖)
+* apc (被 lpAPCCache 依赖)
+* apcu (被 PHP 5.5 下的 lpAPCCache 依赖)
+* memcache (被 lpMemCache 依赖)
+* pdo (被 lpPDOModel 依赖)
+* curl (被 lpMandrillMailer 依赖)
+
+所需环境(均为可选)：
+
+* mongod
+* mysql
+* memcache
+
 ### 开发进度
 
 * 预计于 2013.10.8 发布 v6.0.
