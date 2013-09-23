@@ -1,6 +1,6 @@
 <?php
 
-class lpMemCache
+class lpMemCache implements ArrayAccess
 {
     private $config = [
         "ttl" => 0,
@@ -31,7 +31,7 @@ class lpMemCache
     {
         $f = false;
         $r = $this->memcache->get($k, $f);
-        if($f)
+        if(!is_bool($f) || !$f)
             return $r;
         return null;
     }
@@ -44,7 +44,7 @@ class lpMemCache
             return $r;
 
         $v = $seter();
-        $this->memcache->set($k, $v, $ttl);
+        $this->memcache->set($k, $v, null, $ttl >= 0 ? $ttl : $this->config["ttl"]);
         return $v;
     }
 

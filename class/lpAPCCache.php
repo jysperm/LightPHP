@@ -32,7 +32,7 @@ class lpAPCCache implements ArrayAccess
             return $this->get($k);
 
         $v = $seter();
-        $this->set($k, $v, $ttl);
+        $this->set($k, $v, $ttl >= 0 ? $ttl : $this->config["ttl"]);
         return $v;
     }
 
