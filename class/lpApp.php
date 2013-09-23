@@ -50,6 +50,62 @@ class lpApp
         self::$atExit[] = $func;
     }
 
+    public static function registerShortFunc()
+    {
+        function c($k = null)
+        {
+            /** @var lpConfig $config */
+            $config = lpFactory::get("lpConfig");
+            if($k)
+                return $config->get($k);
+            else
+                return $config->data();
+        }
+
+        function l($k = null)
+        {
+            $locale = lpFactory::get("lpLocale");
+            $param = func_get_args();
+            array_shift($param);
+            return call_user_func_array([$locale, "get"], [$k, $param]);
+        }
+
+        function f($name, $tag = null)
+        {
+            return lpFactory::get($name, $tag);
+        }
+    }
+
+    /**
+     * 判断客户端语言
+     *
+     * * 首先根据 Cookie
+     * * 然后根据 HTTP Accept-Language
+     * * 最后私用默认语言
+     *
+     * @param $localeRoot           本地化文件根目录
+     * @param $defaultLanguage      默认语言
+     * @param string $cookieName    储存语言的Cookie
+     * @return string
+     */
+    static public function checkLanguage($localeRoot, $defaultLanguage, $cookieName="language")
+    {
+        $lang = isset($_COOKIE[$cookieName]) ? $_COOKIE[$cookieName] : "";
+        if($lang && preg_match("/^[_A-Za-z]+$/", $lang) && is_dir("{$localeRoot}/{$lang}"))
+            return $_COOKIE[$cookieName];
+
+        if($_SERVER["HTTP_ACCEPT_LANGUAGE"])
+        {
+            $languages = explode(",", str_replace("-", "_", $_SERVER["HTTP_ACCEPT_LANGUAGE"]));
+
+            foreach($languages as $i)
+                if(preg_match("/^[_A-Za-z]+$/", $i) && is_dir("{$localeRoot}/{$lang}"))
+                    return $i;
+        }
+
+        return $defaultLanguage;
+    }
+
     public static function bye()
     {
         exit(0);
