@@ -5,7 +5,7 @@
  *
  * 该类提供了与 lpPDOModel 几乎完全一致的接口。
  */
-abstract class lpMongoModel
+abstract class lpMongoModel implements ArrayAccess
 {
     // ----- 实例化部分
 
