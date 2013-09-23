@@ -209,23 +209,23 @@ abstract class lpPDOModel implements ArrayAccess
      *
      * @param array $if 检索条件 [
      *     <字段> => <值>,
-     *     '$OR' => [<字段> => <值>, ...],
-     *     '$LT' => [<字段> => <值>],
+     *     '$or' => [<字段> => <值>, ...],
+     *     '$lt' => [<字段> => <值>],
      *     "原始 SQL", ...
      * ]
      *
      * ## 操作符列表
-     * * OR
-     * * LT, LTE, GT, GTE, NE
-     * * LIKE, %LIKE%, REGEXP
+     * * or
+     * * lt, lte, gt, gte, ne
+     * * like, %like%, regexp
      *
-     * $OR 操作符需提供一个数组，数组中的条件将会被以 OR 连接，如果需要用 OR 查询几个字段，可以使用这样的语法：
+     * $or 操作符需提供一个数组，数组中的条件将会被以 OR 连接，如果需要用 OR 查询几个字段，可以使用这样的语法：
      *
-     *     ['$OR' => [["uid" => 2], ["uid" => 3]]]
+     *     ['$or' => [["uid" => 2], ["uid" => 3]]]
      *
-     * $LT, $LTE, $GT, $GTE, $NE 需提供一个具有单一元素的数组。
+     * $lt, $lte, $gt, $gte, $ne 需提供一个具有单一元素的数组。
      *
-     * $LIKE 需手动在参数中包含通配符，$%LIKE% 自动在参数两端添加通配符，$REGEXP 是正则表达式匹配。
+     * $like 需手动在参数中包含通配符，$like% 自动在参数两端添加通配符，$regexp 是正则表达式匹配。
      *
      * @param array $options 选项 [
      *     "sort" => [<排序字段> => <(bool)是否为正序>, <排序字段> => <(bool)是否为正序>],

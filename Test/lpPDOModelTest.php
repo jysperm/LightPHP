@@ -77,12 +77,12 @@ class lpPDOModelTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, UserPDOModel::byID(2)["settings"]["meizhi"]);
 
         // 高级查询
-        $this->assertEquals(["orzfly", "faceair"], UserPDOModel::selectValueList("uname", ['$OR' => [["uid" => 2], ["uid" => 3]]]));
-        $this->assertEquals(["orzfly", "faceair"], UserPDOModel::selectValueList("uname", ['$LT' => ["signup_at" => 20000]]));
-        $this->assertEquals(["jySperm"], UserPDOModel::selectValueList("uname", ['$NE' => ["signup_at" => 12345]]));
-        $this->assertEquals(["orzfly"], UserPDOModel::selectValueList("uname", ['$%LIKE%' => ["email" => "fly"]]));
-        $this->assertEquals(["orzfly"], UserPDOModel::selectValueList("uname", ['$LIKE' => ["email" => "i%"]]));
-        $this->assertEquals(["faceair"], UserPDOModel::selectValueList("uname", ['$REGEXP' => ["email" => "^f"]]));
+        $this->assertEquals(["orzfly", "faceair"], UserPDOModel::selectValueList("uname", ['$or' => [["uid" => 2], ["uid" => 3]]]));
+        $this->assertEquals(["orzfly", "faceair"], UserPDOModel::selectValueList("uname", ['$lt' => ["signup_at" => 20000]]));
+        $this->assertEquals(["jySperm"], UserPDOModel::selectValueList("uname", ['$ne' => ["signup_at" => 12345]]));
+        $this->assertEquals(["orzfly"], UserPDOModel::selectValueList("uname", ['$%like%' => ["email" => "fly"]]));
+        $this->assertEquals(["orzfly"], UserPDOModel::selectValueList("uname", ['$like' => ["email" => "i%"]]));
+        $this->assertEquals(["faceair"], UserPDOModel::selectValueList("uname", ['$regexp' => ["email" => "^f"]]));
         $this->assertEquals(["orzfly", "faceair"], UserPDOModel::selectValueList("uname", ["`signup_at` BETWEEN '10000' AND '20000'"]));
 
         // 查询选项
