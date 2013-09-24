@@ -45,7 +45,7 @@ class lpFileCache implements ArrayAccess
 
     public function offsetExists($offset)
     {
-        
+
     }
 
     public function offsetUnset($offset)

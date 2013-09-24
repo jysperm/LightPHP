@@ -18,6 +18,22 @@ function lpLoader($name)
     if(class_exists($name, false))
         return;
 
+    $groupMap = [
+        "App" => ["lpApp", "lpFactory", "lpHandler", "lpPlugin", "lpRoute"],
+        "Cache" => ["lpAPCCache", "lpFileCache", "lpMemCache"],
+        "Exception" => ["lpException", "lpHandlerException", "lpPHPException", "lpPHPFatalException", "lpSQLException"],
+        "Locale" => ["lpArrayLocale", "lpGetTextLocale", "lpJSONLocale"],
+        "Lock" => ["lpFileLock", "lpMutex", "lpMySQLLock"],
+        "Mailer" => ["lpMandrillMailer", "lpPHPMailer", "lpSmtpMailer"],
+        "Model" => ["lpMongoModel", "lpPDOModel"],
+        "Template" => ["lpCompiledTemplate", "lpPHPTemplate"],
+        "Tool" => ["lpConfig", "lpDebug"]
+    ];
+
+    foreach($groupMap as $group => $classes)
+        if(in_array($name, $classes))
+            $name = "{$group}/{$name}";
+
     $path = dirname(__FILE__) ."/class/{$name}.php";
     if(file_exists($path))
         require_once($path);
