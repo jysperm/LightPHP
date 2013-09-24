@@ -4,17 +4,12 @@ class lpCompiledTemplate extends lpPHPTemplate
 {
     public function output()
     {
-        $_lgFile = $this->checkCache();
+        $_lpFile = $this->checkCache();
 
         foreach($this->values as $_lgKey => $_lgVar)
             $$_lgKey = $_lgVar;
 
-        function nl2p($string)
-        {
-            return str_replace(array("\r\n", "\r", "\n"), "</p><p>", $string);
-        }
-
-        include($_lgFile);
+        include($_lpFile);
     }
 
     public function checkCache()
@@ -29,7 +24,7 @@ class lpCompiledTemplate extends lpPHPTemplate
             if(!is_dir($folder))
                 mkdir($folder);
             if(!self::compile($this->filename, $file))
-                throw new lgException("file access denied");
+                throw new lpException("file access denied");
         }
 
         return $file;
@@ -41,23 +36,19 @@ class lpCompiledTemplate extends lpPHPTemplate
         if(!$content)
             return false;
 
-        $replacer = function($string) {
-            return str_replace('\"', '"', $string);
-        };
-
         $rules = [
             // UTF8 BOM
             '/^(\xef\xbb\xbf)/' => '',
             // {$VARIABLES}
-            "/\{(\\\$[a-zA-Z0-9_\[\]\\\ \-\'\,\%\*\/\.\(\)\>\'\"\$\x7f-\xff]+)\}/s" => '<?= \\1;?>',
+            "/\\{(\\\$[^\\s\\}]+)\\}/s" => '<?= \\1;?>',
             // ${EXPRESSION}
-            '/\\\$\{(.+?)\}/ies' => "\$replacer('<?= \\1;?>')",
+            '/\\\$\{(.+?)\}/is' => "<?= \\1;?>",
             // {#MSGID}
             '/\{#([^\}]+)\}/es' => "l('\\1')",
             // <!-- {else if EXPRESSION} -->
-            '/\<\!\-\-\s*\{else\s*if\s+(.+?)\}\s*\-\-\>/ies' => "\$replacer('<? else if(\\1):?>')",
+            '/\<\!\-\-\s*\{else\s*if\s+(.+?)\}\s*\-\-\>/is' => "<? else if(\\1):?>",
             // <!-- {elif EXPRESSION} -->
-            '/\<\!\-\-\s*\{elif\s+(.+?)\}\s*\-\-\>/ies' => "\$replacer('<? else if(\\1):?>')",
+            '/\<\!\-\-\s*\{elif\s+(.+?)\}\s*\-\-\>/is' => "<? else if(\\1):?>",
             // <!-- {else} -->
             '/\<\!\-\-\s*\{else\}\s*\-\-\>/is' => '<? else:?>',
         ];
@@ -67,11 +58,11 @@ class lpCompiledTemplate extends lpPHPTemplate
 
         $flowRules = [
             // <!-- {loop ARRAY KEY VALUE} --> THEN <!-- {/loop} -->
-            '/\<\!\-\-\s*\{loop\s+(\S+)\s+(\S+)\s+(\S+)\s*\}\s*\-\-\>(.+?)\<\!\-\-\s*\{\/loop\}\s*\-\-\>/ies' => "\$replacer('<?php if(is_array(\\1)): foreach(\\1 as \\2 => \\3):?>\\4<? endforeach; endif;?>')",
+            '/\<\!\-\-\s*\{loop\s+(\S+)\s+(\S+)\s+(\S+)\s*\}\s*\-\-\>(.+?)\<\!\-\-\s*\{\/loop\}\s*\-\-\>/is' => "<?php if(is_array(\\1)): foreach(\\1 as \\2 => \\3):?>\\4<? endforeach; endif;?>",
             // <!-- {loop ARRAY VALUE} --> THEN <!-- {/loop} -->
-            '/\<\!\-\-\s*\{loop\s+(\S+)\s+(\S+)\s*\}\s*\-\-\>(.+?)\<\!\-\-\s*\{\/loop\}\s*\-\-\>/ies' => "\$replacer('<?php if(is_array(\\1)): foreach(\\1 as \\2):?>\\3<? endforeach; endif;?>')",
+            '/\<\!\-\-\s*\{loop\s+(\S+)\s+(\S+)\s*\}\s*\-\-\>(.+?)\<\!\-\-\s*\{\/loop\}\s*\-\-\>/is' => "<?php if(is_array(\\1)): foreach(\\1 as \\2):?>\\3<? endforeach; endif;?>",
             // <!-- {if EXPRESSION} --> THEN <!-- {/if} -->
-            '/\<\!\-\-\s*\{if\s+(.+?)\}\s*\-\-\>(.+?)\<\!\-\-\s*\{\/if\}\s*\-\-\>/ies' => "\$replacer('<? if(\\1):?>\\2<? endif;?>')",
+            '/\<\!\-\-\s*\{if\s+(.+?)\}\s*\-\-\>(.+?)\<\!\-\-\s*\{\/if\}\s*\-\-\>/is' => "<? if(\\1):?>\\2<? endif;?>",
             // <!--{include FILE}-->
             '/<!--\s*{\s*include\s+([^\{\}]+)\s*\}\s*-->/ie' => '<? file_get_contents("\\1");?>'
         ];
@@ -82,8 +73,7 @@ class lpCompiledTemplate extends lpPHPTemplate
                 $content = preg_replace($ex, $replace, $content);
         }
 
-        if(!file_put_contents($output, $content))
-            return false;
+        file_put_contents($output, $content);
         return true;
     }
 }
