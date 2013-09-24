@@ -20,7 +20,7 @@ LightPHP 在设计上充分利用了 PHP 最为好用的两个特征：数组和
 * HTML 模版解析
 * 国际化，邮件，锁
 
-[API 稳定性信息](https://github.com/jybox/LightPHP/blob/master/ROADMAP.md)
+[API 详细信息](https://github.com/jybox/LightPHP/blob/master/API.md)
 
 ### 运行环境
 [![Build Status](https://travis-ci.org/jybox/LightPHP.png?branch=master)](https://travis-ci.org/jybox/LightPHP)
