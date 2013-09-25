@@ -9,7 +9,13 @@ class LightPHPTest extends PHPUnit_Framework_TestCase
         foreach(new DirectoryIterator(dirname(__FILE__) . "/../class") as $fileinfo)
         {
             if(!$fileinfo->isDot())
-                require_once($fileinfo->getPathname());
+            {
+                foreach(new DirectoryIterator($fileinfo->getPathname()) as $f)
+                {
+                    if(!$f->isDot())
+                        require_once($f->getPathname());
+                }
+            }
         }
     }
 }
