@@ -9,7 +9,6 @@ services:
 
 before_script:
   - echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - echo "extension = apc.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "extension = memcache.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - mysql -e "create database IF NOT EXISTS test;" -uroot
   - mysql -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'passwd';" -uroot
