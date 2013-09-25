@@ -88,7 +88,7 @@ class lpApp
      * @param string $cookieName    储存语言的Cookie
      * @return string
      */
-    static public function checkLanguage($localeRoot, $defaultLanguage, $cookieName="language")
+    public static function checkLanguage($localeRoot, $defaultLanguage, $cookieName="language")
     {
         $lang = isset($_COOKIE[$cookieName]) ? $_COOKIE[$cookieName] : "";
         if($lang && preg_match("/^[_A-Za-z]+$/", $lang) && is_dir("{$localeRoot}/{$lang}"))
