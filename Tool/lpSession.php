@@ -2,13 +2,20 @@
 
 class lpSession
 {
+    /** @var bool|null 缓存当前登陆状态 */
     private $isAuth = null;
+    /** @var int|null 当前用户 ID */
     private $userID = null;
-    private $userModel = null;
 
-    public function __construct($userModel)
+    /** @var lpPlugins\UserCenter\UserModel 当前的用户 Model */
+    private $userModel;
+    /** @var int Token 的有效期，单位秒 */
+    private $TokenExpired;
+
+    public function __construct($userModel, $TokenExpired = 2592000)
     {
         $this->userModel = $userModel;
+        $this->TokenExpired = $TokenExpired;
     }
 
     /**
@@ -20,15 +27,21 @@ class lpSession
             return $this->isAuth;
 
         // Session 方式
-        if(isset($_SESSION['is_auth']) && $_SESSION['is_auth'])
+        if(isset($_SESSION['lpIsAuth']) && $_SESSION['lpIsAuth'])
+        {
+            $this->isAuth = true;
+            $this->userID = $_SESSION["lpUserID"];
+            $this->userModel = $this->userModel->byID($this->userID);
             return true;
+        }
+
 
         // Cookie 方式
-        if(self::tryTokenLogin(self::getCookieToken()))
+        if(isset($_COOKIE['lpToken']) && self::tryTokenLogin($_COOKIE['lpToken']))
         {
-            $_SESSION['is_auth'] = true;
-            $_SESSION['user'] = $this->userModel;
-            $_SESSION["userID"] = $this->userModel["id"];
+            $_SESSION['lpIsAuth'] = true;
+            $_SESSION["lpUserID"] = $this->userModel->id();
+            $_SESSION["lpToken"] = $_COOKIE['lpToken'];
             return true;
         }
 
@@ -37,93 +50,81 @@ class lpSession
     }
 
     /**
-     * @return UserModel 当前AccountModel
+     * @return lpPlugins\UserCenter\UserModel|null 当前用户 Model
      */
     public function user()
     {
         if($this->isAuth())
             return $this->userModel;
+
         return null;
     }
 
     /**
      * 将当前会话标记为已验证
      *
-     * @param string $userID  用户ID
+     * @param int $userID 用户ID
      */
     public function authenticated($userID)
     {
         $this->isAuth = true;
         $this->userID = $userID;
-        $_SESSION['is_auth'] = true;
+        $this->userModel = $this->userModel->byID($userID);
+        $_SESSION['lpIsAuth'] = true;
         $_SESSION['userID'] = $userID;
     }
 
     /**
      *  生成一个新的 Token, 调用时需为登录状态
      */
-    public static function newToken()
+    public function newToken()
     {
-        if(!self::isAuth())
-            return null;
-        return TokenModel::newToken(self::user());
+        return $this->userModel->getTokenModel()->newToken($this->userModel);
     }
 
     /**
      * 吊销 token
      *
-     * @param $token
+     * @param string $token
      */
-    public static function revokeToken($token)
+    public function revokeToken($token)
     {
-        TokenModel::byCode($token)->remove();
+        $this->userModel->getTokenModel()->byToken($token)->remove();
     }
 
     /**
-     * 清空所有方式的登录信息
+     * 清空所有方式的登录信息，并注销 Token
      */
-    public static function logout()
+    public function logout()
     {
-        if(isset($_SESSION['token']))
-            self::revokeToken($_SESSION['token']);
-
-        if(self::$token && self::$token != $_SESSION['token'])
-            self::revokeToken(self::$token);
+        if(isset($_SESSION['lpToken']))
+            $this->revokeToken($_SESSION['lpToken']);
 
         setcookie('token', '', 1, '/');
-        self::resetSession();
+        $this->resetSession();
     }
 
     /**
      * 尝试以 Token 登录
-     * Token 可能来自移动设备，也可能来自 Cookie
      *
      * @param $token
      * @return bool
      */
-    public static function tryTokenLogin($token)
+    public function tryTokenLogin($token)
     {
-        $token = TokenModel::byCode($token);
+        $token = $this->userModel->getTokenModel()->byToken($token);
 
-        if(!$token->isNull() && self::isTokenValid($token))
+        if($token->data() && self::isTokenValid($token))
         {
             $token->renew();
-            self::$isAuth = true;
-            self::$userID = $token["account_id"];
+            $this->isAuth = true;
+            $this->userID = $token["user_id"];
+            $this->userModel = $this->userModel->byID($this->userID);
             return true;
         }
         return false;
     }
 
-    // Cookie 方式相关
-
-    /**
-     * @return string|null Cookie 中的 Token
-     */
-    public static function getCookieToken()
-    {
-        return isset($_COOKIE['token']) ? $_COOKIE['token'] : null;
-    }
     /**
      *  通过 Cookie 记住密码
      */

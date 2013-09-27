@@ -68,9 +68,14 @@ abstract class lpPDOModel implements ArrayAccess
         return $this->data;
     }
 
-    public function pkey()
+    public function id()
     {
-        return $this->data[static::metaData()["primary"]];
+        return $this->id;
+    }
+
+    public function updateSelf(array $data)
+    {
+        return self::update([static::metaData()["primary"] => $this->id], $data);
     }
 
     // ----- implements ArrayAccess
