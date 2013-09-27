@@ -1,0 +1,11 @@
+{
+    "name": "jybox/LightPHP",
+    "description": "A Light PHP Library",
+    "authors": [{
+        "name": "jybox",
+        "email": "m@jybox.net"
+    }],
+    "autoload": {
+        "files": ["LightPHP.php"]
+    }
+}
