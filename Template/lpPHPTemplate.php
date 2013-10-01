@@ -41,7 +41,7 @@ class lpPHPTemplate implements ArrayAccess
 
     public function setValues($arr)
     {
-        foreach ($arr as $k => $v)
+        foreach($arr as $k => $v)
             $this->setValue($k, $v);
     }
 
@@ -57,7 +57,7 @@ class lpPHPTemplate implements ArrayAccess
         return ob_get_clean();
     }
 
-    public static function outputFile($file, $values=[])
+    public static function outputFile($file, $values = [])
     {
         $tmp = new static($file);
         if($values)
@@ -65,7 +65,7 @@ class lpPHPTemplate implements ArrayAccess
         $tmp->output();
     }
 
-    public static function getOutputFile($file, $values=[])
+    public static function getOutputFile($file, $values = [])
     {
         $tmp = new static($file);
         if($values)
