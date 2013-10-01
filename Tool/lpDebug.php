@@ -1,6 +1,5 @@
 <?php
 
-namespace LightPHP\Tool;
 class lpDebug
 {
     public static function registerErrorHandling()
