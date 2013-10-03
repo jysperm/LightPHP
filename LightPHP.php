@@ -18,7 +18,7 @@ function lpLoader($name)
     if(class_exists($name, false))
         return;
 
-    $groupMap = [
+    static $groupMap = [
         "App" => ["lpApp", "lpFactory", "lpHandler", "lpPlugin", "lpRoute"],
         "Cache" => ["lpAPCCache", "lpFileCache", "lpMemCache"],
         "Exception" => ["lpException", "lpHandlerException", "lpPHPException", "lpPHPFatalException", "lpSQLException"],
