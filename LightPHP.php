@@ -34,7 +34,7 @@ function lpLoader($name)
         if(in_array($name, $classes))
             $name = "{$group}/{$name}";
 
-    $path = dirname(__FILE__) ."/class/{$name}.php";
+    $path = dirname(__FILE__) ."/{$name}.php";
     if(file_exists($path))
         require_once($path);
 }
