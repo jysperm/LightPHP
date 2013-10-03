@@ -1,5 +1,24 @@
 <?php
 
+interface iUserModel
+{
+    public function byID();
+    public function id();
+    /** @return iTokenModel */
+    public function getTokenModel();
+}
+
+interface iTokenModel
+{
+    public function newToken();
+    /** @return iTokenModel */
+    public function byToken();
+    public function remove();
+    public function userID();
+    public function renew();
+    public function isValid();
+}
+
 class lpSession
 {
     /** @var bool|null 缓存当前登陆状态 */
@@ -7,15 +26,15 @@ class lpSession
     /** @var int|null 当前用户 ID */
     private $userID = null;
 
-    /** @var lpPlugins\UserCenter\UserModel 当前的用户 Model */
+    /** @var iUserModel 当前的用户 Model */
     private $userModel;
     /** @var int Token 的有效期，单位秒 */
-    private $TokenExpired;
+    private $tokenExpired;
 
     public function __construct($userModel, $TokenExpired = 2592000)
     {
         $this->userModel = $userModel;
-        $this->TokenExpired = $TokenExpired;
+        $this->tokenExpired = $TokenExpired;
     }
 
     /**
@@ -27,7 +46,7 @@ class lpSession
             return $this->isAuth;
 
         // Session 方式
-        if(isset($_SESSION['lpIsAuth']) && $_SESSION['lpIsAuth'])
+        if(isset($_SESSION["lpIsAuth"]) && $_SESSION["lpIsAuth"])
         {
             $this->isAuth = true;
             $this->userID = $_SESSION["lpUserID"];
@@ -35,13 +54,12 @@ class lpSession
             return true;
         }
 
-
         // Cookie 方式
-        if(isset($_COOKIE['lpToken']) && self::tryTokenLogin($_COOKIE['lpToken']))
+        if(isset($_COOKIE["lpToken"]) && self::tryTokenLogin($_COOKIE["lpToken"]))
         {
-            $_SESSION['lpIsAuth'] = true;
+            $_SESSION["lpIsAuth"] = true;
             $_SESSION["lpUserID"] = $this->userModel->id();
-            $_SESSION["lpToken"] = $_COOKIE['lpToken'];
+            $_SESSION["lpToken"] = $_COOKIE["lpToken"];
             return true;
         }
 
@@ -50,7 +68,7 @@ class lpSession
     }
 
     /**
-     * @return lpPlugins\UserCenter\UserModel|null 当前用户 Model
+     * @return iUserModel|null 当前用户 Model
      */
     public function user()
     {
@@ -70,8 +88,8 @@ class lpSession
         $this->isAuth = true;
         $this->userID = $userID;
         $this->userModel = $this->userModel->byID($userID);
-        $_SESSION['lpIsAuth'] = true;
-        $_SESSION['userID'] = $userID;
+        $_SESSION["lpIsAuth"] = true;
+        $_SESSION["lpUserID"] = $userID;
     }
 
     /**
@@ -100,7 +118,7 @@ class lpSession
         if(isset($_SESSION['lpToken']))
             $this->revokeToken($_SESSION['lpToken']);
 
-        setcookie('token', '', 1, '/');
+        setcookie("lpToken", "", 1, "/");
         $this->resetSession();
     }
 
@@ -114,11 +132,11 @@ class lpSession
     {
         $token = $this->userModel->getTokenModel()->byToken($token);
 
-        if($token->data() && self::isTokenValid($token))
+        if($token->userID() && $token->isValid($token))
         {
             $token->renew();
             $this->isAuth = true;
-            $this->userID = $token["user_id"];
+            $this->userID = $token->userID();
             $this->userModel = $this->userModel->byID($this->userID);
             return true;
         }
@@ -128,12 +146,12 @@ class lpSession
     /**
      *  通过 Cookie 记住密码
      */
-    public static function cookieRemember()
+    public function cookieRemember()
     {
-        setcookie('token', self::newToken(), time() + lgConfig::get("session")["remember_time"], '/');
+        setcookie("lpToken", self::newToken(), time() + $this->tokenExpired, "/");
     }
 
-    // PHP Session 管理
+    // ----- PHP Session 管理
 
     /**
      *  初始化Session
@@ -142,8 +160,6 @@ class lpSession
     {
         if(!isset($_SESSION))
             session_start();
-
-        self::isAuth();
     }
 
     /**
@@ -171,16 +187,5 @@ class lpSession
                 unset($_SESSION[$name]);
         }
         return $result;
-    }
-
-    // 私有成员
-
-    /**
-     * @param $row
-     * @return bool
-     */
-    private static function isTokenValid($row)
-    {
-        return time() - $row['accessed_at'] < lgConfig::get("session")["remember_time"];
     }
 }
