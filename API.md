@@ -17,7 +17,7 @@
 * lpFileCache
 * lpMemCache
 
-### Exception
+### [较稳定] Exception
 该分组包含了各种异常类型。
 
 * lpException
@@ -26,7 +26,7 @@
 * lpPHPFatalException
 * lpSQLException
 
-### Locale
+### [较稳定] Locale
 该分组提供了基于各种数据源的国际化功能，它们具有相似的接口。
 
 * lpArrayLocale
@@ -50,8 +50,8 @@
 ### Model
 该分组提供了基于各种数据库的，基于 PHP 数组的数据库读写功能，它们具有相似的接口。
 
-* lpMongoModel
-* lpPDOModel
+* [较稳定] lpMongoModel
+* [稳定] lpPDOModel
 
 ### Template
 该分组提供了几种模版引擎。
@@ -62,5 +62,5 @@
 ### Tool
 该分组提供了一些与 LightPHP 核心联系不太紧密的工具。
 
-* lpConfig 配置信息管理
+* [较稳定] lpConfig 配置信息管理
 * lpDebug 调试和错误处理
