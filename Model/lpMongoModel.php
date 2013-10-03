@@ -51,6 +51,11 @@ abstract class lpMongoModel implements ArrayAccess
         return $this->data;
     }
 
+    public function updateSelf(array $data)
+    {
+        return self::update([static::metaData()["primary"] => $this->id], $data);
+    }
+
     // ----- implements ArrayAccess
 
     public function offsetSet($offset, $value)
