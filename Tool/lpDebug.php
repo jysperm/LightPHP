@@ -34,7 +34,7 @@ class lpDebug
                 print "\n^ Call Stack:\n";
                 // 从异常对象获取运行栈
                 $trace = $exception->getTrace();
-                // 如果是 ePHPException 则去除运行栈的第一项，即 error_handler
+                // 如果是 lpPHPException 则去除运行栈的第一项，即 error_handler
                 if($exception instanceof lpPHPException)
                     array_shift($trace);
 
