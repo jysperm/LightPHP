@@ -102,7 +102,7 @@ abstract class lpHandler
     protected function model($name)
     {
         if($this->plugin)
-            return lpFactory::get("p{$name}Model");
+            return lpFactory::get($this->plugin->className("{$name}Model"));
         else
             return lpFactory::get("{$name}Model");
     }
