@@ -16,53 +16,57 @@
  */
 class lpPlugin
 {
-    const ClassNamePrefix = "p";
-
     // ----- 静态成员
 
     private static $pluginMeta = [];
     private static $hooks = [];
 
-    public static function registerPluginDir($dir)
+    public static function initAutoload()
+    {
+        $pluginMeta = &self::$pluginMeta;
+        spl_autoload_register(function($className) use(&$pluginMeta) {
+            foreach($pluginMeta as $meta)
+            {
+                foreach($meta["autoload"] as $dir)
+                {
+                    $file = $meta["dir"] . "/{$dir}/{$className}.php";
+                    if(file_exists($file))
+                        return require_once($file);
+                }
+            }
+        });
+    }
+
+    public static function registerPluginDir($dir, $namespacePrefix = "lpPlugins")
     {
         foreach(new DirectoryIterator($dir) as $fileinfo)
         {
             /** @var $fileinfo DirectoryIterator */
             if(!$fileinfo->isDot() && $fileinfo->isDir())
             {
-                $file = "{$fileinfo->getPathname()}/" . self::ClassNamePrefix . "{$fileinfo->getFilename()}.php";
+                $file = "{$fileinfo->getPathname()}/{$fileinfo->getFilename()}.php";
                 if(file_exists($file))
                 {
                     require_once($file);
                     $name = $fileinfo->getFilename();
-                    $pluginClassName = self::ClassNamePrefix . $name;
+                    $className = "\\{$namespacePrefix}\\{$name}\\{$name}";
 
-                    /** @var $pluginClassName lpPlugin */
-                    self::$pluginMeta[$name] = $pluginClassName::metaData();
+                    /** @var $instance lpPlugin */
+                    $instance = new $className;
 
-                    $plugin = new $pluginClassName($fileinfo->getPathname());
-                    self::$pluginMeta[$name]["instance"] = $plugin;
+                    self::$pluginMeta[$name] = $instance->metaData();
+                    self::$pluginMeta[$name]["instance"] = $instance;
+                    self::$pluginMeta[$name]["classPrefix"] = "\\{$namespacePrefix}\\{$name}\\";
                 }
             }
         }
-    }
-
-    public static function registerPlugin($instance, $dir = null)
-    {
-        $pluginClassName = get_class($instance);
-        $name = substr($pluginClassName, strlen(self::ClassNamePrefix));
-
-        $plugin = new $pluginClassName($dir);
-
-        /** @var $plugin lpPlugin */
-        self::$pluginMeta[$name] = $plugin->metaData();
-        self::$pluginMeta[$name]["instance"] = $plugin;;
     }
 
     public static function initPlugin()
     {
         foreach(self::$pluginMeta as $plugin)
         {
+
             $plugin["instance"]->init();
 
             foreach($plugin["hook"] as $hookName => $func)
@@ -74,7 +78,7 @@ class lpPlugin
     {
         foreach(self::$pluginMeta as $plugin)
         {
-            foreach($plugin["route"] as $k => $v)
+            foreach($plugin["instance"]->routes() as $k => $v)
             {
                 if(is_array($v))
                     list($func, $flags) = $v;
@@ -98,15 +102,24 @@ class lpPlugin
     protected static function meta(array $data)
     {
         $default = [
+            "autoload" => ["handler", "model"],
             "type" => [],
             "requestStatic" => [],
             "requestVersion" => [null => null],
-            "requestPlugins" => [],
-            "route" => [],
-            "hook" => []
+            "requestPlugins" => []
         ];
 
         return array_merge($default, $data);
+    }
+
+    protected function hooks()
+    {
+        return [];
+    }
+
+    protected function routes()
+    {
+        return [];
     }
 
     protected function metaData()
@@ -121,11 +134,11 @@ class lpPlugin
 
     // ----- 实例成员
 
-    protected $dir = null;
+    private $dir;
 
-    public function __construct($dir)
+    public function __construct()
     {
-        $this->dir = $dir;
+        $this->dir = $this->metaData()["dir"];
     }
 
     public function file($name)
@@ -133,8 +146,8 @@ class lpPlugin
         return "{$this->dir}/{$name}";
     }
 
-    public function load($name)
+    public function className($class)
     {
-        require_once("{$this->dir}/{$name}.php");
+        return lpPlugin::$pluginMeta[$this->metaData()["name"]] . $class;
     }
 }
