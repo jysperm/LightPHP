@@ -40,7 +40,7 @@ class lpCompiledTemplate extends lpPHPTemplate
         $execRules = [
             // {#MSGID}
             '/\{#([^\}]+)\}/s' => function($match) {
-                return l($match[1]);
+                return lpFactory::get("lpLocale")->get($match[1]);
             },
         ];
 
