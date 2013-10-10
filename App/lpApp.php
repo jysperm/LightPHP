@@ -101,7 +101,7 @@ class lpApp
         if($lang && preg_match("/^[_A-Za-z]+$/", $lang) && is_dir("{$localeRoot}/{$lang}"))
             return $_COOKIE[$cookieName];
 
-        if($_SERVER["HTTP_ACCEPT_LANGUAGE"])
+        if(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && $_SERVER["HTTP_ACCEPT_LANGUAGE"])
         {
             $languages = explode(",", str_replace("-", "_", $_SERVER["HTTP_ACCEPT_LANGUAGE"]));
 
