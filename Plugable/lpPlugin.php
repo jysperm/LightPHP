@@ -97,6 +97,11 @@ class lpPlugin
         return $param;
     }
 
+    public static function get($name)
+    {
+        return self::$pluginMeta[$name]["instance"];
+    }
+
     // ----- 需要重写的函数
 
     protected static function meta(array $data)

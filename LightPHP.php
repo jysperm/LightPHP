@@ -19,13 +19,14 @@ function lpLoader($name)
         return;
 
     static $groupMap = [
-        "App" => ["lpApp", "lpFactory", "lpHandler", "lpPlugin", "lpRoute"],
+        "App" => ["lpApp", "lpFactory", "lpHandler", "lpRoute"],
         "Cache" => ["lpAPCCache", "lpFileCache", "lpMemCache"],
         "Exception" => ["lpException", "lpHandlerException", "lpPHPException", "lpPHPFatalException", "lpSQLException"],
         "Locale" => ["lpArrayLocale", "lpGetTextLocale", "lpJSONLocale"],
         "Lock" => ["lpFileLock", "lpMutex", "lpMySQLLock"],
         "Mailer" => ["lpMandrillMailer", "lpPHPMailer", "lpSmtpMailer"],
         "Model" => ["lpMongoModel", "lpPDOModel"],
+        "Plugable" => ["lpPlugin", "lpPlugableHandler"],
         "Template" => ["lpCompiledTemplate", "lpPHPTemplate"],
         "Tool" => ["lpConfig", "lpDebug"]
     ];
