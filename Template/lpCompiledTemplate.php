@@ -22,7 +22,7 @@ class lpCompiledTemplate extends lpPHPTemplate
             // UTF8 BOM
             '/^(\xef\xbb\xbf)/' => '',
             // {$VARIABLES}
-            '/\\{(\\\$[^\\s\\}]+)\\}/s' => '<?= \\1;?>',
+            '/\\{(\\$[^\\s\\}]+)\\}/s' => '<?= \\1;?>',
             // ${EXPRESSION}
             '/\$\{(.+?)\}/is' => "<?= \\1;?>",
             // <!-- {else if EXPRESSION} -->
