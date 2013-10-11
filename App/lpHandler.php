@@ -8,9 +8,6 @@ defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 
 abstract class lpHandler
 {
-    /** @var lpPlugin */
-    protected $plugin = null;
-
     public static function invoke($action, $param)
     {
         try {
@@ -51,10 +48,7 @@ abstract class lpHandler
 
     protected function render($template, $values = [])
     {
-        if($this->plugin)
-            return lpCompiledTemplate::outputFile($this->plugin->file("template/{$template}.php"), $values);
-        else
-            return lpCompiledTemplate::outputFile(lpApp::$paths["template"] . "/{$template}.php", $values);
+        return lpCompiledTemplate::outputFile(lpApp::$paths["template"] . "/{$template}.php", $values);
     }
 
     protected function get(array $rules)
@@ -90,20 +84,12 @@ abstract class lpHandler
         return $result;
     }
 
-    public function __construct($plugin = null)
-    {
-        $this->plugin = $plugin;
-    }
-
     /**
      * @param string $name
      * @return lpPDOModel
      */
     protected function model($name)
     {
-        if($this->plugin)
-            return lpFactory::get($this->plugin->className("{$name}Model"));
-        else
-            return lpFactory::get("{$name}Model");
+        return lpFactory::get("{$name}Model");
     }
 }
