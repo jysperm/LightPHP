@@ -8,7 +8,7 @@ defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 
 abstract class lpHandler
 {
-    public static function invoke($action, $param = [])
+    public static function invoke($action, $param = [], $propertys = [])
     {
         try {
             ob_start();
@@ -23,6 +23,10 @@ abstract class lpHandler
                 throw new lpHandlerException("unknown action", ["handler" => $handler, "operator" => $action]);
 
             $handler = new $handler;
+
+            foreach($propertys as $property => $value)
+                $handler->$property = $value;
+
             return $reflection->invokeArgs($handler, $param);
         }
         catch(lpHandlerException $e)

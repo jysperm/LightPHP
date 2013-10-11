@@ -5,11 +5,6 @@ trait lpPlugableHandler
     /** @var lpPLugin $plugin */
     protected $plugin;
 
-    private function setPlugin(lpPLugin $plugin)
-    {
-        $this->plugin = $plugin;
-    }
-
     /**
      * @param string $name
      * @return lpPDOModel
