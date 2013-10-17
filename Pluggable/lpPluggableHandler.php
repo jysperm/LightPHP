@@ -1,6 +1,6 @@
 <?php
 
-trait lpPlugableHandler
+trait lpPluggableHandler
 {
     /** @var lpPLugin $plugin */
     protected $plugin;
