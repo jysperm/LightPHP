@@ -29,7 +29,7 @@ class lpApp
             "RecommendedPHPVersion" => "5.4.0",
             "Paths" => [
                 "core" => dirname(__FILE__) . "/../../core",
-                "template" => dirname(__FILE__) . "/../../core/template"
+                "template" => dirname(__FILE__) . "/../../compiled/template"
             ]
         ]);
 

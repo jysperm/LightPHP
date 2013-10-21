@@ -4,12 +4,10 @@ class lpCompiledTemplate extends lpPHPTemplate
 {
     public function output()
     {
-        $_lpFile = $this->checkCache();
-
         foreach($this->values as $_lgKey => $_lgVar)
             $$_lgKey = $_lgVar;
 
-        include($_lpFile);
+        include($this->filename);
     }
 
     public static function compile($source, $output)
@@ -41,6 +39,10 @@ class lpCompiledTemplate extends lpPHPTemplate
             // {#MSGID}
             '/\{#([^\}]+)\}/s' => function($match) {
                 return lpFactory::get("lpLocale")->get($match[1]);
+            },
+            // {=CONFIG}
+            '/\{=([^\}]+)\}/s' => function($match) {
+                return lpFactory::get("lpConfig")->get($match[1]);
             },
         ];
 
