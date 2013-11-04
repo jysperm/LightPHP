@@ -78,17 +78,25 @@ abstract class lpHandler
     private function assertParam($source, $rules)
     {
         $result = [];
-        foreach($rules as $name => $rx)
+        foreach($rules as $name => $condition)
         {
             if(is_int($name))
-                list($name, $rx) = [null, $name];
+                list($name, $condition) = [null, $name];
 
             $value = isset($source[$name]) ? $source[$name] : "";
 
-            if(!$rx || preg_match($rx, $value))
+            if(is_callable($condition))
+            {
+                if(!$condition($value))
+                    throw new lpHandlerException("invalid request data", ["name" => $name, "assert" => "[callback]"]);
+            }
+            else if($condition)
+            {
+                if(!preg_match($condition, $value))
+                    throw new lpHandlerException("invalid request data", ["name" => $name, "assert" => $condition]);
+            }
+
                 $result[]= $value;
-            else
-                throw new lpHandlerException("missing request data", ["name" => $name, "assert" => $rx]);
         }
         return $result;
     }
