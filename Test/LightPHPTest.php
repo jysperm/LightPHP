@@ -6,13 +6,15 @@ class LightPHPTest extends PHPUnit_Framework_TestCase
 {
     public function test()
     {
-        foreach(new DirectoryIterator(dirname(__FILE__) . "/../class") as $fileinfo)
+        foreach(new DirectoryIterator(dirname(__FILE__) . "/..") as $fDir)
         {
-            if(!$fileinfo->isDot())
+            /** @var $fDir DirectoryIterator */
+            if($fDir->isDir() && $fDir->getFilename() != "Test")
             {
-                foreach(new DirectoryIterator($fileinfo->getPathname()) as $f)
+                foreach(new DirectoryIterator($fDir->getPathname()) as $f)
                 {
-                    if(!$f->isDot())
+                    /** @var $f DirectoryIterator */
+                    if(!$f->isDot() && substr($f->getFilename(), 0, 2) == "lp")
                         require_once($f->getPathname());
                 }
             }
