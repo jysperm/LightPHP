@@ -13,11 +13,8 @@ const lpDebug = 2;
 const lpDefault = 1;
 const lpProduction = 0;
 
-function lpLoader($name)
+spl_autoload_register(function($name)
 {
-    if(class_exists($name, false))
-        return;
-
     static $groupMap = [
         "App" => ["lpApp", "lpFactory", "lpHandler", "lpRoute"],
         "Cache" => ["lpAPCCache", "lpFileCache", "lpMemCache"],
@@ -38,9 +35,7 @@ function lpLoader($name)
     $path = dirname(__FILE__) ."/{$name}.php";
     if(file_exists($path))
         require_once($path);
-}
-
-spl_autoload_register("lpLoader");
+});
 
 if(!defined("lpDisableErrorHandling") || !lpDisableErrorHandling)
 {
@@ -49,4 +44,3 @@ if(!defined("lpDisableErrorHandling") || !lpDisableErrorHandling)
         throw new lpPHPException($str, 0, $no, $file, $line, null, $varList);
     });
 }
-
