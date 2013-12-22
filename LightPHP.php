@@ -1,11 +1,11 @@
 <?php
 
-/* 选项 -- */
+/* 初始化选项 -- */
 
 // 令 LightPHP 不接管错误处理
 const lpDisableErrorHandling = false;
 
-/* -- 选项 */
+/* -- 初始化选项 */
 
 const lpInLightPHP = true;
 
@@ -14,10 +14,9 @@ const lpDeploy = 2;
 const lpDefault = 1;
 const lpProduction = 0;
 
-spl_autoload_register(function($name)
-{
+spl_autoload_register(function ($name) {
     static $groupMap = [
-        "App" => ["lpApp", "lpFactory", "lpHandler", "lpRoute"],
+        "App" => ["lpApp", "lpFactory", "lpHandler", "lpRouter"],
         "Cache" => ["lpAPCCache", "lpFileCache", "lpMemCache"],
         "Exception" => ["lpException", "lpHandlerException", "lpPHPException", "lpPHPFatalException", "lpSQLException"],
         "Locale" => ["lpArrayLocale", "lpGetTextLocale", "lpJSONLocale"],
@@ -29,19 +28,17 @@ spl_autoload_register(function($name)
         "Tool" => ["lpConfig", "lpDebug"]
     ];
 
-    foreach($groupMap as $group => $classes)
-        if(in_array($name, $classes))
+    foreach ($groupMap as $group => $classes)
+        if (in_array($name, $classes))
             $name = "{$group}/{$name}";
 
-    $path = dirname(__FILE__) ."/{$name}.php";
-    if(file_exists($path))
+    $path = dirname(__FILE__) . "/{$name}.php";
+    if (file_exists($path))
         require_once($path);
 });
 
-if(!defined("lpDisableErrorHandling") || !lpDisableErrorHandling)
-{
-    set_error_handler(function($no, $str, $file, $line, $varList)
-    {
+if (!lpDisableErrorHandling) {
+    set_error_handler(function ($no, $str, $file, $line, $varList) {
         throw new lpPHPException($str, 0, $no, $file, $line, null, $varList);
     });
 }
