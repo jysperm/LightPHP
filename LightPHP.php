@@ -24,7 +24,7 @@ spl_autoload_register(function($name)
         "Lock" => ["lpFileLock", "lpMutex", "lpMySQLLock"],
         "Mailer" => ["lpMandrillMailer", "lpPHPMailer", "lpSmtpMailer"],
         "Model" => ["lpMongoModel", "lpPDOModel"],
-        "Plugable" => ["lpPlugin", "lpPlugableHandler"],
+        "Pluggable" => ["lpPlugin", "lpPluggableHandler"],
         "Template" => ["lpCompiledTemplate", "lpPHPTemplate"],
         "Tool" => ["lpConfig", "lpDebug"]
     ];
