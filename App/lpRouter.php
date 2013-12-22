@@ -116,7 +116,7 @@ class lpRouter
             }
 
             $rf = isset($flags["regex.flags"]) ? $flags["regex.flags"] : "";
-            $rs = isset($flags["regex.split"]) ? $flags["regex.split"] : "%";
+            $rs = isset($flags["regex.split"]) ? $flags["regex.split"] : "|";
 
             if (!$rx | preg_match("{$rs}{$rx}{$rs}{$rf}", self::$url, $result)) {
                 self::$matchedUrl = array_shift($result);
