@@ -16,22 +16,22 @@ class lpMongoModelTest extends PHPUnit_Framework_TestCase
 {
     public function test()
     {
-        $funcRemoveID = function($data) {
-            return array_map(function($row) {
+        $funcRemoveID = function ($data) {
+            return array_map(function ($row) {
                 unset($row["_id"]);
                 return $row;
-            },$data);
+            }, $data);
         };
 
-        $funcGetFieldList = function($field, $cur) {
+        $funcGetFieldList = function ($field, $cur) {
             $result = [];
-            foreach($cur as $row)
+            foreach ($cur as $row)
                 $result[] = $row[$field];
             return $result;
         };
 
         // 注册数据库连接对象
-        lpFactory::register("MongoDB.LightPHP", function() {
+        lpFactory::register("MongoDB.LightPHP", function () {
             return (new MongoClient)->selectDB("test");
         });
 
@@ -75,7 +75,7 @@ class lpMongoModelTest extends PHPUnit_Framework_TestCase
 
         // 实例化部分
         $this->assertEquals(UserMongoModel::byID(UserMongoModel::by("passwd", "1a91f14ce7")["_id"])->data(),
-                            UserMongoModel::by("uname", "jySperm")->data());
+            UserMongoModel::by("uname", "jySperm")->data());
         $this->assertEquals(null, UserMongoModel::by("uname", "orzfly")["settings"]["meizhi"]);
 
         // 查询符

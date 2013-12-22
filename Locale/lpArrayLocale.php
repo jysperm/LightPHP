@@ -5,7 +5,6 @@ defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 /**
  * 该类提供了简易的国际化功能.
  */
-
 class lpArrayLocale implements ArrayAccess
 {
     /** @var string  本地化文件根目录 */
@@ -20,7 +19,7 @@ class lpArrayLocale implements ArrayAccess
      * 构造一个实例
      *
      * @param string $localeRoot 本地化文件根目录
-     * @param string $language    语言
+     * @param string $language 语言
      */
     public function __construct($localeRoot, $language)
     {
@@ -30,17 +29,16 @@ class lpArrayLocale implements ArrayAccess
 
     public function load($files, $ext = ".php")
     {
-        if(!is_array($files))
+        if (!is_array($files))
             $files = [$files];
 
-        foreach($files as $file)
-        {
+        foreach ($files as $file) {
             $filename = "{$file}{$ext}";
 
-            if(in_array($filename, $this->exitsData))
+            if (in_array($filename, $this->exitsData))
                 return $this->data;
             else
-                $this->exitsData[]= $filename;
+                $this->exitsData[] = $filename;
 
             $this->data = array_merge($this->data, include("{$this->localeRoot}/{$this->language}/{$filename}"));
         }
@@ -50,7 +48,7 @@ class lpArrayLocale implements ArrayAccess
 
     public function file($file, $locale = null)
     {
-        if(!$locale)
+        if (!$locale)
             $locale = $this->language;
 
         return "{$this->localeRoot}/{$locale}/{$file}";

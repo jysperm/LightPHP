@@ -5,7 +5,6 @@ defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 /**
  *  该类提供了配置信息管理的功能
  */
-
 class lpConfig implements ArrayAccess
 {
     private $data = [];
@@ -13,11 +12,13 @@ class lpConfig implements ArrayAccess
     public function loadFromPHPFile($file)
     {
         $this->loadFromArray(include($file));
+        return $this;
     }
 
     public function loadFromArray($data)
     {
         $this->data = array_merge($this->data, $data);
+        return $this;
     }
 
     public function data()

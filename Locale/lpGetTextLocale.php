@@ -21,7 +21,7 @@ class lpGetTextLocale implements ArrayAccess
         $this->localeRoot = $localeRoot;
         $this->language = $language;
 
-        $domain = $domain ?: $language;
+        $domain = $domain ? : $language;
 
         setlocale(LC_ALL, $language);
         putenv("LC_ALL={$language}");
@@ -33,7 +33,7 @@ class lpGetTextLocale implements ArrayAccess
 
     public function file($file, $locale = null)
     {
-        if(!$locale)
+        if (!$locale)
             $locale = $this->language;
 
         return "{$this->localeRoot}/{$locale}/{$file}";
@@ -47,7 +47,7 @@ class lpGetTextLocale implements ArrayAccess
     public function get($name, $param = [])
     {
         $string = gettext($name);
-        foreach($param as $k => $v)
+        foreach ($param as $k => $v)
             $string = str_replace("%{$k}", $v, $string);
         return $string;
     }

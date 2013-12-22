@@ -26,7 +26,7 @@ class lpPDOModelTest extends PHPUnit_Framework_TestCase
     public function test()
     {
         // 注册数据库连接对象
-        lpFactory::register("PDO.LightPHP", function() {
+        lpFactory::register("PDO.LightPHP", function () {
             return new PDO("mysql:host=localhost;dbname=test", "test", "passwd");
         });
 
@@ -73,7 +73,7 @@ class lpPDOModelTest extends PHPUnit_Framework_TestCase
 
         // 实例化部分
         $this->assertEquals(UserPDOModel::byID(1)->data(),
-                            UserPDOModel::by("uname", "jySperm")->data());
+            UserPDOModel::by("uname", "jySperm")->data());
         $this->assertEquals(null, UserPDOModel::byID(2)["settings"]["meizhi"]);
 
         // 高级查询

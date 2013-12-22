@@ -4,7 +4,7 @@ class lpCompiledTemplate extends lpPHPTemplate
 {
     public function output()
     {
-        foreach($this->values as $_lgKey => $_lgVar)
+        foreach ($this->values as $_lgKey => $_lgVar)
             $$_lgKey = $_lgVar;
 
         include($this->filename);
@@ -13,7 +13,7 @@ class lpCompiledTemplate extends lpPHPTemplate
     public static function compile($source, $output)
     {
         $content = file_get_contents($source);
-        if(!$content)
+        if (!$content)
             return false;
 
         $rules = [
@@ -31,22 +31,22 @@ class lpCompiledTemplate extends lpPHPTemplate
             '/\<\!\-\-\s*\{else\}\s*\-\-\>/is' => '<? else:?>',
         ];
 
-        foreach($rules as $ex => $replace)
+        foreach ($rules as $ex => $replace)
             $content = preg_replace($ex, $replace, $content);
 
 
         $execRules = [
             // {#MSGID}
-            '/\{#([^\}]+)\}/s' => function($match) {
-                return lpFactory::get("lpLocale")->get($match[1]);
-            },
+            '/\{#([^\}]+)\}/s' => function ($match) {
+                    return lpFactory::get("lpLocale")->get($match[1]);
+                },
             // {=CONFIG}
-            '/\{=([^\}]+)\}/s' => function($match) {
-                return lpFactory::get("lpConfig")->get($match[1]);
-            },
+            '/\{=([^\}]+)\}/s' => function ($match) {
+                    return lpFactory::get("lpConfig")->get($match[1]);
+                },
         ];
 
-        foreach($execRules as $ex => $callback)
+        foreach ($execRules as $ex => $callback)
             $content = preg_replace_callback($ex, $callback, $content);
 
         $flowRules = [
@@ -58,22 +58,22 @@ class lpCompiledTemplate extends lpPHPTemplate
             '/\<\!\-\-\s*\{if\s+(.+?)\}\s*\-\-\>(.+?)\<\!\-\-\s*\{\/if\}\s*\-\-\>/is' => '<? if(\\1):?>\\2<? endif;?>',
         ];
 
-        foreach($flowRules as $ex => $replace)
-            while(preg_match($ex, $content))
+        foreach ($flowRules as $ex => $replace)
+            while (preg_match($ex, $content))
                 $content = preg_replace($ex, $replace, $content);
 
         $execFlowRules = [
             // <!--{include FILE}-->
-            '/<!--\s*{\s*include\s+([^\{\}]+)\s*\}\s*-->/i' => function($match) {
-                return file_get_contents($match[1]);
-            },
+            '/<!--\s*{\s*include\s+([^\{\}]+)\s*\}\s*-->/i' => function ($match) {
+                    return file_get_contents($match[1]);
+                },
         ];
 
-        foreach($execFlowRules as $ex => $callback)
-            while(preg_match($ex, $content))
+        foreach ($execFlowRules as $ex => $callback)
+            while (preg_match($ex, $content))
                 $content = preg_replace_callback($ex, $callback, $content);
 
-        if(!file_put_contents($output, $content))
+        if (!file_put_contents($output, $content))
             return false;
         return true;
     }

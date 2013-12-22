@@ -38,7 +38,7 @@ abstract class lpMongoModel implements ArrayAccess
      */
     public static function byID($id)
     {
-        if(!$id)
+        if (!$id)
             return new static();
         return static::by(static::metaData()["primary"], $id);
     }
@@ -60,7 +60,7 @@ abstract class lpMongoModel implements ArrayAccess
 
     public function offsetSet($offset, $value)
     {
-        if(is_null($offset))
+        if (is_null($offset))
             $this->data[] = $value;
         else
             $this->data[$offset] = $value;
@@ -175,7 +175,7 @@ abstract class lpMongoModel implements ArrayAccess
     {
         $cur = static::select($if, $select);
         $result = [];
-        foreach($cur as $row)
+        foreach ($cur as $row)
             $result[] = $row;
         return $result;
     }
@@ -195,7 +195,7 @@ abstract class lpMongoModel implements ArrayAccess
     {
         $cur = static::select($if, $select);
         $result = [];
-        foreach($cur as $row)
+        foreach ($cur as $row)
             $result[] = $row[$field];
         return $result;
     }
@@ -214,12 +214,12 @@ abstract class lpMongoModel implements ArrayAccess
      */
     public static function selectPrimaryArray($field, array $if = [], array $select = [])
     {
-        if(!$field)
+        if (!$field)
             $field = static::metaData()["primary"];
 
         $cur = static::select($if, $select);
         $result = [];
-        foreach($cur as $row)
+        foreach ($cur as $row)
             $result[$row[$field]] = $row;
         return $result;
     }
@@ -242,7 +242,7 @@ abstract class lpMongoModel implements ArrayAccess
      */
     public static function insertArray(array $data)
     {
-        foreach($data as $i)
+        foreach ($data as $i)
             static::insert($i);
     }
 

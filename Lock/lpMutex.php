@@ -5,7 +5,6 @@
  *
  *   构造该类即进入互斥区, 销毁该类即离开互斥区.
  */
-
 class lpMutex
 {
     /** @var lpFileLock 锁 */

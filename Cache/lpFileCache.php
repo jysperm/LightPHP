@@ -14,7 +14,7 @@ class lpFileCache implements ArrayAccess
 
     public function set($k, $v, $ttl = -1)
     {
-        if(!file_exists($this->config["path"]))
+        if (!file_exists($this->config["path"]))
             mkdir($this->config["path"]);
 
         $filename = "{$this->config["path"]}/" . md5($k) . "." . strval($ttl >= 0 ? time() + $ttl : PHP_INT_MAX) . ".cache";

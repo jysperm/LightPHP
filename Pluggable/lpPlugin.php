@@ -23,14 +23,12 @@ class lpPlugin
 
     public static function initAutoload()
     {
-        $pluginMeta = &self::$pluginMeta;
-        spl_autoload_register(function($className) use(&$pluginMeta) {
-            foreach($pluginMeta as $meta)
-            {
-                foreach($meta["autoload"] as $dir)
-                {
+        $pluginMeta = & self::$pluginMeta;
+        spl_autoload_register(function ($className) use (&$pluginMeta) {
+            foreach ($pluginMeta as $meta) {
+                foreach ($meta["autoload"] as $dir) {
                     $file = $meta["dir"] . "/{$dir}/{$className}.php";
-                    if(file_exists($file))
+                    if (file_exists($file))
                         return require_once($file);
                 }
             }
@@ -39,14 +37,11 @@ class lpPlugin
 
     public static function registerPluginDir($dir, $namespacePrefix = "lpPlugins")
     {
-        foreach(new DirectoryIterator($dir) as $fileinfo)
-        {
+        foreach (new DirectoryIterator($dir) as $fileinfo) {
             /** @var $fileinfo DirectoryIterator */
-            if(!$fileinfo->isDot() && $fileinfo->isDir())
-            {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
                 $file = "{$fileinfo->getPathname()}/{$fileinfo->getFilename()}.php";
-                if(file_exists($file))
-                {
+                if (file_exists($file)) {
                     require_once($file);
                     $name = $fileinfo->getFilename();
                     $className = "\\{$namespacePrefix}\\{$name}\\{$name}";
@@ -64,23 +59,20 @@ class lpPlugin
 
     public static function initPlugin()
     {
-        foreach(self::$pluginMeta as $plugin)
-        {
+        foreach (self::$pluginMeta as $plugin) {
 
             $plugin["instance"]->init();
 
-            foreach($plugin["hook"] as $hookName => $func)
+            foreach ($plugin["hook"] as $hookName => $func)
                 self::$hooks[$hookName][] = $func;
         }
     }
 
     public static function bindRoute()
     {
-        foreach(self::$pluginMeta as $plugin)
-        {
-            foreach($plugin["instance"]->routes() as $k => $v)
-            {
-                if(is_array($v))
+        foreach (self::$pluginMeta as $plugin) {
+            foreach ($plugin["instance"]->routes() as $k => $v) {
+                if (is_array($v))
                     list($func, $flags) = $v;
                 else
                     list($func, $flags) = [$v, []];
@@ -91,7 +83,7 @@ class lpPlugin
 
     public static function hook($hookName, array $param = [])
     {
-        foreach(self::$hooks[$hookName] as $hook)
+        foreach (self::$hooks[$hookName] as $hook)
             $param = $hook($param);
 
         return $param;

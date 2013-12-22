@@ -18,7 +18,7 @@ class lpMemCache implements ArrayAccess
 
         $this->memcache = new Memcache;
 
-        foreach($this->config["server"] as $host => $port)
+        foreach ($this->config["server"] as $host => $port)
             $this->memcache->addserver($host, $port);
     }
 
@@ -31,7 +31,7 @@ class lpMemCache implements ArrayAccess
     {
         $f = false;
         $r = $this->memcache->get($k, $f);
-        if(!is_bool($f) || !$f)
+        if (!is_bool($f) || !$f)
             return $r;
         return null;
     }
@@ -40,7 +40,7 @@ class lpMemCache implements ArrayAccess
     {
         $f = false;
         $r = $this->memcache->get($k, $f);
-        if($f)
+        if ($f)
             return $r;
 
         $v = $seter();

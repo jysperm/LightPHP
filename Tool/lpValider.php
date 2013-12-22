@@ -6,8 +6,7 @@ class lpValider
 {
     public static function rx($type)
     {
-        switch($type)
-        {
+        switch ($type) {
             case lpEmail:
                 return '/^[A-Za-z0-9_\-\.\+]+@[A-Za-z0-9_\-\.]+$/';
         }

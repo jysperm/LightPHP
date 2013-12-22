@@ -3,16 +3,15 @@
 defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 
 /**
-*   该类提供应用全局层面的数据储存，工具函数。
-*/
-
+ * 该类提供应用全局层面的数据储存，工具函数。
+ */
 class lpApp
 {
+    /** @var string */
     public static $url = "";
     public static $matchedUrl = "";
     public static $urlParam = [];
     public static $paths = "";
-
     private static $routes = [];
     private static $atExit = [];
 
@@ -31,16 +30,14 @@ class lpApp
                 "core" => dirname(__FILE__) . "/../../core",
                 "template" => dirname(__FILE__) . "/../../compiled/template"
             ]
-        ]);
-
-        $c->loadFromArray($config);
+        ])->loadFromArray($config);
 
         // 设置运行模式
-        if(!defined("lpRunLevel"))
+        if (!defined("lpRunLevel"))
             define("lpRunLevel", $c["RunLevel"]);
 
         // 如果PHP版本过低, 显示警告
-        if(version_compare(PHP_VERSION, $c["lpRecommendedPHPVersion"]) <= 0)
+        if (version_compare(PHP_VERSION, $c["lpRecommendedPHPVersion"]) <= 0)
             trigger_error("Please install the newly version of PHP ({$c["RecommendedPHPVersion"]}+).");
 
         // 设置时区
@@ -48,7 +45,7 @@ class lpApp
 
         self::$paths = $c["Paths"];
 
-        if(!defined("lpDisableErrorHandling") || !lpDisableErrorHandling)
+        if (!lpDisableErrorHandling)
             lpDebug::registerErrorHandling();
     }
 
@@ -57,13 +54,13 @@ class lpApp
         self::$atExit[] = $func;
     }
 
-    public static function registerShortFunc()
+    public static function registerBuildInShortFunc()
     {
         function c($k = null)
         {
             /** @var lpConfig $config */
             $config = lpFactory::get("lpConfig");
-            if($k)
+            if ($k)
                 return $config->get($k);
             else
                 return $config->data();
@@ -83,36 +80,6 @@ class lpApp
         }
     }
 
-    /**
-     * 判断客户端语言
-     *
-     * * 首先根据 Cookie
-     * * 然后根据 HTTP Accept-Language
-     * * 最后私用默认语言
-     *
-     * @param $localeRoot           本地化文件根目录
-     * @param $defaultLanguage      默认语言
-     * @param string $cookieName    储存语言的Cookie
-     * @return string
-     */
-    public static function checkLanguage($localeRoot, $defaultLanguage, $cookieName="language")
-    {
-        $lang = isset($_COOKIE[$cookieName]) ? $_COOKIE[$cookieName] : "";
-        if($lang && preg_match("/^[_A-Za-z]+$/", $lang) && is_dir("{$localeRoot}/{$lang}"))
-            return $_COOKIE[$cookieName];
-
-        if(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && $_SERVER["HTTP_ACCEPT_LANGUAGE"])
-        {
-            $languages = explode(",", str_replace("-", "_", $_SERVER["HTTP_ACCEPT_LANGUAGE"]));
-
-            foreach($languages as $i)
-                if(preg_match("/^[_A-Za-z]+$/", $i) && is_dir("{$localeRoot}/{$lang}"))
-                    return $i;
-        }
-
-        return $defaultLanguage;
-    }
-
     public static function bye()
     {
         exit(0);
@@ -120,7 +87,7 @@ class lpApp
 
     public static function goUrl($url, $code = 302)
     {
-        if($code == 301)
+        if ($code == 301)
             header('HTTP/1.1 301 Moved Permanently');
         header("Location: {$url}");
     }
@@ -133,23 +100,20 @@ class lpApp
     public static function exec()
     {
         $queryStrLen = 0;
-        if(isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"])
+        if (isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"])
             $queryStrLen = strlen($_SERVER["QUERY_STRING"]) + 1;
 
         self::$url = substr($_SERVER["REQUEST_URI"], 0, strlen($_SERVER["REQUEST_URI"]) - $queryStrLen);
-        if(substr(self::$url, -1, 1) == "?")
+        if (substr(self::$url, -1, 1) == "?")
             self::$url = substr(self::$url, 0, strlen(self::$url) - 1);
 
-        foreach(self::$routes as $rx => $route)
-        {
+        foreach (self::$routes as $rx => $route) {
             list($func, $flags) = $route;
 
-            foreach($flags as $flag => $value)
-            {
-                switch($flag)
-                {
+            foreach ($flags as $flag => $value) {
+                switch ($flag) {
                     case "method":
-                        if(!in_array($_SERVER["REQUEST_METHOD"], $value))
+                        if (!in_array($_SERVER["REQUEST_METHOD"], $value))
                             continue 3;
                 }
             }
@@ -157,8 +121,7 @@ class lpApp
             $rf = isset($flags["regex.flags"]) ? $flags["regex.flags"] : "";
             $rs = isset($flags["regex.split"]) ? $flags["regex.split"] : "%";
 
-            if(!$rx | preg_match("{$rs}{$rx}{$rs}{$rf}", self::$url, $result))
-            {
+            if (!$rx | preg_match("{$rs}{$rx}{$rs}{$rf}", self::$url, $result)) {
                 self::$matchedUrl = array_shift($result);
                 self::$urlParam = $result;
 
@@ -168,7 +131,7 @@ class lpApp
             }
         }
 
-        foreach(self::$atExit as $func)
+        foreach (self::$atExit as $func)
             $func();
     }
 }

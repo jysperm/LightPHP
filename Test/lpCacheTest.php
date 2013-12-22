@@ -6,7 +6,7 @@ class lpCacheTest extends PHPUnit_Framework_TestCase
 {
     public function test()
     {
-        $funcRunTest = function($cache) {
+        $funcRunTest = function ($cache) {
             /** @var lpAPCCache $cache */
 
             $cache["key1"] = "value1";
@@ -17,7 +17,7 @@ class lpCacheTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($data, $cache["key2"]);
 
             $flag = 0;
-            $seter = function() use(&$flag) {
+            $seter = function () use (&$flag) {
                 $flag++;
                 return "value";
             };

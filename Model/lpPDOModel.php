@@ -51,7 +51,7 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function byID($id)
     {
-        if(!$id)
+        if (!$id)
             return new static();
         return static::by(static::metaData()["primary"], $id);
     }
@@ -82,7 +82,7 @@ abstract class lpPDOModel implements ArrayAccess
 
     public function offsetSet($offset, $value)
     {
-        if(is_null($offset))
+        if (is_null($offset))
             $this->data[] = $value;
         else
             $this->data[$offset] = $value;
@@ -204,7 +204,7 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function query($query, array $params)
     {
-        foreach($params as $index => $value)
+        foreach ($params as $index => $value)
             $query = str_replace("{{$index}}", substr(self::getDB()->quote($value), 1, -1), $query);
         return $query;
     }
@@ -260,19 +260,15 @@ abstract class lpPDOModel implements ArrayAccess
         $orderBy = "";
         $sqlLimit = "";
 
-        foreach($options as $option => $value)
-        {
-            switch($option)
-            {
+        foreach ($options as $option => $value) {
+            switch ($option) {
                 case "count":
-                    if($value)
+                    if ($value)
                         $select = "COUNT(*)";
                     break;
                 case "sort":
-                    foreach($value as $k => $v)
-                    {
-                        if(is_int($k))
-                        {
+                    foreach ($value as $k => $v) {
+                        if (is_int($k)) {
                             $k = $v;
                             $v = true;
                         }
@@ -282,7 +278,7 @@ abstract class lpPDOModel implements ArrayAccess
                     }
                     break;
                 case "select":
-                    foreach($value as &$i)
+                    foreach ($value as &$i)
                         $i = "`{$i}`";
                     $select = implode(", ", $value);
                     break;
@@ -292,15 +288,15 @@ abstract class lpPDOModel implements ArrayAccess
         $skip = isset($options["skip"]) ? $options["skip"] : -1;
         $limit = isset($options["limit"]) ? $options["limit"] : -1;
 
-        if($limit > -1 && $skip > -1)
+        if ($limit > -1 && $skip > -1)
             $sqlLimit = " LIMIT {$skip}, {$limit}";
-        else if($limit > -1 && !($skip > -1))
+        else if ($limit > -1 && !($skip > -1))
             $sqlLimit = " LIMIT {$limit}";
 
         $sql = "SELECT {$select} FROM `{$table}` WHERE {$where} {$orderBy} {$sqlLimit}";
 
         $result = $db->query($sql);
-        if(!$result)
+        if (!$result)
             throw new lpSQLException($sql, $db->errorInfo());
         $result->setFetchMode(PDO::FETCH_ASSOC);
         return $result;
@@ -336,7 +332,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function selectArray(array $if = [], array $options = [])
     {
         $rs = static::select($if, $options)->fetchAll();
-        foreach($rs as &$v)
+        foreach ($rs as &$v)
             $v = static::jsonDecode($v);
         return $rs;
     }
@@ -355,7 +351,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function selectValueList($field, array $if = [], array $options = [])
     {
         $rs = static::select($if, $options)->fetchAll();
-        foreach($rs as &$v)
+        foreach ($rs as &$v)
             $v = static::jsonDecode($v)[$field];
         return $rs;
     }
@@ -374,12 +370,12 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function selectPrimaryArray($field, array $if = [], array $options = [])
     {
-        if(!$field)
+        if (!$field)
             $field = static::metaData()["primary"];
 
         $rs = static::select($if, $options)->fetchAll();
         $result = [];
-        foreach($rs as $v)
+        foreach ($rs as $v)
             $result[$v[$field]] = static::jsonDecode($v);
         return $result;
     }
@@ -442,7 +438,7 @@ abstract class lpPDOModel implements ArrayAccess
     public static function insertArray(array $data)
     {
         $result = [];
-        foreach($data as $i)
+        foreach ($data as $i)
             $result[] = static::insert($i);
         return $result;
     }
@@ -451,7 +447,7 @@ abstract class lpPDOModel implements ArrayAccess
      * 更新数据
      *
      * @param array $if 条件
-     * @param array  $data 新数据
+     * @param array $data 新数据
      *
      * @return int 被更新的行数
      */
@@ -463,8 +459,7 @@ abstract class lpPDOModel implements ArrayAccess
         $data = static::jsonEncode($data);
 
         $sqlSet = [];
-        foreach($data as $k => $v)
-        {
+        foreach ($data as $k => $v) {
             $v = $db->quote($v);
             $sqlSet[] = "`{$k}` = {$v}";
         }
@@ -507,20 +502,16 @@ abstract class lpPDOModel implements ArrayAccess
 
         $sql = "CREATE TABLE IF NOT EXISTS `{$meta['table']}` (";
 
-        foreach($meta["struct"] as $name => $data)
-        {
+        foreach ($meta["struct"] as $name => $data) {
             $type = "";
 
-            foreach($data as $k => $v)
-            {
-                if(is_int($k))
-                {
+            foreach ($data as $k => $v) {
+                if (is_int($k)) {
                     $k = $v;
                     $v = null;
                 }
 
-                switch($k)
-                {
+                switch ($k) {
                     case self::INT:
                         $type = self::INT;
                         break;
@@ -537,10 +528,10 @@ abstract class lpPDOModel implements ArrayAccess
             }
 
             $suffix = in_array(self::NOTNULL, $data) ? "NOT NULL " : "NULL ";
-            if(in_array(self::AI, $data))
+            if (in_array(self::AI, $data))
                 $suffix .= self::AI;
 
-            if(isset($data[self::DEFALT]))
+            if (isset($data[self::DEFALT]))
                 $type .= " DEFAULT " . $db->quote($data[self::DEFALT]);
 
             $sql .= "`{$name}` {$type} {$suffix},";
@@ -559,8 +550,8 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function jsonEncode(array $data)
     {
-        foreach(static::metaData()["struct"] as $k => $v)
-            if(in_array(self::JSON, $v) && array_key_exists($k, $data))
+        foreach (static::metaData()["struct"] as $k => $v)
+            if (in_array(self::JSON, $v) && array_key_exists($k, $data))
                 $data[$k] = json_encode($data[$k]);
         return $data;
     }
@@ -573,8 +564,8 @@ abstract class lpPDOModel implements ArrayAccess
      */
     public static function jsonDecode(array $data)
     {
-        foreach(static::metaData()["struct"] as $k => $v)
-            if(in_array(self::JSON, $v) && array_key_exists($k, $data))
+        foreach (static::metaData()["struct"] as $k => $v)
+            if (in_array(self::JSON, $v) && array_key_exists($k, $data))
                 $data[$k] = json_decode($data[$k], true);
         return $data;
     }
@@ -591,14 +582,11 @@ abstract class lpPDOModel implements ArrayAccess
         $db = static::getDB();
         $where = [];
 
-        foreach($if as $k => $v)
-        {
-            if(substr($k, 0, 1) == self::QueryEscape)
-            {
+        foreach ($if as $k => $v) {
+            if (substr($k, 0, 1) == self::QueryEscape) {
                 $op = strtolower(substr($k, 1));
 
-                switch($op)
-                {
+                switch ($op) {
                     case "or":
                         $where[] = static::buildWhere($v, false);
                         break;
@@ -633,21 +621,14 @@ abstract class lpPDOModel implements ArrayAccess
                         $where[] = "(`{$kk}` LIKE {$vv})";
                         break;
                 }
-            }
-            else if(is_int($k) && is_string($v))
-            {
+            } else if (is_int($k) && is_string($v)) {
                 $where[] = $v;
-            }
-            else if(is_array($v))
-            {
-                foreach($v as $kk => $vv)
-                {
+            } else if (is_array($v)) {
+                foreach ($v as $kk => $vv) {
                     $vv = $db->quote($vv);
                     $where[] = "(`{$kk}` = {$vv})";
                 }
-            }
-            else
-            {
+            } else {
                 $v = $db->quote($v);
                 $where[] = "(`{$k}` = {$v})";
             }
@@ -656,7 +637,7 @@ abstract class lpPDOModel implements ArrayAccess
         $connector = $isAndOrOr ? " AND " : " OR ";
         $where = implode($connector, $where);
 
-        if($where)
+        if ($where)
             return $where;
         return "TRUE";
     }

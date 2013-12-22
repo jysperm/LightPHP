@@ -3,9 +3,8 @@
 defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 
 /**
-*   处理器基类
-*/
-
+ *   处理器基类
+ */
 abstract class lpHandler
 {
     public static function invoke($action, $param = [], $propertys = [])
@@ -15,26 +14,22 @@ abstract class lpHandler
 
             $handler = get_called_class();
 
-            if(!$action)
+            if (!$action)
                 $action = "__invoke";
 
             $reflection = new ReflectionMethod($handler, $action);
-            if(!$reflection->isPublic() || $reflection->isStatic())
+            if (!$reflection->isPublic() || $reflection->isStatic())
                 throw new lpHandlerException("unknown action", ["handler" => $handler, "operator" => $action]);
 
             $handler = new $handler;
 
-            foreach($propertys as $property => $value)
+            foreach ($propertys as $property => $value)
                 $handler->$property = $value;
 
             return $reflection->invokeArgs($handler, $param);
-        }
-        catch(lpHandlerException $e)
-        {
+        } catch (lpHandlerException $e) {
             static::onException($e->getMessage(), $e->getData());
-        }
-        catch(ReflectionException $e)
-        {
+        } catch (ReflectionException $e) {
             throw new lpException("action not found");
         }
     }
@@ -78,25 +73,21 @@ abstract class lpHandler
     private function assertParam($source, $rules)
     {
         $result = [];
-        foreach($rules as $name => $condition)
-        {
-            if(is_int($name))
+        foreach ($rules as $name => $condition) {
+            if (is_int($name))
                 list($name, $condition) = [null, $name];
 
             $value = isset($source[$name]) ? $source[$name] : "";
 
-            if(is_callable($condition))
-            {
-                if(!$condition($value))
+            if (is_callable($condition)) {
+                if (!$condition($value))
                     throw new lpHandlerException("invalid request data", ["name" => $name, "assert" => "[callback]"]);
-            }
-            else if($condition)
-            {
-                if(!preg_match($condition, $value))
+            } else if ($condition) {
+                if (!preg_match($condition, $value))
                     throw new lpHandlerException("invalid request data", ["name" => $name, "assert" => $condition]);
             }
 
-                $result[]= $value;
+            $result[] = $value;
         }
         return $result;
     }

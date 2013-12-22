@@ -3,7 +3,9 @@
 interface iUserModel
 {
     public function byID();
+
     public function id();
+
     /** @return iTokenModel */
     public function getTokenModel();
 }
@@ -11,11 +13,16 @@ interface iUserModel
 interface iTokenModel
 {
     public function newToken();
+
     /** @return iTokenModel */
     public function byToken();
+
     public function remove();
+
     public function userID();
+
     public function renew();
+
     public function isValid();
 }
 
@@ -42,12 +49,11 @@ class lpSession
      */
     public function isAuth()
     {
-        if($this->isAuth !== null)
+        if ($this->isAuth !== null)
             return $this->isAuth;
 
         // Session 方式
-        if(isset($_SESSION["lpIsAuth"]) && $_SESSION["lpIsAuth"])
-        {
+        if (isset($_SESSION["lpIsAuth"]) && $_SESSION["lpIsAuth"]) {
             $this->isAuth = true;
             $this->userID = $_SESSION["lpUserID"];
             $this->userModel = $this->userModel->byID($this->userID);
@@ -55,8 +61,7 @@ class lpSession
         }
 
         // Cookie 方式
-        if(isset($_COOKIE["lpToken"]) && self::tryTokenLogin($_COOKIE["lpToken"]))
-        {
+        if (isset($_COOKIE["lpToken"]) && self::tryTokenLogin($_COOKIE["lpToken"])) {
             $_SESSION["lpIsAuth"] = true;
             $_SESSION["lpUserID"] = $this->userModel->id();
             $_SESSION["lpToken"] = $_COOKIE["lpToken"];
@@ -72,7 +77,7 @@ class lpSession
      */
     public function user()
     {
-        if($this->isAuth())
+        if ($this->isAuth())
             return $this->userModel;
 
         return null;
@@ -115,7 +120,7 @@ class lpSession
      */
     public function logout()
     {
-        if(isset($_SESSION['lpToken']))
+        if (isset($_SESSION['lpToken']))
             $this->revokeToken($_SESSION['lpToken']);
 
         setcookie("lpToken", "", 1, "/");
@@ -132,8 +137,7 @@ class lpSession
     {
         $token = $this->userModel->getTokenModel()->byToken($token);
 
-        if($token->userID() && $token->isValid($token))
-        {
+        if ($token->userID() && $token->isValid($token)) {
             $token->renew();
             $this->isAuth = true;
             $this->userID = $token->userID();
@@ -158,7 +162,7 @@ class lpSession
      */
     public static function initSession()
     {
-        if(!isset($_SESSION))
+        if (!isset($_SESSION))
             session_start();
     }
 
@@ -178,10 +182,9 @@ class lpSession
     public static function get($name, $remove = false)
     {
         $result = null;
-        if(isset($_SESSION[$name]))
-        {
+        if (isset($_SESSION[$name])) {
             $result = $_SESSION[$name];
-            if($remove)
+            if ($remove)
                 unset($_SESSION[$name]);
         }
         return $result;

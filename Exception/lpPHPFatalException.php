@@ -1,5 +1,6 @@
 <?php
 
-class lpPHPFatalException extends ErrorException {
+class lpPHPFatalException extends ErrorException
+{
 
 }

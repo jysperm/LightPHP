@@ -21,14 +21,14 @@ class lpJSONLocale implements ArrayAccess
         $this->localeRoot = $localeRoot;
         $this->language = $language;
 
-        $domain = $domain ?: $language;
+        $domain = $domain ? : $language;
 
         $this->data = json_decode(file_get_contents("{$localeRoot}/{$language}/{$domain}.json"), true);
     }
 
     public function file($file, $locale = null)
     {
-        if(!$locale)
+        if (!$locale)
             $locale = $this->language;
 
         return "{$this->localeRoot}/{$locale}/{$file}";
@@ -46,17 +46,16 @@ class lpJSONLocale implements ArrayAccess
             $key = $keys[0];
             $string = $this->data[$key];
 
-            if(count($keys) > 1)
-                foreach($keys as $index => $key)
-                    if($index > 0)
+            if (count($keys) > 1)
+                foreach ($keys as $index => $key)
+                    if ($index > 0)
                         $string = $string[$key];
 
-            foreach($param as $k => $v)
+            foreach ($param as $k => $v)
                 $string = str_replace("%{$k}", $v, $string);
 
             return $string;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return $name;
         }
     }

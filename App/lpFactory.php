@@ -5,7 +5,6 @@ defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 /**
  * 一个对象构造器，模拟工厂模式。
  */
-
 class lpFactory
 {
     /** @var array 对象数组 */
@@ -34,22 +33,18 @@ class lpFactory
      */
     public static function get($name, $tag = null)
     {
-        if(!isset(self::$data[$name][$tag]))
-        {
-            if(isset(self::$creator[$name]))
-            {
+        if (!isset(self::$data[$name][$tag])) {
+            if (isset(self::$creator[$name])) {
                 $creator = self::$creator[$name];
                 self::$data[$name][$tag] = $creator($tag);
-            }
-            else
-            {
+            } else {
                 self::$data[$name][$tag] = new $name;
             }
         }
 
         return self::$data[$name][$tag];
     }
-    
+
     /**
      * 强制修改一个对象的值
      * 慎用

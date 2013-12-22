@@ -3,9 +3,8 @@
 defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
 
 /**
-*   文件锁类.
-*/
-
+ *   文件锁类.
+ */
 class lpFileLock
 {
     /** @var resource 文件句柄 */
@@ -18,11 +17,11 @@ class lpFileLock
     private $isLocked = false;
 
     /**
-    *   构造一个文件锁实例.
-    *
-    *   @param string $name 锁的名字
-    *   @param string $path 锁的路径
-    */
+     *   构造一个文件锁实例.
+     *
+     * @param string $name 锁的名字
+     * @param string $path 锁的路径
+     */
 
     public function __construct($name, $path = ".")
     {
@@ -37,32 +36,31 @@ class lpFileLock
 
     public function lock($type = LOCK_EX)
     {
-        if(!$this->file)
+        if (!$this->file)
             $this->file = fopen($this->fileName, "w+");
-        if($this->isLocked)
+        if ($this->isLocked)
             return;
 
-        while(!flock($this->file, $type));
+        while (!flock($this->file, $type)) ;
         $this->isLocked = true;
     }
 
     /**
-    *   解锁.
-    */
+     *   解锁.
+     */
 
     public function unLock()
     {
-        if($this->isLocked)
-        {
+        if ($this->isLocked) {
             flock($this->file, LOCK_UN);
             fclose($this->file);
-            $this->isLocked=false;
+            $this->isLocked = false;
         }
     }
 
     /**
-    *   @return bool 是否处于加锁状态.
-    */
+     * @return bool 是否处于加锁状态.
+     */
 
     public function isLock()
     {
@@ -72,7 +70,7 @@ class lpFileLock
     public function __destruct()
     {
         $this->unLock();
-        if(file_exists($this->fileName))
+        if (file_exists($this->fileName))
             unlink($this->fileName);
     }
 }

@@ -8,7 +8,7 @@ class lpPHPTemplate implements ArrayAccess
     /* ArrayAccess */
     public function offsetSet($offset, $value)
     {
-        if(is_null($offset))
+        if (is_null($offset))
             $this->values[] = $value;
         else
             $this->values[$offset] = $value;
@@ -41,7 +41,7 @@ class lpPHPTemplate implements ArrayAccess
 
     public function setValues($arr)
     {
-        foreach($arr as $k => $v)
+        foreach ($arr as $k => $v)
             $this->setValue($k, $v);
     }
 
@@ -60,7 +60,7 @@ class lpPHPTemplate implements ArrayAccess
     public static function outputFile($file, $values = [])
     {
         $tmp = new static($file);
-        if($values)
+        if ($values)
             $tmp->setValues($values);
         $tmp->output();
     }
@@ -68,7 +68,7 @@ class lpPHPTemplate implements ArrayAccess
     public static function getOutputFile($file, $values = [])
     {
         $tmp = new static($file);
-        if($values)
+        if ($values)
             $tmp->setValues($values);
         return $tmp->getOutput();
     }
