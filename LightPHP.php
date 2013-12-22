@@ -3,7 +3,7 @@
 /* 选项 -- */
 
 // 令 LightPHP 不接管错误处理
-//const lpDisableErrorHandling = true;
+const lpDisableErrorHandling = false;
 
 /* -- 选项 */
 
