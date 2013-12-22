@@ -1,19 +1,17 @@
 <?php
 
-defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
-
 /**
  * 该类提供应用全局层面的数据储存，工具函数。
  */
 class lpApp
 {
-    /** @var string */
-    public static $url = "";
-    public static $matchedUrl = "";
-    public static $urlParam = [];
     public static $paths = "";
-    private static $routes = [];
     private static $atExit = [];
+
+    public static $get = [];
+    public static $post = [];
+    public static $cookie = [];
+    public static $server = [];
 
     public static function helloWorld(array $config)
     {
@@ -45,8 +43,19 @@ class lpApp
 
         self::$paths = $c["Paths"];
 
-        if (!lpDisableErrorHandling)
+        if (lpWrapSuperGlobals)
+            list(self::$get, self::$post, self::$cookie, self::$server) = [
+                $_GET, $_POST, $_COOKIE, $_SERVER
+            ];
+
+        if (lpErrorHandling)
             lpDebug::registerErrorHandling();
+    }
+
+    public static function bye()
+    {
+        foreach (self::$atExit as $func)
+            $func();
     }
 
     public static function registerAtExit(callable $func)
@@ -78,60 +87,5 @@ class lpApp
         {
             return lpFactory::get($name, $tag);
         }
-    }
-
-    public static function bye()
-    {
-        exit(0);
-    }
-
-    public static function goUrl($url, $code = 302)
-    {
-        if ($code == 301)
-            header('HTTP/1.1 301 Moved Permanently');
-        header("Location: {$url}");
-    }
-
-    public static function bind($rx, callable $func, array $flags = [])
-    {
-        self::$routes[$rx] = [$func, $flags];
-    }
-
-    public static function exec()
-    {
-        $queryStrLen = 0;
-        if (isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"])
-            $queryStrLen = strlen($_SERVER["QUERY_STRING"]) + 1;
-
-        self::$url = substr($_SERVER["REQUEST_URI"], 0, strlen($_SERVER["REQUEST_URI"]) - $queryStrLen);
-        if (substr(self::$url, -1, 1) == "?")
-            self::$url = substr(self::$url, 0, strlen(self::$url) - 1);
-
-        foreach (self::$routes as $rx => $route) {
-            list($func, $flags) = $route;
-
-            foreach ($flags as $flag => $value) {
-                switch ($flag) {
-                    case "method":
-                        if (!in_array($_SERVER["REQUEST_METHOD"], $value))
-                            continue 3;
-                }
-            }
-
-            $rf = isset($flags["regex.flags"]) ? $flags["regex.flags"] : "";
-            $rs = isset($flags["regex.split"]) ? $flags["regex.split"] : "%";
-
-            if (!$rx | preg_match("{$rs}{$rx}{$rs}{$rf}", self::$url, $result)) {
-                self::$matchedUrl = array_shift($result);
-                self::$urlParam = $result;
-
-                call_user_func_array($func, $result);
-
-                return $rx;
-            }
-        }
-
-        foreach (self::$atExit as $func)
-            $func();
     }
 }

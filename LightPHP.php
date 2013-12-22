@@ -2,8 +2,10 @@
 
 /* 初始化选项 -- */
 
-// 令 LightPHP 不接管错误处理
-const lpDisableErrorHandling = false;
+// 令 LightPHP 接管错误处理
+const lpErrorHandling = true;
+// 令 LightPHP 包装超全局变量
+const lpWrapSuperGlobals = true;
 
 /* -- 初始化选项 */
 
@@ -37,7 +39,7 @@ spl_autoload_register(function ($name) {
         require_once($path);
 });
 
-if (!lpDisableErrorHandling) {
+if (lpErrorHandling) {
     set_error_handler(function ($no, $str, $file, $line, $varList) {
         throw new lpPHPException($str, 0, $no, $file, $line, null, $varList);
     });

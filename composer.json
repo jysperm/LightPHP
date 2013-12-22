@@ -1,10 +1,10 @@
 {
-  "name": "jybox/LightPHP",
+  "name": "jysperm/LightPHP",
   "description": "A Light PHP Library",
   "authors": [
     {
-      "name": "jybox",
-      "email": "m@jybox.net"
+      "name": "jysperm",
+      "email": "jysperm@gmail.com"
     }
   ],
   "autoload": {
