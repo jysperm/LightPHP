@@ -9,7 +9,8 @@
 
 const lpInLightPHP = true;
 
-const lpDebug = 2;
+const lpDebug = 3;
+const lpDeploy = 2;
 const lpDefault = 1;
 const lpProduction = 0;
 
