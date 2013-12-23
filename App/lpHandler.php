@@ -1,7 +1,5 @@
 <?php
 
-defined("lpInLightPHP") or die(header("HTTP/1.1 403 Not Forbidden"));
-
 /**
  *   处理器基类
  */
@@ -52,7 +50,7 @@ abstract class lpHandler
 
     protected function render($template, $values = [])
     {
-        return lpCompiledTemplate::outputFile(lpApp::$paths["template"] . "/{$template}.php", $values);
+
     }
 
     protected function get(array $rules)

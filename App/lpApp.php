@@ -15,9 +15,7 @@ class lpApp
 
     public static function helloWorld(array $config)
     {
-        $c = new lpConfig;
-
-        $c->loadFromArray([
+        $c = (new lpConfig)->loadFromArray([
             // 时区
             "TimeZone" => "Asia/Shanghai",
             // 运行级别
