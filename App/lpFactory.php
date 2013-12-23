@@ -14,7 +14,7 @@ class lpFactory
      * 注册一个对象构造器
      *
      * @param string $name 类名
-     * @param callable(mixed $tag) $creator 构造器
+     * @param callable (mixed $tag) $creator 构造器
      */
     public static function register($name, callable $creator)
     {

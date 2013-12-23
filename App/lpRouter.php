@@ -58,8 +58,8 @@ class lpRouter
      */
     public static function parseURL($uri = null, $query = null)
     {
-        $uri = $uri ?: $_SERVER["REQUEST_URI"];
-        $query = $query ?: $_SERVER["QUERY_STRING"];
+        $uri = $uri ? : $_SERVER["REQUEST_URI"];
+        $query = $query ? : $_SERVER["QUERY_STRING"];
 
         $queryStrLen = 0;
         if ($query)
@@ -89,7 +89,7 @@ class lpRouter
      */
     public static function exec()
     {
-        self::$url = self::$url ?: self::parseURL();
+        self::$url = self::$url ? : self::parseURL();
 
         $func = self::match();
         call_user_func_array($func, self::$urlParam);
