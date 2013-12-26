@@ -3,9 +3,9 @@
 /**
  * Class lpPDOQuery
  */
-class lpPDOQuery
+class lpPDOQuery implements iModelQuery
 {
-    /** @var string 主键字段 */
+    /** @var string $primary 主键字段 */
     public $primary = "id";
 
     /** @var PDO $pdo */
@@ -13,7 +13,7 @@ class lpPDOQuery
     /** @var string $table */
     private $table;
 
-    /** @var string 数据库驱动名称 */
+    /** @var string $attrDRIVER_NAME PDO 驱动名称 */
     private $attrDRIVER_NAME = null;
 
     /**
@@ -36,7 +36,7 @@ class lpPDOQuery
     /**
      * 通过占位符语法构建 SQL
      *
-     * 该函数仅负责构建 SQL, 你可能需要通过 drive() 获取 PDO 对象后执行查询。
+     * 该函数仅负责构建 SQL, 你可能需要通过 driver() 获取 PDO 对象后执行查询。
      *
      * @param string $query SQL, 其中可以包含形如 {1} {2} 的占位符
      * @param array $params 用于填充占位符的数据，该函数会对它们进行转义
@@ -76,7 +76,7 @@ class lpPDOQuery
      *     "sort" => [<排序字段> => <(bool)是否为正序>, <排序字段> => <(bool)是否为正序>],
      *     "select" => [<要检索的字段>],
      *     "skip" => <(int)跳过条数>,
-     *     "limit" => <(int)检索条数>
+     *     "limit" => <(int)检索条数>,
      *     "count" => <(bool)是否只获取结果数>
      * ]
      *
@@ -245,7 +245,7 @@ class lpPDOQuery
 
         $sql = "INSERT INTO {$this->quoteIdentifiers($this->table)} ({$columns}) VALUES ({$values});";
 
-        $this->handlingError($sql, false);
+        $this->handlingError($sql, [$this->pdo, "exec"]);
         return $this->pdo->lastInsertId();
     }
 
@@ -306,7 +306,14 @@ class lpPDOQuery
         {
             case "primary":
                 return $this->primary;
+            default:
+                return null;
         }
+    }
+
+    public function driver()
+    {
+        return $this->pdo;
     }
 
     /**
