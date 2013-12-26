@@ -2,7 +2,7 @@
 
 const lpEmail = "lpEmail";
 
-class lpValider
+class lpValidator
 {
     public static function rx($type)
     {
