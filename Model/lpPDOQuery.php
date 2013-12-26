@@ -311,6 +311,9 @@ class lpPDOQuery implements iModelQuery
         }
     }
 
+    /**
+     * @return PDO
+     */
     public function driver()
     {
         return $this->pdo;

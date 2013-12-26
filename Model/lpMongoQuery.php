@@ -215,6 +215,15 @@ class lpMongoQuery implements iModelQuery
         }
     }
 
+
+    /**
+     * @return MongoCollection
+     */
+    public function driver()
+    {
+        return $this->mongo;
+    }
+
     /**
      * @param MongoCursor $cursor
      * @param array $options
