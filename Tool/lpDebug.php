@@ -1,5 +1,10 @@
 <?php
 
+class lpPHPFatalException extends ErrorException
+{
+
+}
+
 class lpDebug
 {
     public static function registerErrorHandling()
