@@ -1,76 +1,56 @@
 <?php
 
-class lpMemCache implements ArrayAccess
+class lpMemCache extends lpCache
 {
-    private $config = [
-        "ttl" => 0,
-        "server" => [
-            "127.0.0.1" => 11211
-        ]
-    ];
-
-    /** @var Memcache */
+    /** @var Memcache $memcache */
     private $memcache = null;
 
-    public function __construct($config = [])
+    public function __construct($server = null, $ttl = 0, array $config = [])
     {
-        $this->config = array_merge($this->config, $config);
+        $server = $server ?: ["127.0.0.1" => 11211];
 
         $this->memcache = new Memcache;
 
-        foreach ($this->config["server"] as $host => $port)
+        foreach($server as $host => $port)
             $this->memcache->addserver($host, $port);
+
+        parent::__construct($server, $ttl, $config);
     }
 
-    public function set($k, $v, $ttl = -1)
+
+    public function set($key, $value, $ttl = -1)
     {
-        $this->memcache->set($k, $v, null, $ttl >= 0 ? $ttl : $this->config["ttl"]);
+        $this->memcache->set($key, $value, null, $ttl ?: $this->ttl);
     }
 
-    public function get($k)
+    public function get($key)
     {
-        $f = false;
-        $r = $this->memcache->get($k, $f);
-        if (!is_bool($f) || !$f)
-            return $r;
+        $flag = false;
+        $result = $this->memcache->get($key, $flag);
+        if (!is_bool($flag) || !$flag)
+            return $result;
         return null;
     }
 
-    public function check($k, $seter, $ttl = -1)
+    public function check($key, $setter, $ttl = -1)
     {
-        $f = false;
-        $r = $this->memcache->get($k, $f);
-        if ($f)
-            return $r;
+        $flag = false;
+        $result = $this->memcache->get($key, $flag);
+        if ($flag)
+            return $result;
 
-        $v = $seter();
-        $this->memcache->set($k, $v, null, $ttl >= 0 ? $ttl : $this->config["ttl"]);
-        return $v;
+        $value = $setter();
+        $this->memcache->set($key, $value, null, $ttl ?: $this->ttl);
+        return $value;
     }
 
-    public function delete($k)
+    public function delete($key)
     {
-        return $this->memcache->delete($k);
+        return $this->memcache->delete($key);
     }
 
-    /* ArrayAccess */
-    public function offsetSet($offset, $value)
+    public function exist($key)
     {
-        $this->memcache->set($offset, $value, null, $this->config["ttl"]);
-    }
-
-    public function offsetExists($offset)
-    {
-        return apc_exists($offset);
-    }
-
-    public function offsetUnset($offset)
-    {
-        return apc_delete($offset);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
+        throw new lpException("not support");
     }
 }
