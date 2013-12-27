@@ -2,6 +2,8 @@
 
 interface iModelQuery
 {
+    /** @property string $primary */
+
     public function __construct($db, $table);
 
     public function select(array $if = [], array $options = []);
@@ -37,12 +39,11 @@ class lpModel implements ArrayAccess
      */
     public static function by($k, $v)
     {
-        $primary = static::q()->getAttribute("primary");
-
         /** @var lpModel $i */
         $i = new static();
+        $i->primary = static::q()->getAttribute("primary");
         $i->data = static::q()->findOne([$k => $v]);
-        $i->id = isset($i->data[$primary]) ? $i->data[$primary] : null;
+        $i->id = isset($i->data[$i->primary]) ? $i->data[$i->primary] : null;
         return $i;
     }
 
@@ -50,7 +51,7 @@ class lpModel implements ArrayAccess
     {
         if (!$id)
             return new static();
-        return static::by("id", $id);
+        return static::by(static::q()->getAttribute("primary"), $id);
     }
 
     /**
@@ -68,18 +69,19 @@ class lpModel implements ArrayAccess
         return $this->id;
     }
 
+    public function findOne(array $if = [], array $options = [])
+    {
+        return static::q()->findOne($if, $options);
+    }
+
     public function update(array $data)
     {
-        $primary = static::q()->getAttribute("primary");
-
-        return static::q()->update([$primary => $this->id], $data);
+        return static::q()->update([static::$primary => $this->id], $data);
     }
 
     public function delete()
     {
-        $primary = static::q()->getAttribute("primary");
-
-        return static::q()->delete([$primary => $this->id]);
+        return static::q()->delete([static::$primary => $this->id]);
     }
 
     // implements ArrayAccess
@@ -109,10 +111,12 @@ class lpModel implements ArrayAccess
 
     // 静态成员部分
 
-    public static $dbQuerys = [];
+    protected static $dbQueries = [];
+    protected static $primary = null;
 
     protected static $table = null;
     protected static $driver = null;
+    protected static $source = null;
 
     /**
      * @return iModelQuery
@@ -122,17 +126,22 @@ class lpModel implements ArrayAccess
     {
         $class = get_called_class();
 
-        if(!isset(self::$dbQuerys[$class]))
+        if(!isset(self::$dbQueries[$class]))
         {
             $table = $class::$table;
             $driver = $class::$driver ? : self::DEFAULT_DRIVER;
 
             if(!class_exists($driver))
-                throw new lpException("drive not support");
+                throw new lpFeatureNotSupportException("drive not support");
 
-            self::$dbQuerys[$class] = new $driver(lpFactory::get("lpDBDriver", $driver), $table);
+            /** @var iModelQuery $queryDriver */
+            $queryDriver = new $driver(lpFactory::get($class::$source, $driver), $table);
+
+            self::$dbQueries[$class] = $queryDriver;
+
+            $class::$primary = $queryDriver->getAttribute("primary");
         }
 
-        return self::$dbQuerys[$class];
+        return self::$dbQueries[$class];
     }
-} 
+}
