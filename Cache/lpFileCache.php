@@ -1,60 +1,56 @@
 <?php
 
-class lpFileCache implements ArrayAccess
+class lpFileCache extends lpCache
 {
-    private $config = [
-        "ttl" => 0,
-        "path" => "/tmp/lpFileCache"
-    ];
-
-    public function __construct($config = [])
+    public function __construct($server = null, $ttl = 0, array $config = [])
     {
-        $this->config = array_merge($this->config, $config);
+        $server = $server ?: "/tmp/lpFileCache";
+
+        if(!file_exists($server))
+            mkdir($server);
+
+        parent::__construct($server, $ttl, $config);
     }
 
-    public function set($k, $v, $ttl = -1)
+    public function set($key, $value, $ttl = -1)
     {
-        if (!file_exists($this->config["path"]))
-            mkdir($this->config["path"]);
+        $filename = "{$this->server}/" . md5($key);
+        $ttl = $ttl <= 0 ? $this->ttl : $ttl;
+        $expired = $ttl ? time() + $ttl : PHP_INT_MAX;
+        $data = serialize([$value, $expired]);
 
-        $filename = "{$this->config["path"]}/" . md5($k) . "." . strval($ttl >= 0 ? time() + $ttl : PHP_INT_MAX) . ".cache";
-
-        file_put_contents($filename, serialize($v));
+        $file = fopen($filename, "w+");
+        flock($file, LOCK_EX);
+        fwrite($file, $data);
+        fclose($file);
     }
 
-    public function get($k)
+    public function get($key)
     {
+        $filename = "{$this->server}/" . md5($key);
+        $data = file_get_contents($filename);
+        list($value, $expired) = unserialize($data);
 
+        if(time() > $expired)
+        {
+            unlink($filename);
+            return null;
+        }
+        else
+        {
+            return $value;
+        }
     }
 
-    public function check($k, $seter, $ttl = -1)
+    public function delete($key)
     {
-
+        $filename = "{$this->server}/" . md5($key);
+        unlink($filename);
     }
 
-    public function delete($k)
+    public function exist($key)
     {
-
-    }
-
-    /* ArrayAccess */
-    public function offsetSet($offset, $value)
-    {
-        apc_store($offset, $value, $this->config["ttl"]);
-    }
-
-    public function offsetExists($offset)
-    {
-
-    }
-
-    public function offsetUnset($offset)
-    {
-        return $this->delete($offset);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
+        $filename = "{$this->server}/" . md5($key);
+        return file_exists($filename);
     }
 }

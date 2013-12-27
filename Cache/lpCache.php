@@ -1,5 +1,10 @@
 <?php
 
+class lpCacheMethodNotSupportException extends lpFeatureNotSupportException
+{
+
+}
+
 class lpCache implements ArrayAccess
 {
     /** @var int $ttl */

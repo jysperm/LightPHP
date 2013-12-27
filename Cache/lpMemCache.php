@@ -17,10 +17,9 @@ class lpMemCache extends lpCache
         parent::__construct($server, $ttl, $config);
     }
 
-
     public function set($key, $value, $ttl = -1)
     {
-        $this->memcache->set($key, $value, null, $ttl ?: $this->ttl);
+        $this->memcache->set($key, $value, null, $ttl <= 0 ? $this->ttl : $ttl);
     }
 
     public function get($key)
@@ -40,7 +39,7 @@ class lpMemCache extends lpCache
             return $result;
 
         $value = $setter();
-        $this->memcache->set($key, $value, null, $ttl ?: $this->ttl);
+        $this->memcache->set($key, $value, null, $ttl <= 0 ? $this->ttl : $ttl);
         return $value;
     }
 
@@ -51,6 +50,6 @@ class lpMemCache extends lpCache
 
     public function exist($key)
     {
-        throw new lpException("not support");
+        throw new lpCacheMethodNotSupportException("");
     }
 }
