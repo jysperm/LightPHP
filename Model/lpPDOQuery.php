@@ -1,5 +1,10 @@
 <?php
 
+class lpSQLException extends lpException
+{
+
+}
+
 /**
  * Class lpPDOQuery
  */
