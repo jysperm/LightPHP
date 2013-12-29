@@ -1,8 +1,8 @@
 <?php
 
-namespace LightPHP\Model\Querier;
+namespace LightPHP\Model\Adapter;
 
-interface QuerierInterface
+interface QueryInterface
 {
     /** @property string $primary */
 

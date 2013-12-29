@@ -1,6 +1,6 @@
 <?php
 
-namespace LightPHP\Locale\Driver;
+namespace LightPHP\Locale\Adapter;
 
 class GetTextLocale implements ArrayAccess
 {

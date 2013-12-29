@@ -1,6 +1,6 @@
 <?php
 
-namespace LightPHP\Cache\Driver;
+namespace LightPHP\Cache\Adapter;
 
 use LightPHP\Cache\AbstractCache;
 use LightPHP\Cache\Exception\MethodNotSupportException;

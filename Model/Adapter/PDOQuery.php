@@ -1,19 +1,14 @@
 <?php
 
-namespace LightPHP\Model\Querier;
+namespace LightPHP\Model\Adapter;
 
 use LightPHP\Core\Exception;
 use PDO;
 
-class SQLException extends Exception
-{
-
-}
-
 /**
  * Class PDOQuery
  */
-class PDOQuery implements QuerierInterface
+class PDOQuery implements QueryInterface
 {
     /** @var string $primary 主键字段 */
     public $primary = "id";

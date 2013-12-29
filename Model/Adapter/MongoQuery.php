@@ -1,12 +1,11 @@
 <?php
 
-namespace LightPHP\Model;
-use LightPHP\Model\Querier\QuerierInterface;
+namespace LightPHP\Model\Adapter;
 
 /**
  * Class lpMongoQuery
  */
-class MongoQuery implements QuerierInterface
+class MongoQuery implements QueryInterface
 {
     /** @var string $primary 主键字段 */
     public $primary = "_id";

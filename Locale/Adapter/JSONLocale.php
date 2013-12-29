@@ -1,11 +1,8 @@
 <?php
 
-namespace LightPHP\Locale\Driver;
+namespace LightPHP\Locale\Adapter;
 
-/**
- * 该类提供了简易的国际化功能.
- */
-class ArrayLocale implements ArrayAccess
+class JSONLocale implements ArrayAccess
 {
     /** @var string  本地化文件根目录 */
     private $localeRoot;
@@ -13,37 +10,22 @@ class ArrayLocale implements ArrayAccess
     private $language;
     /** @var array 数据 */
     private $data = [];
-    private $exitsData = [];
 
     /**
      * 构造一个实例
      *
      * @param string $localeRoot 本地化文件根目录
      * @param string $language 语言
+     * @param string $domain 本地化 JSON 文件的文件名
      */
-    public function __construct($localeRoot, $language)
+    public function __construct($localeRoot, $language, $domain = null)
     {
         $this->localeRoot = $localeRoot;
         $this->language = $language;
-    }
 
-    public function load($files, $ext = ".php")
-    {
-        if (!is_array($files))
-            $files = [$files];
+        $domain = $domain ? : $language;
 
-        foreach ($files as $file) {
-            $filename = "{$file}{$ext}";
-
-            if (in_array($filename, $this->exitsData))
-                return $this->data;
-            else
-                $this->exitsData[] = $filename;
-
-            $this->data = array_merge($this->data, include("{$this->localeRoot}/{$this->language}/{$filename}"));
-        }
-
-        return $this->data;
+        $this->data = json_decode(file_get_contents("{$localeRoot}/{$language}/{$domain}.json"), true);
     }
 
     public function file($file, $locale = null)
@@ -59,9 +41,25 @@ class ArrayLocale implements ArrayAccess
         return $this->language;
     }
 
-    public function get($key)
+    public function get($name, $param = [])
     {
-        return $this->data[$key];
+        $keys = explode(".", $name);
+        try {
+            $key = $keys[0];
+            $string = $this->data[$key];
+
+            if (count($keys) > 1)
+                foreach ($keys as $index => $key)
+                    if ($index > 0)
+                        $string = $string[$key];
+
+            foreach ($param as $k => $v)
+                $string = str_replace("%{$k}", $v, $string);
+
+            return $string;
+        } catch (Exception $e) {
+            return $name;
+        }
     }
 
     public function data()
@@ -87,6 +85,6 @@ class ArrayLocale implements ArrayAccess
 
     public function offsetGet($offset)
     {
-        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+        return $this->get($offset);
     }
 }
