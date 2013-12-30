@@ -2,41 +2,51 @@
 
 namespace LightPHP\Core;
 
-/**
- *   处理器基类
- */
+use ReflectionMethod;
+use ReflectionException;
+use LightPHP\Core\Exception\HandlerException;
+use LightPHP\Core\Exception;
+
 abstract class Handler
 {
-    public static function invoke($action, $param = [], $propertys = [])
+    const GET = "GET";
+    const POST = "POST";
+    const OPTIONS = "OPTIONS";
+    const HEAD = "HEAD";
+    const PATCH = "PATCH";
+    const PUT = "PUT";
+    const DELETE = "DELETE";
+
+    const COOKIE = "COOKIE";
+    const SERVER = "SERVER";
+
+    public static function invoke($action = "__invoke", $param = [])
     {
         try {
             ob_start();
 
-            $handler = get_called_class();
+            $handlerName = get_called_class();
 
-            if (!$action)
-                $action = "__invoke";
+            $reflection = new ReflectionMethod($handlerName, $action);
+            if (!$reflection->isPublic() || $reflection->isStatic() || $reflection->isFinal())
+                throw new HandlerException("unknown action", ["handler" => $handlerName, "operator" => $action]);
 
-            $reflection = new ReflectionMethod($handler, $action);
-            if (!$reflection->isPublic() || $reflection->isStatic())
-                throw new handlerException("unknown action", ["handler" => $handler, "operator" => $action]);
-
-            $handler = new $handler;
-
-            foreach ($propertys as $property => $value)
-                $handler->$property = $value;
+            $handler = new $handlerName;
 
             return $reflection->invokeArgs($handler, $param);
-        } catch (handlerException $e) {
+        } catch (HandlerException $e) {
             static::onException($e->getMessage(), $e->getData());
         } catch (ReflectionException $e) {
-            throw new lpException("action not found");
+            throw new Exception("action not found");
         }
     }
 
-    public function __construct()
+    public static function invokeREST($actionName = "Index", $method = self::GET, $param = [])
     {
+        $method = strtolower($method);
+        $actionName = "{$method}{$actionName}";
 
+        return self::invoke($actionName, $param);
     }
 
     protected static function onException($message, $data)
@@ -52,39 +62,46 @@ abstract class Handler
 
     protected function render($template, $values = [])
     {
-
+        var_dump($values);
     }
 
     protected function get(array $rules)
     {
-        return $this->assertParam($_GET, $rules);
+        return self::assertParam($_GET, $rules);
     }
 
     protected function post(array $rules)
     {
-        return $this->assertParam($_POST, $rules);
+        return self::assertParam($_POST, $rules);
     }
 
-    protected static function isPost()
+    protected function param($source, $rules)
     {
-        return $_SERVER["REQUEST_METHOD"] == "POST";
+        $map = [
+            self::GET => Application::$get,
+            self::POST => Application::$post,
+            self::COOKIE => Application::$cookie,
+            self::SERVER => Application::$server
+        ];
+
+        return self::assertParam($map[$source], $rules);
     }
 
-    private function assertParam($source, $rules)
+    private static function assertParam($source, $rules)
     {
         $result = [];
-        foreach ($rules as $name => $condition) {
+        foreach ($rules as $name => $rule) {
             if (is_int($name))
-                list($name, $condition) = [null, $name];
+                list($name, $rule) = [null, $name];
 
             $value = isset($source[$name]) ? $source[$name] : "";
 
-            if (is_callable($condition)) {
-                if (!$condition($value))
-                    throw new handlerException("invalid request data", ["name" => $name, "assert" => "[callback]"]);
-            } else if ($condition) {
-                if (!preg_match($condition, $value))
-                    throw new handlerException("invalid request data", ["name" => $name, "assert" => $condition]);
+            if (is_callable($rule)) {
+                if (!$rule($value))
+                    throw new HandlerException("invalid request data", ["name" => $name, "assert" => "[callback]"]);
+            } else if ($rule) {
+                if (!preg_match($rule, $value))
+                    throw new HandlerException("invalid request data", ["name" => $name, "assert" => $rule]);
             }
 
             $result[] = $value;
@@ -94,10 +111,10 @@ abstract class Handler
 
     /**
      * @param string $name
-     * @return lpPDOModel
+     * @return \LightPHP\Model\Model
      */
     protected function model($name)
     {
-        return lpFactory::get("{$name}Model");
+        return Factory::get("{$name}Model");
     }
 }
