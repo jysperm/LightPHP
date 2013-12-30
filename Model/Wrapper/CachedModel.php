@@ -1,6 +1,6 @@
 <?php
 
-namespace LightPHP\Model;
+namespace LightPHP\Model\Wrapper;
 
 class CachedModel extends Model
 {
