@@ -63,30 +63,4 @@ class Application
     {
         self::$atExit[] = $func;
     }
-
-    public static function registerBuildInShortFunc()
-    {
-        function c($k = null)
-        {
-            /** @var Config $config */
-            $config = Factory::get("lpConfig");
-            if ($k)
-                return $config->get($k);
-            else
-                return $config->data();
-        }
-
-        function l($k = null)
-        {
-            $locale = Factory::get("lpLocale");
-            $param = func_get_args();
-            array_shift($param);
-            return call_user_func_array([$locale, "get"], [$k, $param]);
-        }
-
-        function f($name, $tag = null)
-        {
-            return Factory::get($name, $tag);
-        }
-    }
 }
