@@ -24,11 +24,13 @@ class MemCache extends AbstractCache
 
     public function set($key, $value, $ttl = -1)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $this->memcache->set($key, $value, null, $ttl <= 0 ? $this->ttl : $ttl);
     }
 
     public function get($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $flag = false;
         $result = $this->memcache->get($key, $flag);
         if (!is_bool($flag) || !$flag)
@@ -38,6 +40,7 @@ class MemCache extends AbstractCache
 
     public function check($key, $setter, $ttl = -1)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $flag = false;
         $result = $this->memcache->get($key, $flag);
         if ($flag)
@@ -50,6 +53,7 @@ class MemCache extends AbstractCache
 
     public function delete($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         return $this->memcache->delete($key);
     }
 

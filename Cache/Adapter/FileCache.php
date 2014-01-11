@@ -18,6 +18,7 @@ class FileCache extends AbstractCache
 
     public function set($key, $value, $ttl = -1)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $filename = "{$this->server}/" . md5($key);
         $ttl = $ttl <= 0 ? $this->ttl : $ttl;
         $expired = $ttl ? time() + $ttl : PHP_INT_MAX;
@@ -31,6 +32,7 @@ class FileCache extends AbstractCache
 
     public function get($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $filename = "{$this->server}/" . md5($key);
         $data = file_get_contents($filename);
         list($value, $expired) = unserialize($data);
@@ -48,12 +50,14 @@ class FileCache extends AbstractCache
 
     public function delete($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $filename = "{$this->server}/" . md5($key);
         unlink($filename);
     }
 
     public function exist($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $filename = "{$this->server}/" . md5($key);
         return file_exists($filename);
     }

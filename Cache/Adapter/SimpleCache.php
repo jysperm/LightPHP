@@ -15,6 +15,7 @@ class SimpleCache extends AbstractCache
 
     public function set($key, $value, $ttl = -1)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $ttl = $ttl <= 0 ? $this->ttl : $ttl;
         $expired = $ttl ? time() + $ttl : PHP_INT_MAX;
         $this->cache[$key] = [$value, $expired];
@@ -22,6 +23,7 @@ class SimpleCache extends AbstractCache
 
     public function get($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         list($value, $expired) = $this->cache[$key];
 
         if(time() > $expired)
@@ -37,11 +39,13 @@ class SimpleCache extends AbstractCache
 
     public function delete($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         unset($this->cache[$key]);
     }
 
     public function exist($key)
     {
+        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         /** @noinspection PhpUnusedLocalVariableInspection */
         list($value, $expired) = $this->cache[$key];
 
