@@ -2,9 +2,13 @@
 
 namespace LightPHP\Model\Wrapper;
 
+use LightPHP\Model\Model;
+use LightPHP\Cache\AbstractCache;
+
 class CachedModel extends Model
 {
-    const DEFAULT_CACHE_DRIVER = "lpCache";
+    /** @var AbstractCache */
+    public static $cache = null;
 
     protected static $cacheDriver = null;
 
@@ -23,7 +27,7 @@ class CachedModel extends Model
 
                 $cacheKey = "[lgCachedModel]{$table}({$primary}:{$if[$primary]})";
 
-                return self::getCache()->check($cacheKey, function() use($if) {
+                return self::$cache->check($cacheKey, function() use($if) {
                     return parent::findOne($if);
                 });
             }
@@ -54,14 +58,6 @@ class CachedModel extends Model
         $primary = static::$primary;
 
         $cacheKey = "[lgCachedModel]{$table}({$primary}:{$id})";
-        self::getCache()->delete($cacheKey);
-    }
-
-    /**
-     * @return lpCache
-     */
-    protected static function getCache()
-    {
-        return lpFactory::get(self::$cacheDriver ?: self::DEFAULT_CACHE_DRIVER);
+        self::$cache->delete($cacheKey);
     }
 } 

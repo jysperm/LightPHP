@@ -3,6 +3,8 @@
 namespace LightPHP\Model;
 
 use ArrayAccess;
+use LightPHP\Core\Exception\FeatureNotSupportException;
+use LightPHP\Model\Adapter\QueryInterface;
 
 class Model implements ArrayAccess
 {
@@ -97,13 +99,13 @@ class Model implements ArrayAccess
     protected static $dbQueries = [];
     protected static $primary = null;
 
-    protected static $table = null;
-    protected static $driver = null;
-    protected static $source = null;
+    private static $table = null;
+    private static $driver = null;
+    private static $source = null;
 
     /**
      * @throws FeatureNotSupportException
-     * @return QuerierInterface
+     * @return QueryInterface
      */
     protected static function q()
     {
@@ -117,8 +119,8 @@ class Model implements ArrayAccess
             if(!class_exists($driver))
                 throw new FeatureNotSupportException("drive not support");
 
-            /** @var iModelQuery $queryDriver */
-            $queryDriver = new $driver(lpFactory::get($class::$source, $driver), $table);
+            /** @var QueryInterface $queryDriver */
+            $queryDriver = new $driver($class::$source, $table);
 
             self::$dbQueries[$class] = $queryDriver;
 
