@@ -1,5 +1,9 @@
 <?php
 
+namespace LightPHP\Tool;
+
+use LightPHP\Tool\Auth\UserModelInterface;
+
 class Auth
 {
     /** @var bool|null 缓存当前登陆状态 */
@@ -7,7 +11,7 @@ class Auth
     /** @var int|null 当前用户 ID */
     private $userID = null;
 
-    /** @var iUserModel 当前的用户 Model */
+    /** @var UserModelInterface 当前的用户 Model */
     private $userModel;
     /** @var int Token 的有效期，单位秒 */
     private $tokenExpired;
@@ -47,7 +51,7 @@ class Auth
     }
 
     /**
-     * @return iUserModel|null 当前用户 Model
+     * @return UserModelInterface|null 当前用户 Model
      */
     public function user()
     {
@@ -98,7 +102,7 @@ class Auth
             $this->revokeToken($_SESSION['lpToken']);
 
         setcookie("lpToken", "", 1, "/");
-        $this->resetSession();
+        Session::resetSession();
     }
 
     /**
