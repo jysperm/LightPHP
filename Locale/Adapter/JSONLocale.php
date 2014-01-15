@@ -2,6 +2,9 @@
 
 namespace LightPHP\Locale\Adapter;
 
+use ArrayAccess;
+use Exception;
+
 class JSONLocale implements ArrayAccess
 {
     /** @var string  本地化文件根目录 */

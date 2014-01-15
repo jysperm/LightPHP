@@ -11,8 +11,8 @@ class Locale
      * * 然后根据 HTTP Accept-Language
      * * 最后私用默认语言
      *
-     * @param $localeRoot 本地化文件根目录
-     * @param $defaultLanguage 默认语言
+     * @param string $localeRoot 本地化文件根目录
+     * @param string $defaultLanguage 默认语言
      * @param string $cookieName 储存语言的Cookie
      * @return string
      */
