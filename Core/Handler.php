@@ -43,10 +43,12 @@ abstract class Handler
 
     public static function invokeREST($actionName = "Index", $method = self::GET, $param = [])
     {
-        $method = strtolower($method);
-        $actionName = "{$method}{$actionName}";
+        return self::invoke("{$method}{$actionName}", $param);
+    }
 
-        return self::invoke($actionName, $param);
+    public static function method()
+    {
+        return Application::$server["REQUEST_METHOD"];
     }
 
     protected static function onException($message, $data)
