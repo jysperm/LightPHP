@@ -2,14 +2,14 @@
 
 namespace LightPHP\Tool;
 
-const Email = "email";
-
 class Validator
 {
+    const Email = "email";
+
     public static function rx($type)
     {
         switch ($type) {
-            case Email:
+            case self::Email:
                 return '/^[A-Za-z0-9_\-\.\+]+@[A-Za-z0-9_\-\.]+$/';
         }
     }

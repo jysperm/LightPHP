@@ -66,7 +66,7 @@ class PHPTemplate implements ArrayAccess
         $tmp = new static($file);
         if ($values)
             $tmp->setValues($values);
-        $tmp->output();
+        return $tmp->output();
     }
 
     public static function getOutputFile($file, $values = [])
