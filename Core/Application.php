@@ -26,8 +26,8 @@ class Application
             // 运行级别
             "RunLevel" => lpDefault,
             "Paths" => [
-                "core" => dirname(__FILE__) . "/../../core",
-                "template" => dirname(__FILE__) . "/../../compiled/template"
+                "core" => __DIR__ . "/../../core",
+                "template" => __DIR__ . "/../../compiled/template"
             ]
         ])->loadFromArray($config);
 
