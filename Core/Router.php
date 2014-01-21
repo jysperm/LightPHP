@@ -89,12 +89,16 @@ class Router
     /**
      * 执行匹配到的路由，然后退出程序
      */
-    public static function exec()
+    public static function exec(callable $default = null)
     {
         self::$url = self::$url ? : self::parseURL();
 
         $func = self::match();
-        call_user_func_array($func, self::$urlParam);
+
+        if($func)
+            call_user_func_array($func, self::$urlParam);
+        else if($default)
+            $default();
 
         Application::bye();
     }
@@ -129,5 +133,7 @@ class Router
                 return $rx;
             }
         }
+
+        return null;
     }
 }

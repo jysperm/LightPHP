@@ -38,7 +38,7 @@ class MemCache extends AbstractCache
         return null;
     }
 
-    public function check($key, $setter, $ttl = -1)
+    public function check($key, callable $setter, $ttl = -1)
     {
         $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $flag = false;

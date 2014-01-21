@@ -26,10 +26,7 @@ spl_autoload_register(function ($name) {
     $path = "{$path}.php";
 
     if(file_exists($path))
-    {
-        /** @noinspection PhpIncludeInspection */
         require_once($path);
-    }
 });
 
 if (lpErrorHandling) {
