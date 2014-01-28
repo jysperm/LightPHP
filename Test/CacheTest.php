@@ -6,8 +6,6 @@ use LightPHP\Cache\Adapter\FileCache;
 use LightPHP\Cache\Adapter\SimpleCache;
 use LightPHP\Cache\CacheAgent;
 use LightPHP\Cache\Adapter\MemCache;
-use LightPHP\Cache\Exception\NoDataException;
-use LightPHP\Cache\Adapter\CacheInterface;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {

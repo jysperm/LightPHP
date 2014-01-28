@@ -59,9 +59,9 @@ class MemCache implements CacheInterface
         $result = $this->memcached->get("{$this->prefix}{$key}");
         $status = $this->memcached->getResultCode();
 
-        if($status == Memcached::RES_SUCCESS)
+        if ($status == Memcached::RES_SUCCESS)
             return $result;
-        else if($status == Memcached::RES_NOTFOUND)
+        else if ($status == Memcached::RES_NOTFOUND)
             throw new NoDataException;
         else
             throw new Exception("memcached get failed", ["code" => $status]);
@@ -84,9 +84,7 @@ class MemCache implements CacheInterface
         try {
             $this->fetch($key);
             return true;
-        }
-        catch(NoDataException $e)
-        {
+        } catch (NoDataException $e) {
             return false;
         }
     }

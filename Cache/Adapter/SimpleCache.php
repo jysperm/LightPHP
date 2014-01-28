@@ -47,8 +47,7 @@ class SimpleCache implements CacheInterface
     {
         $key = "{$this->prefix}{$key}";
 
-        if(isset(self::$data[$key]))
-        {
+        if (isset(self::$data[$key])) {
             list($value, $expired) = self::$data[$key];
 
             if ($expired > time())
@@ -76,8 +75,7 @@ class SimpleCache implements CacheInterface
     {
         $key = "{$this->prefix}{$key}";
 
-        if(isset(self::$data[$key]))
-        {
+        if (isset(self::$data[$key])) {
             list($value, $expired) = self::$data[$key];
 
             if ($expired > time())

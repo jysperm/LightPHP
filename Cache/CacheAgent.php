@@ -29,7 +29,7 @@ class CacheAgent implements ArrayAccess
      */
     public function set($key, $value, $ttl = null)
     {
-        if($ttl === null)
+        if ($ttl === null)
             $ttl = $this->ttl;
         $this->adapter->set($key, $value, $ttl);
     }
@@ -53,8 +53,7 @@ class CacheAgent implements ArrayAccess
     {
         try {
             return $this->adapter->fetch($key);
-        }
-        catch(NoDataException $e) {
+        } catch (NoDataException $e) {
             return $default;
         }
     }
@@ -69,12 +68,10 @@ class CacheAgent implements ArrayAccess
     {
         try {
             $result = $this->adapter->fetch($key);
-        }
-        catch(NoDataException $e)
-        {
+        } catch (NoDataException $e) {
             $result = $setter();
 
-            if($ttl === null)
+            if ($ttl === null)
                 $ttl = $this->ttl;
 
             $this->adapter->set($key, $result, $ttl);
