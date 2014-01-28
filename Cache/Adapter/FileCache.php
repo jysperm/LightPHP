@@ -2,26 +2,48 @@
 
 namespace LightPHP\Cache\Adapter;
 
-use LightPHP\Cache\AbstractCache;
+use LightPHP\Cache\Exception\NoDataException;
 
-class FileCache extends AbstractCache
+class FileCache implements CacheInterface
 {
-    public function __construct($server = null, $ttl = 0, array $config = [])
+    /** @var string $path */
+    protected $path;
+    /** @var string $prefix */
+    protected $prefix;
+
+    /**
+     * @param string $path "/tmp/lpFileCache"
+     * @param string $prefix
+     */
+    public function __construct($path = null, $prefix = "")
     {
-        $server = $server ?: "/tmp/lpFileCache";
+        $path = $path ? : "/tmp/lpFileCache";
 
-        if(!file_exists($server))
-            mkdir($server);
+        $this->path = $path;
+        $this->prefix = $prefix;
 
-        parent::__construct($server, $ttl, $config);
+        if (!file_exists($path))
+            mkdir($path);
     }
 
-    public function set($key, $value, $ttl = -1)
+    /**
+     * @return FileCache
+     */
+    public function driver()
     {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
-        $filename = "{$this->server}/" . md5($key);
-        $ttl = $ttl <= 0 ? $this->ttl : $ttl;
-        $expired = $ttl ? time() + $ttl : PHP_INT_MAX;
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
+     */
+    public function set($key, $value, $ttl)
+    {
+        $expired = ($ttl === null) ? PHP_INT_MAX : time() + $ttl;
+        $filename = "{$this->path}/" . md5("{$this->prefix}{$key}");
+
         $data = serialize([$value, $expired]);
 
         $file = fopen($filename, "w+");
@@ -30,35 +52,44 @@ class FileCache extends AbstractCache
         fclose($file);
     }
 
+    /**
+     * @param string $key
+     * @return mixed
+     * @throws NoDataException
+     */
     public function get($key)
     {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
-        $filename = "{$this->server}/" . md5($key);
-        $data = file_get_contents($filename);
-        list($value, $expired) = unserialize($data);
+        $filename = "{$this->path}/" . md5("{$this->prefix}{$key}");
 
-        if(time() > $expired)
-        {
-            unlink($filename);
-            return null;
+        if (file_exists($filename)) {
+            $data = file_get_contents($filename);
+            list($value, $expired) = unserialize($data);
+
+            if ($expired > time())
+                return $value;
+            else
+                unlink($filename);
         }
-        else
-        {
-            return $value;
-        }
+
+        throw new NoDataException;
     }
 
+    /**
+     * @param string $key
+     */
     public function delete($key)
     {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
-        $filename = "{$this->server}/" . md5($key);
+        $filename = "{$this->path}/" . md5("{$this->prefix}{$key}");
         unlink($filename);
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
     public function exist($key)
     {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
-        $filename = "{$this->server}/" . md5($key);
+        $filename = "{$this->path}/" . md5("{$this->prefix}{$key}");
         return file_exists($filename);
     }
 }

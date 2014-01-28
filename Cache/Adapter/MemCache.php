@@ -2,7 +2,6 @@
 
 namespace LightPHP\Cache\Adapter;
 
-use LightPHP\Cache\Exception\MethodNotSupportException;
 use LightPHP\Cache\Exception\NoDataException;
 
 class MemCache implements CacheInterface
@@ -13,17 +12,17 @@ class MemCache implements CacheInterface
     protected $prefix;
 
     /**
-     * @param array $server ["127.0.0.1" => 11211]
+     * @param array $servers ["127.0.0.1" => 11211]
      * @param string $prefix
      */
-    public function __construct($server = null, $prefix = "")
+    public function __construct($servers = null, $prefix = "")
     {
-        $server = $server ? : ["127.0.0.1" => 11211];
+        $servers = $servers ? : ["127.0.0.1" => 11211];
 
         $this->memcache = new \Memcache;
         $this->prefix = $prefix;
 
-        foreach ($server as $host => $port)
+        foreach ($servers as $host => $port)
             $this->memcache->addserver($host, $port);
     }
 
