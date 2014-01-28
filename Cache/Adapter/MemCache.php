@@ -54,7 +54,7 @@ class MemCache implements CacheInterface
      * @throws NoDataException
      * @return mixed
      */
-    public function get($key)
+    public function fetch($key)
     {
         $result = $this->memcached->get("{$this->prefix}{$key}");
         $status = $this->memcached->getResultCode();
@@ -82,7 +82,7 @@ class MemCache implements CacheInterface
     public function exist($key)
     {
         try {
-            $this->get($key);
+            $this->fetch($key);
             return true;
         }
         catch(NoDataException $e)

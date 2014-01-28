@@ -57,7 +57,7 @@ class FileCache implements CacheInterface
      * @return mixed
      * @throws NoDataException
      */
-    public function get($key)
+    public function fetch($key)
     {
         $filename = "{$this->path}/" . md5("{$this->prefix}{$key}");
 

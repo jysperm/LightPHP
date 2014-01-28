@@ -38,18 +38,21 @@ CacheAgent 是缓存部分的对外接口，我们总是需要创建一个 Cache
 
     // 获取数据
     try {
-        print $cacheAgent->get("key");
+        print $cacheAgent->fetch("key");
     }
     catch(NoDataException $e) {
         print "No data";
     }
+
+    // 使用默认值获取数据
+    print $cacheAgent->get("key", "default value");
 
     // 获取数据，如果不存在即设置缓存
     print $cacheAgent->check("key", function() {
         return "value";
     });
 
-## 更多实例
+## 更多示例
 
     // 每个配适器都有不同的参数
     // 例如 FileCache 可以指定储存路径，以及要在 key 前自动添加的前缀
@@ -80,7 +83,7 @@ CacheAgent 是缓存部分的对外接口，我们总是需要创建一个 Cache
 
         }
 
-        public function get($key)
+        public function fetch($key)
         {
             throw new NoDataException;
         }

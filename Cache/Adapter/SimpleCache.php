@@ -43,7 +43,7 @@ class SimpleCache implements CacheInterface
      * @return mixed
      * @throws NoDataException
      */
-    public function get($key)
+    public function fetch($key)
     {
         $key = "{$this->prefix}{$key}";
 

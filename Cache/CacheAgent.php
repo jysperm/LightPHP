@@ -37,11 +37,26 @@ class CacheAgent implements ArrayAccess
     /**
      * @param string $key
      * @return mixed
-     * @throw Exception\NoDataException
+     * @throw NoDataException
      */
-    public function get($key)
+    public function fetch($key)
     {
-        return $this->adapter->get($key);
+        return $this->adapter->fetch($key);
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function get($key, $default = null)
+    {
+        try {
+            return $this->adapter->fetch($key);
+        }
+        catch(NoDataException $e) {
+            return $default;
+        }
     }
 
     /**
@@ -53,7 +68,7 @@ class CacheAgent implements ArrayAccess
     public function check($key, callable $setter, $ttl = null)
     {
         try {
-            $result = $this->adapter->get($key);
+            $result = $this->adapter->fetch($key);
         }
         catch(NoDataException $e)
         {

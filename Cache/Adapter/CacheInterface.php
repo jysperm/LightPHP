@@ -15,7 +15,7 @@ interface CacheInterface
      * @param string $key
      * @return mixed
      */
-    public function get($key);
+    public function fetch($key);
 
     /**
      * @param string $key
