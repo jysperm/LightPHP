@@ -7,7 +7,7 @@ use LightPHP\Cache\Exception\NoDataException;
 class SimpleCache implements CacheInterface
 {
     /** @var array $data */
-    private $data = [];
+    private static $data = [];
     /** @var string $prefix */
     protected $prefix;
 
@@ -35,7 +35,7 @@ class SimpleCache implements CacheInterface
     public function set($key, $value, $ttl)
     {
         $expired = ($ttl === null) ? PHP_INT_MAX : time() + $ttl;
-        $this->data["{$this->prefix}{$key}"] = [$value, $expired];
+        self::$data["{$this->prefix}{$key}"] = [$value, $expired];
     }
 
     /**
@@ -47,14 +47,14 @@ class SimpleCache implements CacheInterface
     {
         $key = "{$this->prefix}{$key}";
 
-        if(isset($this->data[$key]))
+        if(isset(self::$data[$key]))
         {
-            list($value, $expired) = $this->data[$key];
+            list($value, $expired) = self::$data[$key];
 
             if ($expired > time())
                 return $value;
             else
-                unset($this->data[$key]);
+                unset(self::$data[$key]);
         }
 
         throw new NoDataException;
@@ -65,7 +65,7 @@ class SimpleCache implements CacheInterface
      */
     public function delete($key)
     {
-        unset($this->data["{$this->prefix}{$key}"]);
+        unset(self::$data["{$this->prefix}{$key}"]);
     }
 
     /**
@@ -76,14 +76,14 @@ class SimpleCache implements CacheInterface
     {
         $key = "{$this->prefix}{$key}";
 
-        if(isset($this->data[$key]))
+        if(isset(self::$data[$key]))
         {
-            list($value, $expired) = $this->data[$key];
+            list($value, $expired) = self::$data[$key];
 
             if ($expired > time())
                 return true;
             else
-                unset($this->data[$key]);
+                unset(self::$data[$key]);
         }
 
         return false;
