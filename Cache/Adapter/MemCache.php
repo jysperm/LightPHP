@@ -3,11 +3,13 @@
 namespace LightPHP\Cache\Adapter;
 
 use LightPHP\Cache\Exception\NoDataException;
+use LightPHP\Core\Exception;
+use Memcached;
 
 class MemCache implements CacheInterface
 {
-    /** @var \Memcache $memcache */
-    protected $memcache;
+    /** @var Memcached $memcache */
+    protected $memcached;
     /** @var string $prefix */
     protected $prefix;
 
@@ -19,19 +21,19 @@ class MemCache implements CacheInterface
     {
         $servers = $servers ? : ["127.0.0.1" => 11211];
 
-        $this->memcache = new \Memcache;
+        $this->memcached = new Memcached;
         $this->prefix = $prefix;
 
         foreach ($servers as $host => $port)
-            $this->memcache->addserver($host, $port);
+            $this->memcached->addserver($host, $port);
     }
 
     /**
-     * @return \Memcache
+     * @return Memcached
      */
     public function driver()
     {
-        return $this->memcache;
+        return $this->memcached;
     }
 
     /**
@@ -43,22 +45,26 @@ class MemCache implements CacheInterface
     {
         if ($ttl === null)
             $ttl = 0;
-        $this->memcache->set("{$this->prefix}{$key}", $value, null, $ttl);
+        $this->memcached->set("{$this->prefix}{$key}", $value, $ttl);
     }
 
     /**
      * @param string $key
-     * @return mixed
+     * @throws Exception
      * @throws NoDataException
+     * @return mixed
      */
     public function get($key)
     {
-        $flag = false;
-        $result = $this->memcache->get("{$this->prefix}{$key}", $flag);
-        if (!is_bool($flag) || !$flag)
+        $result = $this->memcached->get("{$this->prefix}{$key}");
+        $status = $this->memcached->getResultCode();
+
+        if($status == Memcached::RES_SUCCESS)
             return $result;
-        else
+        else if($status == Memcached::RES_NOTFOUND)
             throw new NoDataException;
+        else
+            throw new Exception("memcached get failed", ["code" => $status]);
     }
 
     /**
@@ -66,7 +72,7 @@ class MemCache implements CacheInterface
      */
     public function delete($key)
     {
-        $this->memcache->delete("{$this->prefix}{$key}");
+        $this->memcached->delete("{$this->prefix}{$key}");
     }
 
     /**

@@ -26,9 +26,9 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     public function provider()
     {
         return [
-            new CacheAgent(new MemCache),
-            new CacheAgent(new FileCache),
-            new CacheAgent(new SimpleCache)
+            [new CacheAgent(new MemCache)],
+            [new CacheAgent(new FileCache)],
+            [new CacheAgent(new SimpleCache)]
         ];
     }
 }

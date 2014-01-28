@@ -22,8 +22,8 @@ const lpProduction = 0;
 
 spl_autoload_register(function ($name) {
     $paths = explode("\\", $name);
-    $path = implode(DIRECTORY_SEPARATOR, $paths);
-    $path = "{$path}.php";
+    $path = implode(DIRECTORY_SEPARATOR, array_slice($paths, 1));
+    $path = __DIR__ . "/{$path}.php";
 
     if(file_exists($path))
         require_once($path);

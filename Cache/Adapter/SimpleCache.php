@@ -76,12 +76,15 @@ class SimpleCache implements CacheInterface
     {
         $key = "{$this->prefix}{$key}";
 
-        list($value, $expired) = $this->data[$key];
+        if(isset($this->data[$key]))
+        {
+            list($value, $expired) = $this->data[$key];
 
-        if ($expired > time())
-            return true;
-        else
-            unset($this->data[$key]);
+            if ($expired > time())
+                return true;
+            else
+                unset($this->data[$key]);
+        }
 
         return false;
     }
