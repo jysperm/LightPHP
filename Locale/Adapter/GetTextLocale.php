@@ -2,6 +2,8 @@
 
 namespace LightPHP\Locale\Adapter;
 
+use ArrayAccess;
+
 class GetTextLocale implements ArrayAccess
 {
     /** @var string  本地化文件根目录 */
@@ -79,5 +81,4 @@ class GetTextLocale implements ArrayAccess
     {
         return $this->get($offset);
     }
-
 }
