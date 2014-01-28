@@ -14,4 +14,4 @@ before_script:
   - mysql -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'passwd';" -uroot
   - mysql -e "GRANT ALL PRIVILEGES ON  test.* TO 'test'@'localhost';" -uroot
 
-script: phpunit Test
+script: phpunit --bootstrap LightPHP.php Test
