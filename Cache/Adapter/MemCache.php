@@ -2,63 +2,87 @@
 
 namespace LightPHP\Cache\Adapter;
 
-use LightPHP\Cache\AbstractCache;
 use LightPHP\Cache\Exception\MethodNotSupportException;
+use LightPHP\Cache\Exception\NoDataException;
 
-class MemCache extends AbstractCache
+class MemCache implements CacheInterface
 {
     /** @var \Memcache $memcache */
-    private $memcache = null;
+    protected $memcache;
+    /** @var string $prefix */
+    protected $prefix;
 
-    public function __construct($server = null, $ttl = 0, array $config = [])
+    /**
+     * @param array $server ["127.0.0.1" => 11211]
+     * @param string $prefix
+     */
+    public function __construct($server = null, $prefix = "")
     {
-        $server = $server ?: ["127.0.0.1" => 11211];
+        $server = $server ? : ["127.0.0.1" => 11211];
 
         $this->memcache = new \Memcache;
+        $this->prefix = $prefix;
 
-        foreach($server as $host => $port)
+        foreach ($server as $host => $port)
             $this->memcache->addserver($host, $port);
-
-        parent::__construct($server, $ttl, $config);
     }
 
-    public function set($key, $value, $ttl = -1)
+    /**
+     * @return \Memcache
+     */
+    public function driver()
     {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
-        $this->memcache->set($key, $value, null, $ttl <= 0 ? $this->ttl : $ttl);
+        return $this->memcache;
     }
 
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
+     */
+    public function set($key, $value, $ttl)
+    {
+        if ($ttl === null)
+            $ttl = 0;
+        $this->memcache->set("{$this->prefix}{$key}", $value, null, $ttl);
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     * @throws NoDataException
+     */
     public function get($key)
     {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
         $flag = false;
-        $result = $this->memcache->get($key, $flag);
+        $result = $this->memcache->get("{$this->prefix}{$key}", $flag);
         if (!is_bool($flag) || !$flag)
             return $result;
-        return null;
+        else
+            throw new NoDataException;
     }
 
-    public function check($key, callable $setter, $ttl = -1)
-    {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
-        $flag = false;
-        $result = $this->memcache->get($key, $flag);
-        if ($flag)
-            return $result;
-
-        $value = $setter();
-        $this->memcache->set($key, $value, null, $ttl <= 0 ? $this->ttl : $ttl);
-        return $value;
-    }
-
+    /**
+     * @param string $key
+     */
     public function delete($key)
     {
-        $key = isset($this->config["prefix"]) ? "{$this->config["prefix"]}{$key}" : $key;
-        return $this->memcache->delete($key);
+        $this->memcache->delete("{$this->prefix}{$key}");
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
     public function exist($key)
     {
-        throw new MethodNotSupportException("memcache not support exist method");
+        try {
+            $this->get($key);
+            return true;
+        }
+        catch(NoDataException $e)
+        {
+            return false;
+        }
     }
 }

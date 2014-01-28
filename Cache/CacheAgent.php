@@ -3,77 +3,68 @@
 namespace LightPHP\Cache;
 
 use ArrayAccess;
+use LightPHP\Cache\Adapter\CacheInterface;
+use LightPHP\Cache\Exception\NoDataException;
 
-/**
- * Class AbstractCache
- * @package LightPHP\Cache
- *
- * 该类是所有缓存驱动的基类
- */
-abstract class AbstractCache implements ArrayAccess
+class CacheAgent implements ArrayAccess
 {
-    /** @var int $ttl 默认 TTL */
+    /** @var CacheInterface */
+    protected $adapter;
+    /** @var int $ttl */
     protected $ttl;
-    /** @var mixed 缓存服务器信息 */
-    protected $server;
-    /** @var array $config 配置信息 */
-    protected $config;
 
     /**
-     * @param mixed $server
+     * @param CacheInterface $adapter
      * @param int $ttl
-     * @param array $config
      */
-    public function __construct($server = null, $ttl = 0, array $config = [])
+    public function __construct(CacheInterface $adapter, $ttl = null)
     {
-        $this->server = $server;
-        $this->ttl = $ttl;
-        $this->config = $config;
+        $this->adapter = $adapter;
     }
 
     /**
-     * 缓存一项逐句
-     *
      * @param string $key
      * @param mixed $value
      * @param int $ttl
      */
-    public function set($key, $value, $ttl = -1)
+    public function set($key, $value, $ttl = null)
     {
-
+        if($ttl === null)
+            $ttl = $this->ttl;
+        $this->adapter->set($key, $value, $ttl);
     }
 
     /**
-     * 获取一项数据
-     *
-     * 如果不存在该项缓存，将返回 null.
-     *
      * @param string $key
-     * @return mixed|null
+     * @return mixed
+     * @throw Exception\NoDataException
      */
-    public function get(/** @noinspection PhpUnusedParameterInspection */ $key)
+    public function get($key)
     {
-        return null;
+        return $this->adapter->get($key);
     }
 
     /**
-     * 尝试获取一项数据
-     *
-     * 若该项不存在将调用 $setter 获取数据并缓存。
-     *
      * @param string $key
      * @param callable $setter
      * @param int $ttl
      * @return mixed
      */
-    public function check($key, callable $setter, $ttl = -1)
+    public function check($key, callable $setter, $ttl = null)
     {
-        $result = $this->get($key);
-
-        if(!$result)
+        try {
+            $result = $this->adapter->get($key);
+        }
+        catch(NoDataException $e)
         {
-            $result = $setter;
-            $this->set($key, $setter, $ttl);
+            $result = $setter();
+
+            if($ttl === null)
+                $ttl = $this->ttl;
+
+            $this->adapter->set($key, $result, $ttl);
+
+            return $result;
         }
 
         return $result;
@@ -84,16 +75,24 @@ abstract class AbstractCache implements ArrayAccess
      */
     public function delete($key)
     {
-
+        $this->adapter->delete($key);
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return bool
      */
     public function exist($key)
     {
-        return false;
+        return $this->adapter->exist($key);
+    }
+
+    /**
+     * @return CacheInterface
+     */
+    public function adapter()
+    {
+        return $this->adapter;
     }
 
     // --- implements ArrayAccess
@@ -126,10 +125,10 @@ abstract class AbstractCache implements ArrayAccess
 
     /**
      * @param string $offset
-     * @return mixed|null
+     * @return mixed
      */
     public function offsetGet($offset)
     {
         return $this->get($offset);
     }
-} 
+}
