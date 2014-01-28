@@ -69,6 +69,9 @@ CacheAgent 是缓存部分的对外接口，我们总是需要创建一个 Cache
     $cacheAgent["key"] = "value";
     print $cacheAgent["key"];
 
+    // 删除数据
+    $cacheAgent->delete($key);
+
     // 检查数据是否存在
     print $cacheAgent->exist("key");
     print isset($cacheAgent["key"]);
