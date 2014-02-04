@@ -67,8 +67,9 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testCheck($agent)
     {
-        $closure = $this->getMock("stdClass", ["__invoke"]);
-        $closure->expects($this->never())->method("__invoke");
+        $closure = function() {
+            throw new \Exception;
+        };
 
         $this->assertEquals("value", $agent->check("key", $closure));
 
