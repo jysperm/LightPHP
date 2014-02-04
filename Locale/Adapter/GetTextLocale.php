@@ -31,8 +31,6 @@ class GetTextLocale implements ArrayAccess
         putenv("LC_ALL={$language}");
         bindtextdomain($domain, $localeRoot);
         textdomain($domain);
-
-        $this->data = json_decode(file_get_contents("{$localeRoot}/{$language}/{$domain}.json"), true);
     }
 
     public function file($file, $locale = null)
