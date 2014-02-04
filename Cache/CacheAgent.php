@@ -20,6 +20,7 @@ class CacheAgent implements ArrayAccess
     public function __construct(CacheInterface $adapter, $ttl = null)
     {
         $this->adapter = $adapter;
+        $this->ttl = $ttl;
     }
 
     /**
