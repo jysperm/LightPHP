@@ -9,20 +9,13 @@ LightPHP 在设计上充分利用了 PHP 最为好用的两个特征：数组和
 
 ### 功能
 
-* 接管错误处理(可选)
-* 对象构造器
-* 配置文件和 Session 管理，用户登录状态管理
-* MVC 分层模型，无需 SQL 的数据库读写(支持 MySQL 和 Mongo)
-* 插件机制
-* 缓存(APC, MemCache)
-* HTML 模版解析
-* 国际化，邮件，锁
+* [缓存](DOC/Cache.md)
 
 ### 运行环境
-[![Build Status](https://travis-ci.org/jysperm/LightPHP.png?branch=master)](https://travis-ci.org/jysperm/LightPHP)
+[![Build Status](https://travis-ci.org/jysperm/LightPHP.png)](https://travis-ci.org/jysperm/LightPHP)
 
 * PHP 5.4 / 5.5
-* Linux
+* Linux / Unix
 * PHP-FPM / Apache2
 
 ### 开发进度
