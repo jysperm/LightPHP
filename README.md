@@ -10,6 +10,7 @@ LightPHP 在设计上充分利用了 PHP 最为好用的两个特征：数组和
 ### 功能
 
 * [缓存](DOC/Cache.md)
+* [本地化](DOC/Locale.md)
 
 ### 运行环境
 [![Build Status](https://travis-ci.org/jysperm/LightPHP.png)](https://travis-ci.org/jysperm/LightPHP)
