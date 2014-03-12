@@ -6,7 +6,7 @@ use ArrayAccess;
 use LightPHP\Locale\Adapter\LocaleInterface;
 use LightPHP\Locale\Exception\LocaleNotExistException;
 
-class LocalAgent implements ArrayAccess
+class LocaleAgent implements ArrayAccess
 {
     /** @var LocaleInterface */
     protected $adapter;

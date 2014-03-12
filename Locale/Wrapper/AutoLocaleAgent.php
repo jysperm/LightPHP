@@ -5,9 +5,9 @@ namespace LightPHP\Locale\Wrapper;
 use DirectoryIterator;
 use LightPHP\Locale\Adapter\LocaleInterface;
 use LightPHP\Locale\Exception\LocaleNotExistException;
-use LightPHP\Locale\LocalAgent;
+use LightPHP\Locale\LocaleAgent;
 
-class AutoLocalAgent extends LocalAgent
+class AutoLocaleAgent extends LocaleAgent
 {
     public function __construct(LocaleInterface $adapter, $localeRoot, array $availableLanguage = [], $acceptLanguage = "", $spliter = ".")
     {
