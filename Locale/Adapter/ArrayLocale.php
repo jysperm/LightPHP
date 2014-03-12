@@ -6,12 +6,24 @@ use LightPHP\Locale\Exception\LocaleNotExistException;
 
 class ArrayLocale implements LocaleInterface
 {
-    /** @var array 本地化数据 */
+    /** @var array */
     private $data = [];
+    /** @var string */
+    private $suffix;
+
+    public function __construct($suffix = ".php")
+    {
+        $this->suffix = $suffix;
+    }
+
+    public function init($localeRoot, $language)
+    {
+
+    }
 
     public function load($file)
     {
-        $filename = "{$file}.php";
+        $filename = "{$file}{$this->suffix}";
         if(!file_exists($filename))
             throw new LocaleNotExistException($filename);
 

@@ -24,6 +24,8 @@ class LocalAgent implements ArrayAccess
         if(!file_exists($languageDir))
             throw new LocaleNotExistException($languageDir);
 
+        $adapter->init($localeRoot, $language);
+
         $this->adapter = $adapter;
         $this->localeRoot = $localeRoot;
         $this->language = $language;

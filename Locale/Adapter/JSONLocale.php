@@ -2,92 +2,38 @@
 
 namespace LightPHP\Locale\Adapter;
 
-use ArrayAccess;
-use Exception;
+use LightPHP\Locale\Exception\LocaleNotExistException;
 
-class JSONLocale implements ArrayAccess
+class JSONLocale implements LocaleInterface
 {
-    /** @var string  本地化文件根目录 */
-    private $localeRoot;
-    /** @var string 语言 */
-    private $language;
-    /** @var array 数据 */
+    /** @var array */
     private $data = [];
+    /** @var string */
+    private $suffix;
 
-    /**
-     * 构造一个实例
-     *
-     * @param string $localeRoot 本地化文件根目录
-     * @param string $language 语言
-     * @param string $domain 本地化 JSON 文件的文件名
-     */
-    public function __construct($localeRoot, $language, $domain = null)
+    public function __construct($suffix = ".json")
     {
-        $this->localeRoot = $localeRoot;
-        $this->language = $language;
-
-        $domain = $domain ? : $language;
-
-        $this->data = json_decode(file_get_contents("{$localeRoot}/{$language}/{$domain}.json"), true);
+        $this->suffix = $suffix;
     }
 
-    public function file($file, $locale = null)
-    {
-        if (!$locale)
-            $locale = $this->language;
-
-        return "{$this->localeRoot}/{$locale}/{$file}";
-    }
-
-    public function language()
-    {
-        return $this->language;
-    }
-
-    public function get($name, $param = [])
-    {
-        $keys = explode(".", $name);
-        try {
-            $key = $keys[0];
-            $string = $this->data[$key];
-
-            if (count($keys) > 1)
-                foreach ($keys as $index => $key)
-                    if ($index > 0)
-                        $string = $string[$key];
-
-            foreach ($param as $k => $v)
-                $string = str_replace("%{$k}", $v, $string);
-
-            return $string;
-        } catch (Exception $e) {
-            return $name;
-        }
-    }
-
-    public function data()
-    {
-        return $this->data;
-    }
-
-    /* ArrayAccess */
-    public function offsetSet($offset, $value)
+    public function init($localeRoot, $language)
     {
 
     }
 
-    public function offsetExists($offset)
+    public function load($file)
     {
-        return isset($this->data[$offset]);
+        $filename = "{$file}{$this->suffix}";
+        if(!file_exists($filename))
+            throw new LocaleNotExistException($filename);
+
+        $this->data = array_merge($this->data, json_decode(file_get_contents($filename), true));
     }
 
-    public function offsetUnset($offset)
+    public function get($name)
     {
-
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
+        if(isset($this->data[$name]))
+            return $this->data[$name];
+        return null;
     }
 }
