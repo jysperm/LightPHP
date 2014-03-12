@@ -153,7 +153,7 @@ class MongoQuery implements QueryInterface
     /**
      * 插入多条数据
      *
-     * @param array[array] $data 数据
+     * @param array [array] $data 数据
      * @param array $options Mongo 语法
      * @return array[array|null] 来自 Mongo
      */
@@ -208,8 +208,7 @@ class MongoQuery implements QueryInterface
 
     public function getAttribute($name)
     {
-        switch($name)
-        {
+        switch ($name) {
             case "primary":
                 return $this->primary;
             default:
@@ -233,18 +232,17 @@ class MongoQuery implements QueryInterface
      */
     private function applyOptions($cursor, array $options)
     {
-        if(isset($options["sort"]))
-        {
-            foreach($options["sort"] as &$v)
+        if (isset($options["sort"])) {
+            foreach ($options["sort"] as &$v)
                 $v = $v ? 1 : -1;
 
             $cursor->sort($options["sort"]);
         }
 
-        if(isset($options["skip"]))
+        if (isset($options["skip"]))
             $cursor->skip($options["skip"]);
 
-        if(isset($options["limit"]))
+        if (isset($options["limit"]))
             $cursor->limit($options["limit"]);
 
         return $cursor;

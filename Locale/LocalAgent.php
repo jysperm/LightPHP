@@ -21,7 +21,7 @@ class LocalAgent implements ArrayAccess
     public function __construct(LocaleInterface $adapter, $localeRoot, $language, $spliter = ".")
     {
         $languageDir = "{$localeRoot}/{$language}";
-        if(!file_exists($languageDir))
+        if (!file_exists($languageDir))
             throw new LocaleNotExistException($languageDir);
 
         $adapter->init($localeRoot, $language);
@@ -45,9 +45,9 @@ class LocalAgent implements ArrayAccess
         $key = array_shift($names);
         $result = $this->adapter->get($key);
 
-        while(count($names)) {
+        while (count($names)) {
             $key = array_shift($names);
-            if(isset($result[$key]))
+            if (isset($result[$key]))
                 $result = $result[$key];
             else
                 return $name;

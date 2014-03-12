@@ -307,8 +307,7 @@ class PDOQuery implements QueryInterface
 
     public function getAttribute($name)
     {
-        switch($name)
-        {
+        switch ($name) {
             case "primary":
                 return $this->primary;
             default:

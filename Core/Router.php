@@ -95,9 +95,9 @@ class Router
 
         $func = self::match();
 
-        if($func)
+        if ($func)
             call_user_func_array($func, self::$urlParam);
-        else if($default)
+        else if ($default)
             $default();
 
         Application::bye();

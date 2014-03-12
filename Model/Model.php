@@ -111,12 +111,11 @@ class Model implements ArrayAccess
     {
         $class = get_called_class();
 
-        if(!isset(self::$dbQueries[$class]))
-        {
+        if (!isset(self::$dbQueries[$class])) {
             $table = $class::$table;
             $driver = $class::$driver ? : self::DEFAULT_DRIVER;
 
-            if(!class_exists($driver))
+            if (!class_exists($driver))
                 throw new FeatureNotSupportException("drive not support");
 
             /** @var QueryInterface $queryDriver */

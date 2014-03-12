@@ -2,8 +2,8 @@
 
 namespace LightPHP\Model\Wrapper;
 
-use LightPHP\Model\Model;
 use LightPHP\Cache\AbstractCache;
+use LightPHP\Model\Model;
 
 class CachedModel extends Model
 {
@@ -14,20 +14,18 @@ class CachedModel extends Model
 
     public function findOne(array $if = [], array $options = [])
     {
-        if(!$options)
-        {
-            if(!static::$primary)
+        if (!$options) {
+            if (!static::$primary)
                 static::q();
             $primary = static::$primary;
 
-            if(array_keys($if) == [$primary])
-            {
+            if (array_keys($if) == [$primary]) {
                 $class = get_called_class();
                 $table = $class::$table;
 
                 $cacheKey = "[lgCachedModel]{$table}({$primary}:{$if[$primary]})";
 
-                return self::$cache->check($cacheKey, function() use($if) {
+                return self::$cache->check($cacheKey, function () use ($if) {
                     return parent::findOne($if);
                 });
             }
@@ -53,7 +51,7 @@ class CachedModel extends Model
         $class = get_called_class();
         $table = $class::$table;
 
-        if(!static::$primary)
+        if (!static::$primary)
             static::q();
         $primary = static::$primary;
 

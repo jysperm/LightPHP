@@ -2,10 +2,10 @@
 
 namespace LightPHP\Core;
 
-use ReflectionMethod;
-use ReflectionException;
-use LightPHP\Core\Exception\HandlerException;
 use LightPHP\Core\Exception;
+use LightPHP\Core\Exception\HandlerException;
+use ReflectionException;
+use ReflectionMethod;
 
 abstract class Handler
 {

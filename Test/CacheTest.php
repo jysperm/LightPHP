@@ -3,9 +3,9 @@
 namespace LightPHP\Test;
 
 use LightPHP\Cache\Adapter\FileCache;
+use LightPHP\Cache\Adapter\MemCache;
 use LightPHP\Cache\Adapter\SimpleCache;
 use LightPHP\Cache\CacheAgent;
-use LightPHP\Cache\Adapter\MemCache;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,7 +23,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      * @param CacheAgent $agent
      *
      * @dataProvider provider
-     * @depends testSet
+     * @depends      testSet
      */
     public function testGetData($agent)
     {
@@ -38,7 +38,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      * @param CacheAgent $agent
      *
      * @dataProvider provider
-     * @depends testSet
+     * @depends      testSet
      * @expectedException LightPHP\Cache\Exception\NoDataException
      */
     public function testFetchException($agent)
@@ -50,7 +50,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      * @param CacheAgent $agent
      *
      * @dataProvider provider
-     * @depends testSet
+     * @depends      testSet
      */
     public function testExist($agent)
     {
@@ -67,13 +67,13 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testCheck($agent)
     {
-        $closure = function() {
+        $closure = function () {
             throw new \Exception;
         };
 
         $this->assertEquals("value", $agent->check("key", $closure));
 
-        $this->assertEquals("new value", $agent->check("new_key", function() {
+        $this->assertEquals("new value", $agent->check("new_key", function () {
             return "new value";
         }));
     }
@@ -82,7 +82,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      * @param CacheAgent $agent
      *
      * @dataProvider provider
-     * @depends testCheck
+     * @depends      testCheck
      */
     public function testDelete($agent)
     {

@@ -25,7 +25,7 @@ spl_autoload_register(function ($name) {
     $path = implode(DIRECTORY_SEPARATOR, array_slice($paths, 1));
     $path = __DIR__ . "/{$path}.php";
 
-    if(file_exists($path))
+    if (file_exists($path))
         require_once($path);
 });
 

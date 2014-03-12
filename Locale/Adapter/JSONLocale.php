@@ -24,7 +24,7 @@ class JSONLocale implements LocaleInterface
     public function load($file)
     {
         $filename = "{$file}{$this->suffix}";
-        if(!file_exists($filename))
+        if (!file_exists($filename))
             throw new LocaleNotExistException($filename);
 
         $this->data = array_merge($this->data, json_decode(file_get_contents($filename), true));
@@ -32,7 +32,7 @@ class JSONLocale implements LocaleInterface
 
     public function get($name)
     {
-        if(isset($this->data[$name]))
+        if (isset($this->data[$name]))
             return $this->data[$name];
         return null;
     }
