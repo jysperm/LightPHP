@@ -9,6 +9,14 @@ use LightPHP\Locale\LocaleAgent;
 
 class AutoLocaleAgent extends LocaleAgent
 {
+    /**
+     * @param LocaleInterface $adapter
+     * @param string $localeRoot
+     * @param array $availableLanguage
+     * @param string $acceptLanguage
+     * @param string $spliter
+     * @throws LocaleNotExistException
+     */
     public function __construct(LocaleInterface $adapter, $localeRoot, array $availableLanguage = [], $acceptLanguage = "", $spliter = ".")
     {
         $language = null;

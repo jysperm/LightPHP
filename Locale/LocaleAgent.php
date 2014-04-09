@@ -18,6 +18,13 @@ class LocaleAgent implements ArrayAccess
     /** @var string */
     protected $spliter = ".";
 
+    /**
+     * @param LocaleInterface $adapter
+     * @param string $localeRoot
+     * @param string $language
+     * @param string $spliter
+     * @throws LocaleNotExistException
+     */
     public function __construct(LocaleInterface $adapter, $localeRoot, $language, $spliter = ".")
     {
         $languageDir = "{$localeRoot}/{$language}";
@@ -32,12 +39,20 @@ class LocaleAgent implements ArrayAccess
         $this->spliter = $spliter;
     }
 
+    /**
+     * @param string $name
+     */
     public function load($name)
     {
         $filename = "{$this->localeRoot}/{$this->language}/{$name}";
         $this->adapter->load($filename);
     }
 
+    /**
+     * @param string $name
+     * @param array $param
+     * @return mixed
+     */
     public function translate($name, array $param = [])
     {
         $names = explode($this->spliter, $name);
@@ -59,16 +74,26 @@ class LocaleAgent implements ArrayAccess
         return $result;
     }
 
+    /**
+     * @param string $filename
+     * @return string
+     */
     public function path($filename)
     {
         return "{$this->localeRoot}/{$this->language}/{$filename}";
     }
 
+    /**
+     * @return string
+     */
     public function language()
     {
         return $this->language;
     }
 
+    /**
+     * @return LocaleInterface
+     */
     public function adapter()
     {
         return $this->adapter();
